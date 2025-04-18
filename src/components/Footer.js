@@ -43,7 +43,7 @@ function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-lg font-semibold mb-4">
               {language === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
             </h3>

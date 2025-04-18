@@ -84,7 +84,7 @@ function Container4() {
           {/* Navigation Buttons */}
           <button
             onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
             aria-label="Previous review"
           >
             ‹
@@ -92,6 +92,9 @@ function Container4() {
 
           {/* Testimonial */}
           <div className="bg-white/10 rounded-3xl p-12 backdrop-blur-sm">
+            <div className="md:hidden text-center text-white/60 mb-4">
+              Desliza para ver más opiniones ← →
+            </div>
             <p className="text-white text-xl leading-relaxed mb-8">
               "{reviews[currentReview].text}"
             </p>
@@ -103,7 +106,7 @@ function Container4() {
 
           <button
             onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
             aria-label="Next review"
           >
             ›

@@ -4,10 +4,10 @@ import pacienteImg from '../../images/paciente.png'
 
 function Container2() {
   return (
-    <div className="relative bg-gradient-to-br from-[#4466B7]/10 to-white">
+    <div className="relative bg-gradient-to-br from-[#4466B7]/10 to-white mt-4 md:mt-0">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-24 py-12">
         <div className="flex flex-col md:flex-row items-start justify-between gap-12">
-          <div className="flex-1 min-h-[400px] w-full md:w-[600px]">
+          <div className="flex-1 min-h-[400px] w-full md:w-[600px] hidden md:block">
             <img 
               src={pacienteImg} 
               alt="Personal médico atendiendo a paciente de hemodiálisis"
