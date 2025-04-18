@@ -1,10 +1,14 @@
 import React from 'react';
+import Container1 from '../containers/about/Container1';
+import Container2 from '../containers/about/Container2';
+import Container3 from '../containers/about/Container3';
 
 const About = () => {
   return (
-    <div className="text-center">
-      <h1 className="text-4xl font-bold mb-6">About Us</h1>
-      <p className="text-xl text-gray-600">Learn more about our company and mission.</p>
+    <div>
+      <Container1 />
+      <Container2 />
+      <Container3 />
     </div>
   );
 };

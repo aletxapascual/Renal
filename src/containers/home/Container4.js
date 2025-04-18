@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
 function Container4() {
   const { language } = useLanguage();
   const [currentReview, setCurrentReview] = useState(0);
+  const timerRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const reviews = [
     {
@@ -56,19 +58,43 @@ function Container4() {
     }
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentReview((prev) => (prev + 1) % reviews.length);
-    }, 5000);
-    return () => clearInterval(timer);
+  const startAutoSlide = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrentReview(prev => (prev + 1) % reviews.length);
+    }, 4000);
   }, [reviews.length]);
 
+  useEffect(() => {
+    startAutoSlide();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [startAutoSlide]);
+
+  const handleReviewChange = (newReview) => {
+    setCurrentReview(newReview);
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    
+    timeoutRef.current = setTimeout(() => {
+      startAutoSlide();
+    }, 6000);
+  };
+
   const nextReview = () => {
-    setCurrentReview((prev) => (prev + 1) % reviews.length);
+    const newReview = (currentReview + 1) % reviews.length;
+    handleReviewChange(newReview);
   };
 
   const prevReview = () => {
-    setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length);
+    const newReview = (currentReview - 1 + reviews.length) % reviews.length;
+    handleReviewChange(newReview);
+  };
+
+  const goToReview = (index) => {
+    handleReviewChange(index);
   };
 
   return (
@@ -84,7 +110,7 @@ function Container4() {
           {/* Navigation Buttons */}
           <button
             onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity z-20"
             aria-label="Previous review"
           >
             ‹
@@ -93,7 +119,7 @@ function Container4() {
           {/* Testimonial */}
           <div className="bg-white/10 rounded-3xl p-12 backdrop-blur-sm">
             <div className="md:hidden text-center text-white/60 mb-4">
-              Desliza para ver más opiniones ← →
+              {language === 'es' ? 'Desliza para ver más opiniones' : 'Swipe to see more reviews'} ← →
             </div>
             <p className="text-white text-xl leading-relaxed mb-8">
               "{reviews[currentReview].text}"
@@ -106,20 +132,22 @@ function Container4() {
 
           <button
             onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-white text-4xl opacity-70 hover:opacity-100 transition-opacity z-20"
             aria-label="Next review"
           >
             ›
           </button>
 
           {/* Dots indicator */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {reviews.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentReview(index)}
+                onClick={() => goToReview(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
-                  currentReview === index ? 'bg-white w-4' : 'bg-white/50'
+                  currentReview === index 
+                    ? 'bg-white w-4' 
+                    : 'bg-white/50 hover:bg-white/75'
                 }`}
                 aria-label={`Go to review ${index + 1}`}
               />

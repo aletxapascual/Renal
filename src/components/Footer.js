@@ -12,12 +12,12 @@ function Footer() {
       <div className="bg-[#00BFB3] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end items-center">
           <div className="flex items-center gap-2">
-            <span className="text-white">
+            <span className="text-white text-sm">
               {language === 'es' ? '¿TIENES ALGUNA PREGUNTA?' : 'DO YOU HAVE A QUESTION?'}
             </span>
             <a 
               href="tel:9999255435" 
-              className="text-white text-2xl font-bold hover:text-white/90 transition-colors"
+              className="text-white text-lg font-bold hover:text-white/90 transition-colors"
             >
               (999) 925 5435
             </a>
