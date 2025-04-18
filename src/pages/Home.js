@@ -1,11 +1,13 @@
 import React from 'react';
-import Container1 from '../containers/home/Containe1';
+import Containe1 from '../containers/home/Containe1';
+import Container2 from '../containers/home/Container2';
 
 
 const Home = () => {
   return (
-    <div className="text-center">
-      <Container1 />
+    <div>
+      <Containe1 />
+      <Container2 />
     </div>
   );
 };
