@@ -19,11 +19,11 @@ function Container1() {
       if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
         scrollContainer.scrollLeft = 0;
       } else {
-        scrollContainer.scrollLeft += 0.5; // Slower scroll speed
+        scrollContainer.scrollLeft += 0.5;
       }
     };
 
-    const intervalId = setInterval(scroll, 50); // Increased interval for smoother animation
+    const intervalId = setInterval(scroll, 50);
 
     return () => clearInterval(intervalId);
   }, []);

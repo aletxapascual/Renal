@@ -74,8 +74,8 @@ function Container4() {
                   rel="noopener noreferrer" 
                   className="h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-[#5773BB] hover:text-white transition-colors"
                 >
-                  <FaFacebookF className="w-5 h-5 mr-2" />
-                  <span className="font-semibold">Facebook</span>
+                  <FaFacebookF className="w-5 h-5 md:mr-2" />
+                  <span className="font-semibold hidden md:inline">Facebook</span>
                 </a>
                 <a 
                   href="https://www.doctoralia.com.mx/mario-arturo-burgos-soto/nefrologo/yucatan" 
@@ -86,9 +86,9 @@ function Container4() {
                   <img 
                     src={doctoralia} 
                     alt="Doctoralia Profile"
-                    className="h-6 object-contain mr-2 [filter:brightness(0)_saturate(100%)_invert(45%)_sepia(19%)_saturate(1404%)_hue-rotate(187deg)_brightness(100%)_contrast(87%)] group-hover:brightness-0 group-hover:invert-[100%] group-hover:sepia-0 group-hover:saturate-100 group-hover:contrast-100 transition-all"
+                    className="h-6 object-contain md:mr-2 [filter:brightness(0)_saturate(100%)_invert(45%)_sepia(19%)_saturate(1404%)_hue-rotate(187deg)_brightness(100%)_contrast(87%)] group-hover:brightness-0 group-hover:invert-[100%] group-hover:sepia-0 group-hover:saturate-100 group-hover:contrast-100 transition-all"
                   />
-                  <span className="font-semibold">Doctoralia</span>
+                  <span className="font-semibold hidden md:inline">Doctoralia</span>
                 </a>
                 <a 
                   href="https://nefrologomerida.com/" 
@@ -96,8 +96,8 @@ function Container4() {
                   rel="noopener noreferrer" 
                   className="h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-[#5773BB] hover:text-white transition-colors"
                 >
-                  <FaGlobe className="w-5 h-5 mr-2" />
-                  <span className="font-semibold">Sitio Web</span>
+                  <FaGlobe className="w-5 h-5 md:mr-2" />
+                  <span className="font-semibold hidden md:inline">Sitio Web</span>
                 </a>
               </div>
             </div>
