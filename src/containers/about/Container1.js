@@ -16,14 +16,20 @@ function Container1() {
     if (!scrollContainer) return;
 
     const scroll = () => {
-      if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-        scrollContainer.scrollLeft = 0;
+      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+      
+      if (scrollContainer.scrollLeft >= maxScroll) {
+        // When reaching the end, smoothly reset to start
+        scrollContainer.scrollTo({
+          left: 0,
+          behavior: 'smooth'
+        });
       } else {
-        scrollContainer.scrollLeft += 0.5;
+        scrollContainer.scrollLeft += 1;
       }
     };
 
-    const intervalId = setInterval(scroll, 50);
+    const intervalId = setInterval(scroll, 30);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -35,10 +41,8 @@ function Container1() {
     { src: paciente4, alt: "Paciente 4" },
     { src: paciente5, alt: "Paciente 5" },
     { src: pacienteImg, alt: "Paciente 6" },
-    // Duplicate images to create seamless loop
-    { src: paciente1, alt: "Paciente 1" },
-    { src: paciente2, alt: "Paciente 2" },
-    { src: paciente3, alt: "Paciente 3" },
+    // Add only first image again to create smooth transition
+    { src: paciente1, alt: "Paciente 1" }
   ];
 
   return (
@@ -59,7 +63,7 @@ function Container1() {
         <div className="relative overflow-hidden">
           <div 
             ref={scrollRef}
-            className="flex gap-4 overflow-x-hidden whitespace-nowrap py-4"
+            className="flex gap-4 overflow-x-hidden whitespace-nowrap py-4 touch-none"
           >
             {images.map((image, index) => (
               <div 
@@ -70,6 +74,7 @@ function Container1() {
                   src={image.src}
                   alt={image.alt}
                   className="w-full h-full object-cover"
+                  draggable="false"
                 />
               </div>
             ))}
