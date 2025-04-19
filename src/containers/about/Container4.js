@@ -13,14 +13,14 @@ function Container4() {
             <h4 className="font-sans text-[#5773BB] text-xl mb-4">
               Especialista en Nefrología
             </h4>
-            <h1 className="font-sans text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="font-sans text-5xl font-bold text-[#5773BB] mb-6">
               Dr. Mario Arturo<br />
               Burgos Soto
             </h1>
 
             <div className="space-y-6">
               <div>
-                <h3 className="font-sans text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="font-sans text-xl font-semibold text-[#5773BB] mb-2">
                   Formación Académica
                 </h3>
                 <p className="font-sans text-lg text-gray-600">
@@ -31,7 +31,7 @@ function Container4() {
               </div>
 
               <div>
-                <h3 className="font-sans text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="font-sans text-xl font-semibold text-[#5773BB] mb-2">
                   Áreas de especialidad
                 </h3>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-lg text-gray-600">
