@@ -22,16 +22,16 @@ function Container1() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Text Content */}
           <div>
-            <h1 className="text-[#5773BB] text-6xl font-bold mb-8 leading-tight">
+            <h1 className="font-sans text-6xl font-bold text-[#5773BB] mb-8 leading-tight">
               Conectamos<br />
               tecnología con<br />
               humanidad
             </h1>
             <div className="space-y-6 text-gray-600 text-lg">
-              <p>
+              <p className="font-sans">
                 En RENALSTAR PENINSULAR, creemos firmemente que el cuidado renal debe ir mucho más allá de lo técnico o lo rutinario. Para nosotros, cada paciente es una persona con emociones, necesidades y una historia única, no solo alguien que necesita un tratamiento médico.
               </p>
-              <p>
+              <p className="font-sans">
                 Por eso, nos esforzamos día a día en ofrecer una atención integral que combine tecnología confiable con una verdadera vocación de servicio. Nos mueve una filosofía basada en la calidez humana, la atención personalizada y el compromiso constante con la calidad médica. 
               </p>
             </div>

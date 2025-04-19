@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaMicrochip, FaFlask, FaHospitalAlt } from 'react-icons/fa';
-import recepcionImg from '../../images/repcepcion.png';
+import sillonVerticalImg from '../../images/sillonVertical.png';
 
 function Container3() {
   const { language } = useLanguage();
@@ -27,48 +27,29 @@ function Container3() {
   return (
     <div className="relative bg-white overflow-hidden py-24">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left Image */}
-          <div className="relative">
-            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
-              <img
-                src={recepcionImg}
-                alt="Nuestras instalaciones"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            {/* Decorative Elements */}
-            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10" />
-            <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10" />
-          </div>
+        <h2 className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB] mb-12 text-center">
+          ¿Qué nos distingue?
+        </h2>
 
-          {/* Right Content */}
-          <div>
-            <h2 className="text-[#5773BB] text-4xl font-bold mb-8">
-              ¿Qué nos distingue?
-            </h2>
-
-            <div className="space-y-8">
-              {features.map((feature, index) => (
-                <div 
-                  key={index}
-                  className="flex flex-col gap-2"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 bg-[#5773BB]/10 rounded-2xl p-4">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-[#5773BB] text-xl font-semibold">
-                      {feature.title}
-                    </h3>
-                  </div>
-                  <p className="text-gray-600 text-base leading-relaxed pl-20">
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <div 
+              key={index}
+              className="bg-gray-50 rounded-3xl p-8 hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="bg-[#5773BB]/10 rounded-2xl p-4 w-fit mb-6">
+                {feature.icon}
+              </div>
+              
+              <h3 className="font-sans text-2xl font-bold text-[#5773BB] mb-4">
+                {feature.title}
+              </h3>
+              
+              <p className="font-sans text-gray-600 text-base">
+                {feature.description}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

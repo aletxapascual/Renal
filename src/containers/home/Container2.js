@@ -1,8 +1,36 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import pacienteImg from '../../images/paciente.png'
+import { useLanguage } from '../../context/LanguageContext'
+import { FaUserMd, FaHospital, FaHeartbeat } from 'react-icons/fa'
 
 function Container2() {
+  const { language } = useLanguage()
+
+  const features = [
+    {
+      icon: <FaUserMd className="w-12 h-12 text-[#5773BB]" />,
+      title: language === 'es' ? 'Equipo Especializado' : 'Specialized Team',
+      description: language === 'es' 
+        ? 'Nuestro equipo médico está altamente capacitado y en constante actualización para brindar el mejor servicio.'
+        : 'Our medical team is highly trained and constantly updated to provide the best service.'
+    },
+    {
+      icon: <FaHospital className="w-12 h-12 text-[#5773BB]" />,
+      title: language === 'es' ? 'Instalaciones Modernas' : 'Modern Facilities',
+      description: language === 'es'
+        ? 'Contamos con instalaciones de primer nivel y tecnología de vanguardia para garantizar tratamientos seguros y eficaces.'
+        : 'We have first-class facilities and cutting-edge technology to ensure safe and effective treatments.'
+    },
+    {
+      icon: <FaHeartbeat className="w-12 h-12 text-[#5773BB]" />,
+      title: language === 'es' ? 'Atención Personalizada' : 'Personalized Care',
+      description: language === 'es'
+        ? 'Nos enfocamos en las necesidades individuales de cada paciente para brindar un tratamiento adaptado y efectivo.'
+        : 'We focus on the individual needs of each patient to provide tailored and effective treatment.'
+    }
+  ]
+
   return (
     <div className="relative bg-gradient-to-br from-[#4466B7]/10 to-white mt-4 md:mt-0">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-24 py-12">

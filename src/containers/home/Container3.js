@@ -36,41 +36,50 @@ function Container3() {
   ];
 
   return (
-    <div className="relative bg-gradient-to-br from-white to-[#5773BB]/10">
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-4xl font-bold text-center text-[#235AA7] mb-12">
-          {language === 'es' ? 'Nuestros Suplementos' : 'Our Supplements'}
-        </h2>
-        
+    <div className="bg-white py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h4 className="text-[#5773BB] text-lg font-medium mb-4">
+            {language === 'es' ? 'Nuestros Productos' : 'Our Products'}
+          </h4>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#5773BB] mb-6">
+            {language === 'es' ? 'Suplementos Especializados' : 'Specialized Supplements'}
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            {language === 'es' 
+              ? 'Desarrollados específicamente para complementar el tratamiento renal y mejorar la calidad de vida de nuestros pacientes.'
+              : 'Specifically developed to complement renal treatment and improve the quality of life of our patients.'}
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <div 
               key={product.id}
-              className="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-[#4466B7]/10"
+              className="bg-white rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
             >
-              <div className="aspect-w-1 aspect-h-1 mb-6">
+              <div className="aspect-[4/3] overflow-hidden bg-white p-8">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-64 object-contain rounded-lg"
+                  className="w-full h-full object-contain"
                 />
               </div>
-              
-              <h3 className="text-2xl font-semibold text-[#235AA7] mb-4">
-                {product.name}
-              </h3>
-              
-              <p className="text-gray-600 mb-6 min-h-[120px]">
-                {product.description}
-              </p>
-              
-              <Link
-                to={`/productos/${product.id}`}
-                className="inline-flex items-center justify-center w-full px-6 py-3 text-base font-medium text-white bg-[#235AA7] hover:bg-[#4466B7] rounded-full transition-colors duration-300"
-              >
-                {language === 'es' ? 'Comprar Ahora' : 'Buy Now'} 
-                <span className="ml-2">🛒</span>
-              </Link>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-[#5773BB] mb-4">
+                  {product.name}
+                </h3>
+                <p className="text-gray-600 mb-8">
+                  {product.description}
+                </p>
+                <Link
+                  to={`/productos/${product.id}`}
+                  className="inline-flex items-center justify-center w-full px-6 py-4 text-base font-medium text-white bg-[#5773BB] hover:bg-[#4466B7] rounded-full transition-colors duration-300"
+                >
+                  {language === 'es' ? 'Comprar Ahora' : 'Buy Now'} 
+                  <span className="ml-2">🛒</span>
+                </Link>
+              </div>
             </div>
           ))}
         </div>
