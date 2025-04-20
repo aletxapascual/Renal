@@ -33,10 +33,10 @@ function Container2() {
     },
     {
       icon: <FaHandHoldingMedical className="w-12 h-12" />,
-      title: language === 'es' ? 'Servicio Integral' : 'Comprehensive Service',
+      title: language === 'es' ? 'Solución Completa en Hemodiálisis' : 'Complete Hemodialysis Solution',
       description: language === 'es'
-        ? 'Ofrecemos un servicio integral que incluye diagnóstico, tratamiento y seguimiento.'
-        : 'We offer a comprehensive service including diagnosis, treatment, and follow-up.'
+        ? 'Ofrecemos todo lo que necesitas en un solo lugar, con calidad y calidez.'
+        : 'We offer everything you need in one place, with quality and warmth.'
     }
   ]
 
