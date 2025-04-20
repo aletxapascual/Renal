@@ -46,7 +46,7 @@ function Container1() {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-white to-[#5773BB]/5">
+    <div id="inicio" className="bg-gradient-to-b from-white to-[#5773BB]/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center max-w-4xl mx-auto mb-16">
           <h1 className="font-sans text-6xl font-bold text-[#5773BB] mb-8">

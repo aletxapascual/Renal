@@ -76,7 +76,7 @@ function Container2() {
             </div>
 
             <Link 
-              to="/about"
+              to="/acerca-de#inicio"
               className="inline-flex items-center gap-2 bg-[#235AA7] hover:bg-[#4466B7] text-white px-6 py-3 rounded-full transition-colors mt-8"
             >
               <span className="text-xl">+</span> Conocer más
