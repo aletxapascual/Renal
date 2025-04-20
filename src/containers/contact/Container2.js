@@ -231,7 +231,7 @@ function Container2() {
                       </div>
                       <div>
                         <p className="text-lg font-medium">{info.label}</p>
-                        <p className="text-xl whitespace-pre-line break-words">{info.value}</p>
+                        <p className="text-base sm:text-xl whitespace-pre-line break-words overflow-hidden">{info.value}</p>
                       </div>
                     </a>
                   ) : (
@@ -241,7 +241,7 @@ function Container2() {
                       </div>
                       <div>
                         <p className="text-lg font-medium">{info.label}</p>
-                        <p className="text-xl whitespace-pre-line break-words">{info.value}</p>
+                        <p className="text-base sm:text-xl whitespace-pre-line break-words overflow-hidden">{info.value}</p>
                       </div>
                     </div>
                   )}
