@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import paciente1 from '../../images/pacientes/paciente1.png';
 import paciente2 from '../../images/pacientes/paciente2.png';
 import paciente3 from '../../images/pacientes/paciente3.png';
@@ -8,6 +8,7 @@ import pacienteImg from '../../images/paciente.png';
 
 function PhotoSlideshow() {
   const scrollRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
@@ -16,20 +17,27 @@ function PhotoSlideshow() {
     let isScrolling = true;
     let touchStartX = 0;
     let touchEndX = 0;
+    let scrollInterval;
 
-    const scroll = () => {
-      if (!isScrolling) return;
+    const startScrolling = () => {
+      if (scrollInterval) clearInterval(scrollInterval);
       
-      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-      
-      if (scrollContainer.scrollLeft >= maxScroll) {
-        scrollContainer.scrollLeft = 0;
-      } else {
-        scrollContainer.scrollLeft += 0.3; // Reduced scroll speed for smoother animation
-      }
+      scrollInterval = setInterval(() => {
+        if (!isScrolling) return;
+        
+        const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        
+        if (scrollContainer.scrollLeft >= maxScroll) {
+          // Reset to beginning when reaching the end
+          scrollContainer.scrollLeft = 0;
+        } else {
+          scrollContainer.scrollLeft += 1; // Increased scroll speed
+        }
+      }, 30);
     };
 
-    const intervalId = setInterval(scroll, 30);
+    // Start scrolling immediately
+    startScrolling();
 
     // Touch event handlers
     const handleTouchStart = (e) => {
@@ -64,6 +72,7 @@ function PhotoSlideshow() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          setIsVisible(entry.isIntersecting);
           isScrolling = entry.isIntersecting;
         });
       },
@@ -73,7 +82,7 @@ function PhotoSlideshow() {
     observer.observe(scrollContainer);
 
     return () => {
-      clearInterval(intervalId);
+      if (scrollInterval) clearInterval(scrollInterval);
       observer.disconnect();
       scrollContainer.removeEventListener('touchstart', handleTouchStart);
       scrollContainer.removeEventListener('touchend', handleTouchEnd);
