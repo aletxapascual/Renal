@@ -30,7 +30,7 @@ function Container3() {
     <div className="relative bg-white overflow-hidden py-12" id="container3">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h2 
-          className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB] mb-12 text-center"
+          className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB] mb-16 pt-8 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -58,11 +58,11 @@ function Container3() {
                 />
               </div>
 
-              <h3 className="font-sans text-2xl font-bold text-[#5773BB] mb-4">
+              <h3 className="font-sans text-2xl font-bold text-[#5773BB] mb-6">
                 {feature.title}
               </h3>
               
-              <p className="font-sans text-gray-600 text-base">
+              <p className="font-sans text-gray-600 text-base text-justify">
                 {feature.description}
               </p>
             </motion.div>

@@ -1,14 +1,20 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaMapMarkedAlt } from 'react-icons/fa';
+import { FaMapMarkedAlt, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 function Container5() {
   const { language } = useLanguage();
 
   return (
-    <div className="bg-white py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10 py-24 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/15 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-[#5773BB]/10 to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
@@ -16,15 +22,18 @@ function Container5() {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h2 className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB]">
-            Ubicación
+          <h4 className="text-lg font-medium mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
+            {language === 'es' ? 'Encuéntranos' : 'Find Us'}
+          </h4>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent">
+            {language === 'es' ? 'Nuestra Ubicación' : 'Our Location'}
           </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Map */}
           <motion.div 
-            className="lg:col-span-3 w-full h-[500px] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="lg:col-span-3 w-full h-[500px] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white/80 backdrop-blur-sm ring-1 ring-[#5773BB]/10"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
@@ -39,6 +48,7 @@ function Container5() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="Ubicación de RENALSTAR PENINSULAR"
+              className="transition-all duration-500"
             />
           </motion.div>
 
@@ -52,43 +62,57 @@ function Container5() {
           >
             <div className="space-y-6">
               <motion.div 
-                className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className="p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ring-1 ring-[#5773BB]/10"
                 whileHover={{ scale: 1.02 }}
               >
-                <h4 className="font-sans text-xl font-bold text-[#5773BB] mb-2">
-                  Dirección
-                </h4>
-                <p className="font-sans text-lg text-gray-600">
-                  Calle 7 #338, entre 42 y 44<br />
-                  Col. García Gineres<br />
-                  Mérida, Yucatán, México<br />
-                  C.P. 97070
-                </p>
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-gradient-to-br from-[#5773BB] to-[#4466B7] rounded-2xl text-white">
+                    <FaMapMarkerAlt className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-sans text-xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-3">
+                      {language === 'es' ? 'Dirección' : 'Address'}
+                    </h4>
+                    <p className="font-sans text-lg text-gray-600 leading-relaxed">
+                      Calle 7 #338, entre 42 y 44<br />
+                      Col. García Gineres<br />
+                      Mérida, Yucatán, México<br />
+                      C.P. 97070
+                    </p>
+                  </div>
+                </div>
               </motion.div>
 
               <motion.div 
-                className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className="p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ring-1 ring-[#5773BB]/10"
                 whileHover={{ scale: 1.02 }}
               >
-                <h4 className="font-sans text-xl font-bold text-[#5773BB] mb-2">
-                  Horario
-                </h4>
-                <p className="font-sans text-lg text-gray-600">
-                  Lunes a Sábado<br />
-                  7:00 AM - 7:00 PM
-                </p>
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-gradient-to-br from-[#5773BB] to-[#4466B7] rounded-2xl text-white">
+                    <FaClock className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-sans text-xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-3">
+                      {language === 'es' ? 'Horario' : 'Hours'}
+                    </h4>
+                    <p className="font-sans text-lg text-gray-600 leading-relaxed">
+                      {language === 'es' ? 'Lunes a Sábado' : 'Monday to Saturday'}<br />
+                      7:00 AM - 7:00 PM
+                    </p>
+                  </div>
+                </div>
               </motion.div>
 
               <motion.a
                 href="https://www.google.com/maps/dir//Renal+-+Hemodi%C3%A1lisis+Cl%C3%ADnica+de+Ri%C3%B1%C3%B3n+y+trasplante+renal/@21.0149576,-89.5846563,19z/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-4 bg-[#5773BB] text-white font-sans font-semibold rounded-full hover:bg-[#4563AB] transition-colors duration-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center justify-center w-full px-8 py-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] hover:from-[#4466B7] hover:to-[#5773BB] text-white font-sans font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <FaMapMarkedAlt className="mr-2" />
-                Cómo Llegar
+                <FaMapMarkedAlt className="w-5 h-5 mr-2" />
+                {language === 'es' ? 'Cómo Llegar' : 'Get Directions'}
               </motion.a>
             </div>
           </motion.div>

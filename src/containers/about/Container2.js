@@ -1,40 +1,17 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaUserMd, FaHospital, FaHeartbeat, FaHandHoldingMedical } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import pacienteImg from '../../images/paciente.png';
 
 function Container2() {
   const { language } = useLanguage();
 
-  const services = [
-    {
-      icon: <FaUserMd className="w-16 h-16 text-[#5773BB]" />,
-      title: "Atención Personalizada",
-      description: "Tratamos a cada paciente de manera individual, adaptando nuestros servicios a sus necesidades específicas."
-    },
-    {
-      icon: <FaHospital className="w-16 h-16 text-[#5773BB]" />,
-      title: "Instalaciones Modernas",
-      description: "Contamos con espacios diseñados para maximizar tu comodidad durante el tratamiento."
-    },
-    {
-      icon: <FaHeartbeat className="w-16 h-16 text-[#5773BB]" />,
-      title: "Cuidado Integral",
-      description: "Nos enfocamos tanto en tu bienestar físico como emocional durante todo el proceso."
-    },
-    {
-      icon: <FaHandHoldingMedical className="w-16 h-16 text-[#5773BB]" />,
-      title: "Apoyo Continuo",
-      description: "Estamos contigo en cada paso del camino, brindando el soporte que necesitas."
-    }
-  ];
-
   return (
-    <div className="bg-white py-16" id="container2">
+    <div className="bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10 py-8" id="container2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mission and Vision Sections */}
         <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -44,24 +21,27 @@ function Container2() {
           <motion.div
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
+            className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 ring-1 ring-[#5773BB]/10"
           >
             <motion.h2 
-              className="font-sans text-4xl font-bold text-[#5773BB] mb-6"
+              className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-8 pb-2"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Misión
+              {language === 'es' ? 'Misión' : 'Mission'}
             </motion.h2>
             <motion.p 
-              className="font-sans text-lg text-gray-600"
+              className="text-lg text-gray-600 leading-relaxed text-justify"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes.
+              {language === 'es' 
+                ? 'Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes.'
+                : 'Provide excellent nephrological care that combines cutting-edge technology with humane, empathetic, and personalized treatment, improving the quality of life of each of our patients.'}
             </motion.p>
           </motion.div>
 
@@ -69,61 +49,118 @@ function Container2() {
           <motion.div
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
+            className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 ring-1 ring-[#5773BB]/10"
           >
             <motion.h2 
-              className="font-sans text-4xl font-bold text-[#5773BB] mb-6"
+              className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-8 pb-2"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Visión
+              {language === 'es' ? 'Visión' : 'Vision'}
             </motion.h2>
             <motion.p 
-              className="font-sans text-lg text-gray-600"
+              className="text-lg text-gray-600 leading-relaxed text-justify"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes.
+              {language === 'es'
+                ? 'Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes.'
+                : 'To be the leading hemodialysis center in the Yucatan Peninsula, recognized for its technological innovation, human warmth, and commitment to the comprehensive well-being of our patients.'}
             </motion.p>
           </motion.div>
         </motion.div>
 
-        {/* Services Grid */}
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12"
+        {/* ¿Quiénes Somos? Section */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
+          className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 ring-1 ring-[#5773BB]/10"
         >
-          {services.map((service, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <motion.h2 
+                className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-8 pb-2"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                {language === 'es' ? '¿Quiénes Somos?' : 'Who Are We?'}
+              </motion.h2>
+              <div className="space-y-6 text-lg text-gray-600 leading-relaxed text-justify">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  {language === 'es' 
+                    ? 'En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia.'
+                    : 'At Renal, we are dedicated to providing hemodialysis services with a human approach and cutting-edge technology.'}
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  {language === 'es'
+                    ? 'Nuestro objetivo es ofrecer un ambiente cálido y acogedor, donde cada paciente se sienta valorado y cuidado. Contamos con un equipo de profesionales comprometidos y equipos de última generación que garantizan tratamientos seguros y efectivos.'
+                    : 'Our goal is to provide a warm and welcoming environment where each patient feels valued and cared for. We have a team of committed professionals and state-of-the-art equipment that guarantee safe and effective treatments.'}
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
+                  {language === 'es'
+                    ? 'Nos enorgullece ser un centro pionero en ofrecer hemodiálisis fuera del entorno hospitalario, proporcionando una experiencia más cómoda y menos estresante para nuestros pacientes.'
+                    : 'We are proud to be a pioneer center in offering hemodialysis outside the hospital environment, providing a more comfortable and less stressful experience for our patients.'}
+                </motion.p>
+              </div>
+            </div>
             <motion.div 
-              key={index} 
-              className="flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
             >
               <motion.div 
-                className="bg-[#5773BB]/10 rounded-full p-6 mb-6"
-                whileHover={{ scale: 1.1, backgroundColor: "rgba(87, 115, 187, 0.2)" }}
+                className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl"
+                whileHover={{ scale: 1.03 }}
                 transition={{ duration: 0.3 }}
               >
-                {service.icon}
+                <img 
+                  src={pacienteImg} 
+                  alt="Paciente recibiendo atención" 
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
-              <h3 className="font-sans text-2xl font-bold text-[#5773BB] mb-4">
-                {service.title}
-              </h3>
-              <p className="font-sans text-gray-600">
-                {service.description}
-              </p>
+              {/* Decorative Elements */}
+              <motion.div 
+                className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+              />
+              <motion.div 
+                className="absolute -top-6 -left-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+              />
             </motion.div>
-          ))}
+          </div>
         </motion.div>
       </div>
     </div>

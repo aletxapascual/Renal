@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import pacienteImg from '../../images/paciente.png'
 import { useLanguage } from '../../context/LanguageContext'
-import { FaUserMd, FaHospital, FaHeartbeat } from 'react-icons/fa'
+import { FaUserMd, FaHospital, FaHeartbeat, FaHandHoldingMedical } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
 function Container2() {
@@ -11,104 +11,109 @@ function Container2() {
 
   const features = [
     {
-      icon: <FaUserMd className="w-12 h-12 text-[#5773BB]" />,
-      title: language === 'es' ? 'Equipo Especializado' : 'Specialized Team',
+      icon: <FaUserMd className="w-12 h-12" />,
+      title: language === 'es' ? 'Personal Especializado' : 'Specialized Staff',
       description: language === 'es' 
-        ? 'Nuestro equipo médico está altamente capacitado y en constante actualización para brindar el mejor servicio.'
-        : 'Our medical team is highly trained and constantly updated to provide the best service.'
+        ? 'Contamos con personal altamente capacitado y especializado en hemodiálisis.'
+        : 'We have highly trained staff specialized in hemodialysis.'
     },
     {
-      icon: <FaHospital className="w-12 h-12 text-[#5773BB]" />,
+      icon: <FaHospital className="w-12 h-12" />,
       title: language === 'es' ? 'Instalaciones Modernas' : 'Modern Facilities',
       description: language === 'es'
-        ? 'Contamos con instalaciones de primer nivel y tecnología de vanguardia para garantizar tratamientos seguros y eficaces.'
-        : 'We have first-class facilities and cutting-edge technology to ensure safe and effective treatments.'
+        ? 'Nuestras instalaciones están equipadas con la última tecnología médica.'
+        : 'Our facilities are equipped with the latest medical technology.'
     },
     {
-      icon: <FaHeartbeat className="w-12 h-12 text-[#5773BB]" />,
+      icon: <FaHeartbeat className="w-12 h-12" />,
       title: language === 'es' ? 'Atención Personalizada' : 'Personalized Care',
       description: language === 'es'
-        ? 'Nos enfocamos en las necesidades individuales de cada paciente para brindar un tratamiento adaptado y efectivo.'
-        : 'We focus on the individual needs of each patient to provide tailored and effective treatment.'
+        ? 'Brindamos atención personalizada y seguimiento constante a nuestros pacientes.'
+        : 'We provide personalized care and constant monitoring to our patients.'
+    },
+    {
+      icon: <FaHandHoldingMedical className="w-12 h-12" />,
+      title: language === 'es' ? 'Servicio Integral' : 'Comprehensive Service',
+      description: language === 'es'
+        ? 'Ofrecemos un servicio integral que incluye diagnóstico, tratamiento y seguimiento.'
+        : 'We offer a comprehensive service including diagnosis, treatment, and follow-up.'
     }
   ]
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  }
+
   return (
-    <div className="relative bg-gradient-to-br from-[#4466B7]/10 to-white mt-4 md:mt-0">
-      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-24 py-12">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-12">
-          <motion.div 
-            className="flex-1 min-h-[400px] w-full md:w-[600px] hidden md:block"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3 }}
+    <div id="container2" className="relative py-24 bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/15 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-[#5773BB]/10 to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+          className="text-center mb-16"
+        >
+          <motion.h2 
+            variants={itemVariants}
+            className="text-4xl font-bold text-[#5773BB] mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent"
           >
-            <img 
-              src={pacienteImg} 
-              alt="Personal médico atendiendo a paciente de hemodiálisis"
-              className="w-full h-full object-cover rounded-2xl shadow-xl"
-              onError={(e) => {
-                console.error('Error loading image');
-                e.target.style.display = 'none';
-              }}
-            />
-          </motion.div>
-          
-          <div className="flex-1 max-w-xl">
-            <motion.div 
-              className="text-left"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <span className="text-[#235AA7] font-medium">Acerca de Nosotros</span>
-              <h2 className="text-4xl font-semibold text-[#235AA7] mt-2 mb-8">¿Quiénes Somos?</h2>
-            </motion.div>
+            {language === 'es' ? '¿Por qué elegirnos?' : 'Why Choose Us?'}
+          </motion.h2>
+          <motion.p 
+            variants={itemVariants}
+            className="text-xl text-gray-700 max-w-3xl mx-auto"
+          >
+            {language === 'es' 
+              ? 'Ofrecemos la mejor atención y tecnología en hemodiálisis'
+              : 'We offer the best care and technology in hemodialysis'}
+          </motion.p>
+        </motion.div>
 
-            <motion.div 
-              className="space-y-4 text-gray-600"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <p className="leading-relaxed text-justify">
-                En Renal nos dedicamos a brindar servicios de hemodiálisis 
-                con un enfoque humano y tecnología de vanguardia.
-              </p>
-
-              <p className="leading-relaxed text-justify">
-                Nuestro objetivo es ofrecer un ambiente cálido y acogedor, 
-                donde cada paciente se sienta valorado y cuidado. 
-                Contamos con un equipo de profesionales comprometidos 
-                y equipos de última generación que garantizan 
-                tratamientos seguros y efectivos.
-              </p>
-
-              <p className="leading-relaxed text-justify">
-                Nos enorgullece ser un centro pionero en ofrecer 
-                hemodiálisis fuera del entorno hospitalario, 
-                proporcionando una experiencia más cómoda y menos 
-                estresante para nuestros pacientes.
-              </p>
-            </motion.div>
-
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+        >
+          {features.map((feature, index) => (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="mt-12"
+              key={index}
+              variants={itemVariants}
+              className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ring-1 ring-[#5773BB]/10"
             >
-              <Link 
-                to="/acerca-de#inicio"
-                className="inline-flex items-center gap-2 bg-[#235AA7] hover:bg-[#4466B7] text-white px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              >
-                <span className="text-xl">+</span> Conocer más
-              </Link>
+              <div className="text-[#5773BB] mb-4 transform transition-transform duration-300 hover:scale-110">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-[#5773BB] mb-4">{feature.title}</h3>
+              <p className="text-gray-700 leading-relaxed">{feature.description}</p>
             </motion.div>
-          </div>
-        </div>
+          ))}
+        </motion.div>
       </div>
     </div>
   )
