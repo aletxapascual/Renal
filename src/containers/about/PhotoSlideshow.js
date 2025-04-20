@@ -14,6 +14,8 @@ function PhotoSlideshow() {
     if (!scrollContainer) return;
 
     let isScrolling = true;
+    let touchStartX = 0;
+    let touchEndX = 0;
 
     const scroll = () => {
       if (!isScrolling) return;
@@ -23,11 +25,40 @@ function PhotoSlideshow() {
       if (scrollContainer.scrollLeft >= maxScroll) {
         scrollContainer.scrollLeft = 0;
       } else {
-        scrollContainer.scrollLeft += 0.5;
+        scrollContainer.scrollLeft += 0.3; // Reduced scroll speed for smoother animation
       }
     };
 
     const intervalId = setInterval(scroll, 30);
+
+    // Touch event handlers
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      isScrolling = false;
+    };
+
+    const handleTouchEnd = (e) => {
+      touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > 50) { // Minimum swipe distance
+        if (diff > 0) {
+          // Swipe left
+          scrollContainer.scrollLeft += 200;
+        } else {
+          // Swipe right
+          scrollContainer.scrollLeft -= 200;
+        }
+      }
+      
+      // Resume scrolling after a delay
+      setTimeout(() => {
+        isScrolling = true;
+      }, 3000);
+    };
+
+    scrollContainer.addEventListener('touchstart', handleTouchStart);
+    scrollContainer.addEventListener('touchend', handleTouchEnd);
 
     // Pause scrolling when the container is not visible
     const observer = new IntersectionObserver(
@@ -44,6 +75,8 @@ function PhotoSlideshow() {
     return () => {
       clearInterval(intervalId);
       observer.disconnect();
+      scrollContainer.removeEventListener('touchstart', handleTouchStart);
+      scrollContainer.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
 

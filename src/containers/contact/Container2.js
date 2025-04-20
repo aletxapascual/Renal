@@ -212,7 +212,7 @@ function Container2() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-3xl font-bold mb-6"
             >
-              ¿Necesitas ayuda?
+              Más Información
             </motion.h2>
             
             <div className="space-y-4">
@@ -231,7 +231,7 @@ function Container2() {
                       </div>
                       <div>
                         <p className="text-lg font-medium">{info.label}</p>
-                        <p className="text-xl whitespace-pre-line">{info.value}</p>
+                        <p className="text-xl whitespace-pre-line break-words">{info.value}</p>
                       </div>
                     </a>
                   ) : (
@@ -241,7 +241,7 @@ function Container2() {
                       </div>
                       <div>
                         <p className="text-lg font-medium">{info.label}</p>
-                        <p className="text-xl whitespace-pre-line">{info.value}</p>
+                        <p className="text-xl whitespace-pre-line break-words">{info.value}</p>
                       </div>
                     </div>
                   )}
