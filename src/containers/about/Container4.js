@@ -1,55 +1,81 @@
 import React from 'react';
-import { FaFacebookF, FaEnvelope, FaPhone, FaGlobe } from 'react-icons/fa';
+import { FaFacebookF, FaEnvelope, FaGlobe } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import doctorImg from '../../images/doctor.jpg';
 import doctoralia from '../../images/doctoraliaLogo.png';
 
 function Container4() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
+  const specialtyAreas = [
+    'Nefropatías Glomerulares', 
+    'Hipertensión', 
+    'Anemias', 
+    'Hemodiálisis', 
+    'Trasplante Renal'
+  ];
+
   return (
-    <div className="bg-white py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10 py-24">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/20 to-[#5773BB]/5 blur-3xl animate-pulse" />
+        <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#5773BB]/15 to-[#5773BB]/5 blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#5773BB]/10 to-transparent blur-3xl animate-pulse" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          viewport={{ once: true }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-start"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
         >
           {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            viewport={{ once: true }}
+            variants={itemVariants}
+            className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg ring-1 ring-[#5773BB]/10"
           >
             <motion.h4 
-              className="font-sans text-[#5773BB] text-xl mb-4"
-              whileHover={{ color: "#4466B7" }}
-              transition={{ duration: 0.2 }}
+              className="font-sans bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent text-xl mb-4"
             >
               Especialista en Nefrología
             </motion.h4>
             <motion.h1 
-              className="font-sans text-5xl font-bold text-[#5773BB] mb-6"
-              whileHover={{ color: "#4466B7" }}
-              transition={{ duration: 0.2 }}
+              className="font-sans text-5xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent mb-6 leading-normal pb-1"
             >
               Dr. Mario Arturo<br />
               Burgos Soto
             </motion.h1>
 
-            <motion.div 
+            <motion.div
               className="space-y-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              viewport={{ once: true }}
+              variants={itemVariants}
             >
               <motion.div
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-md"
               >
-                <h3 className="font-sans text-xl font-semibold text-[#5773BB] mb-2">
+                <h3 className="font-sans text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-2">
                   Formación Académica
                 </h3>
                 <p className="font-sans text-lg text-gray-600">
@@ -60,70 +86,34 @@ function Container4() {
               </motion.div>
 
               <motion.div
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-md"
               >
-                <h3 className="font-sans text-xl font-semibold text-[#5773BB] mb-2">
+                <h3 className="font-sans text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-2">
                   Áreas de especialidad
                 </h3>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-lg text-gray-600">
-                  <motion.li 
-                    className="flex items-center space-x-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-[#5773BB] rounded-full"></span>
-                    <span>Nefropatías Glomerulares</span>
-                  </motion.li>
-                  <motion.li 
-                    className="flex items-center space-x-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-[#5773BB] rounded-full"></span>
-                    <span>Hipertensión</span>
-                  </motion.li>
-                  <motion.li 
-                    className="flex items-center space-x-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-[#5773BB] rounded-full"></span>
-                    <span>Anemias</span>
-                  </motion.li>
-                  <motion.li 
-                    className="flex items-center space-x-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-[#5773BB] rounded-full"></span>
-                    <span>Hemodiálisis</span>
-                  </motion.li>
-                  <motion.li 
-                    className="flex items-center space-x-2"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-[#5773BB] rounded-full"></span>
-                    <span>Trasplante Renal</span>
-                  </motion.li>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2 text-lg text-gray-600">
+                  {specialtyAreas.map((area, index) => (
+                    <motion.li 
+                      key={index}
+                      className="flex items-center space-x-2"
+                    >
+                      <span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span>
+                      <span className="whitespace-nowrap">{area}</span>
+                    </motion.li>
+                  ))}
                 </ul>
               </motion.div>
               
               <motion.div 
-                className="space-y-4"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                viewport={{ once: true }}
+                className="space-y-4 bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-md"
               >
                 <motion.div 
                   className="flex items-center space-x-3 text-gray-600"
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2 }}
                 >
-                  <FaEnvelope className="w-5 h-5 text-[#5773BB]" />
-                  <a href="mailto:drburgos@hemodialisis.com.mx" className="hover:text-[#5773BB] transition-colors">
+                  <div className="p-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-lg">
+                    <FaEnvelope className="w-5 h-5 text-white" />
+                  </div>
+                  <a href="mailto:drburgos@hemodialisis.com.mx" className="text-gray-600">
                     drburgos@hemodialisis.com.mx
                   </a>
                 </motion.div>
@@ -131,18 +121,13 @@ function Container4() {
               
               <motion.div 
                 className="flex space-x-4"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-                viewport={{ once: true }}
+                variants={itemVariants}
               >
                 <motion.a 
                   href="https://www.facebook.com/nefrologomerida/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-[#5773BB] hover:text-white transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex-1 h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-gradient-to-r hover:from-[#5773BB] hover:to-[#4466B7] hover:text-white transition-colors duration-300"
                 >
                   <FaFacebookF className="w-5 h-5 md:mr-2" />
                   <span className="font-semibold hidden md:inline">Facebook</span>
@@ -151,9 +136,7 @@ function Container4() {
                   href="https://www.doctoralia.com.mx/mario-arturo-burgos-soto/nefrologo/yucatan" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-[#5773BB] hover:text-white group transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex-1 h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-gradient-to-r hover:from-[#5773BB] hover:to-[#4466B7] hover:text-white transition-colors duration-300"
                 >
                   <img 
                     src={doctoralia} 
@@ -166,9 +149,7 @@ function Container4() {
                   href="https://nefrologomerida.com/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-[#5773BB] hover:text-white transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex-1 h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-gradient-to-r hover:from-[#5773BB] hover:to-[#4466B7] hover:text-white transition-colors duration-300"
                 >
                   <FaGlobe className="w-5 h-5 md:mr-2" />
                   <span className="font-semibold hidden md:inline">Sitio Web</span>
@@ -180,15 +161,10 @@ function Container4() {
           {/* Right Image */}
           <motion.div 
             className="relative"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            viewport={{ once: true }}
+            variants={itemVariants}
           >
             <motion.div 
               className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl"
-              whileHover={{ scale: 1.03 }}
-              transition={{ duration: 0.3 }}
             >
               <img 
                 src={doctorImg} 
@@ -198,14 +174,14 @@ function Container4() {
             </motion.div>
             {/* Decorative Elements */}
             <motion.div 
-              className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10"
+              className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-[#5773BB]/20 to-[#5773BB]/5 rounded-3xl -z-10"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
               viewport={{ once: true }}
             />
             <motion.div 
-              className="absolute -top-6 -left-6 w-32 h-32 bg-[#5773BB]/5 rounded-3xl -z-10"
+              className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-tr from-[#5773BB]/20 to-[#5773BB]/5 rounded-3xl -z-10"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}

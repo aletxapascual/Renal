@@ -56,7 +56,7 @@ function Container3() {
           {products.map((product) => (
             <div 
               key={product.id}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 ring-1 ring-[#5773BB]/10"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 ring-1 ring-[#5773BB]/10 flex flex-col h-full"
             >
               <div className="aspect-[4/3] overflow-hidden bg-white p-8">
                 <img
@@ -65,11 +65,11 @@ function Container3() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-[#5773BB] mb-4">
+              <div className="p-8 flex flex-col flex-grow">
+                <h3 className="text-2xl font-bold text-[#5773BB] mb-4 text-center">
                   {product.name}
                 </h3>
-                <p className="text-gray-700 mb-8">
+                <p className="text-gray-700 mb-8 text-center flex-grow">
                   {product.description}
                 </p>
                 <Link

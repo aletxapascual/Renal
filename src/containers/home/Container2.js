@@ -104,9 +104,9 @@ function Container2() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ring-1 ring-[#5773BB]/10"
+              className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ring-1 ring-[#5773BB]/10 text-center"
             >
-              <div className="text-[#5773BB] mb-4 transform transition-transform duration-300 hover:scale-110">
+              <div className="text-[#5773BB] mb-4 transition-transform duration-300 hover:scale-110 flex justify-center">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold text-[#5773BB] mb-4">{feature.title}</h3>

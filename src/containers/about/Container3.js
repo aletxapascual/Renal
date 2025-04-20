@@ -26,11 +26,38 @@ function Container3() {
     }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
   return (
-    <div className="relative bg-white overflow-hidden py-12" id="container3">
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative bg-gradient-to-br from-white via-[#5773BB]/10 to-[#5773BB]/20 py-8">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/25 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-[#5773BB]/20 to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h2 
-          className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB] mb-16 pt-8 text-center"
+          className="font-sans text-5xl font-bold text-[#5773BB] mb-8 text-center leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -39,35 +66,33 @@ function Container3() {
           ¿Qué nos distingue?
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-4 place-items-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={containerVariants}
+        >
           {features.map((feature, index) => (
-            <motion.div 
+            <motion.div
               key={index}
-              className="bg-gray-50 rounded-3xl p-8 hover:shadow-lg transition-shadow duration-200"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5 }}
+              variants={itemVariants}
+              className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg ring-1 ring-[#5773BB]/10 flex flex-col h-full"
             >
-              <div className="aspect-square rounded-2xl overflow-hidden mb-6">
-                <img
-                  src={feature.image}
+              <div className="mb-6 h-48 flex items-center justify-center">
+                <img 
+                  src={feature.image} 
                   alt={feature.title}
-                  className="w-full h-full object-cover"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
-
-              <h3 className="font-sans text-2xl font-bold text-[#5773BB] mb-6">
-                {feature.title}
-              </h3>
-              
-              <p className="font-sans text-gray-600 text-base text-justify">
-                {feature.description}
-              </p>
+              <h3 className="text-xl font-semibold text-[#5773BB] mb-4 text-center">{feature.title}</h3>
+              <div className="flex-grow flex flex-col justify-center">
+                <p className="text-gray-700 leading-relaxed text-center">{feature.description}</p>
+              </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
