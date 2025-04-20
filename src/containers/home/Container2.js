@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import pacienteImg from '../../images/paciente.png'
 import { useLanguage } from '../../context/LanguageContext'
 import { FaUserMd, FaHospital, FaHeartbeat } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 
 function Container2() {
   const { language } = useLanguage()
+  const [hoveredFeature, setHoveredFeature] = useState(null)
 
   const features = [
     {
@@ -35,7 +37,11 @@ function Container2() {
     <div className="relative bg-gradient-to-br from-[#4466B7]/10 to-white mt-4 md:mt-0">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-24 py-12">
         <div className="flex flex-col md:flex-row items-start justify-between gap-12">
-          <div className="flex-1 min-h-[400px] w-full md:w-[600px] hidden md:block">
+          <motion.div 
+            className="flex-1 min-h-[400px] w-full md:w-[600px] hidden md:block"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+          >
             <img 
               src={pacienteImg} 
               alt="Personal médico atendiendo a paciente de hemodiálisis"
@@ -45,15 +51,27 @@ function Container2() {
                 e.target.style.display = 'none';
               }}
             />
-          </div>
+          </motion.div>
           
           <div className="flex-1 max-w-xl">
-            <div className="text-left">
+            <motion.div 
+              className="text-left"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
               <span className="text-[#235AA7] font-medium">Acerca de Nosotros</span>
               <h2 className="text-4xl font-semibold text-[#235AA7] mt-2 mb-8">¿Quiénes Somos?</h2>
-            </div>
+            </motion.div>
 
-            <div className="space-y-4 text-gray-600">
+            <motion.div 
+              className="space-y-4 text-gray-600"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
               <p className="leading-relaxed text-justify">
                 En Renal nos dedicamos a brindar servicios de hemodiálisis 
                 con un enfoque humano y tecnología de vanguardia.
@@ -73,14 +91,22 @@ function Container2() {
                 proporcionando una experiencia más cómoda y menos 
                 estresante para nuestros pacientes.
               </p>
-            </div>
+            </motion.div>
 
-            <Link 
-              to="/acerca-de#inicio"
-              className="inline-flex items-center gap-2 bg-[#235AA7] hover:bg-[#4466B7] text-white px-6 py-3 rounded-full transition-colors mt-8"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="mt-12"
             >
-              <span className="text-xl">+</span> Conocer más
-            </Link>
+              <Link 
+                to="/acerca-de#inicio"
+                className="inline-flex items-center gap-2 bg-[#235AA7] hover:bg-[#4466B7] text-white px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                <span className="text-xl">+</span> Conocer más
+              </Link>
+            </motion.div>
           </div>
         </div>
       </div>

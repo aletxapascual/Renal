@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaStar } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Container4() {
   const { language } = useLanguage();
   const [currentReview, setCurrentReview] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -49,10 +51,12 @@ function Container4() {
 
   const startAutoSlide = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setCurrentReview(prev => (prev + 1) % reviews.length);
-    }, 4000);
-  }, [reviews.length]);
+    if (!isHovered) {
+      timerRef.current = setInterval(() => {
+        setCurrentReview(prev => (prev + 1) % reviews.length);
+      }, 4000);
+    }
+  }, [reviews.length, isHovered]);
 
   useEffect(() => {
     startAutoSlide();
@@ -89,7 +93,13 @@ function Container4() {
   return (
     <div className="bg-white py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
           <h4 className="font-sans text-[#5773BB] text-lg font-medium mb-4">
             Testimonios
           </h4>
@@ -97,41 +107,67 @@ function Container4() {
             Lo que dicen nuestros<br />
             pacientes sobre nosotros
           </h2>
-        </div>
+        </motion.div>
 
         <div className="relative max-w-4xl mx-auto">
           {/* Navigation Buttons */}
           <button
             onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-4xl text-gray-400 hover:text-gray-600 transition-colors z-20"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-4xl text-gray-400 hover:text-gray-600 transition-colors duration-300 z-20"
             aria-label="Previous review"
           >
             ‹
           </button>
 
           {/* Testimonial */}
-          <div className="bg-white rounded-3xl p-12">
+          <motion.div 
+            className="bg-white rounded-3xl p-12 shadow-lg hover:shadow-xl transition-shadow duration-300"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <div className="md:hidden text-center text-gray-500 mb-4">
               Desliza para ver más opiniones ← →
             </div>
-            <p className="font-sans text-2xl text-gray-800 italic leading-relaxed mb-8">
-              "{reviews[currentReview].text}"
-            </p>
-            <div className="space-y-4">
-              <div className="flex justify-center">
-                {[...Array(reviews[currentReview].stars)].map((_, i) => (
-                  <FaStar key={i} className="text-yellow-400 w-6 h-6" />
-                ))}
-              </div>
-              <h4 className="font-sans font-bold text-xl text-center text-gray-900">
-                {reviews[currentReview].name}
-              </h4>
-            </div>
-          </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentReview}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="font-sans text-2xl text-gray-800 italic leading-relaxed mb-8">
+                  "{reviews[currentReview].text}"
+                </p>
+                <motion.div 
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="flex justify-center">
+                    {[...Array(reviews[currentReview].stars)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <FaStar className="text-yellow-400 w-6 h-6" />
+                      </motion.div>
+                    ))}
+                  </div>
+                  <h4 className="font-sans font-bold text-xl text-center text-gray-900">
+                    {reviews[currentReview].name}
+                  </h4>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
           <button
             onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-4xl text-gray-400 hover:text-gray-600 transition-colors z-20"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-4xl text-gray-400 hover:text-gray-600 transition-colors duration-300 z-20"
             aria-label="Next review"
           >
             ›
@@ -140,7 +176,7 @@ function Container4() {
           {/* Dots indicator */}
           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {reviews.map((_, index) => (
-              <button
+              <motion.button
                 key={index}
                 onClick={() => goToReview(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
@@ -148,6 +184,8 @@ function Container4() {
                     ? 'bg-[#5773BB] w-4' 
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
                 aria-label={`Go to review ${index + 1}`}
               />
             ))}

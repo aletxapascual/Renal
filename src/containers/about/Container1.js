@@ -1,81 +1,56 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import paciente1 from '../../images/pacientes/paciente1.png';
-import paciente2 from '../../images/pacientes/paciente2.png';
-import paciente3 from '../../images/pacientes/paciente3.png';
-import paciente4 from '../../images/pacientes/paciente4.png';
-import paciente5 from '../../images/pacientes/paciente5.png';
-import pacienteImg from '../../images/paciente.png';
+import { FaHeart, FaLaptopMedical, FaUserMd } from 'react-icons/fa';
 
 function Container1() {
   const { language } = useLanguage();
-  const scrollRef = useRef(null);
 
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    const scroll = () => {
-      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-      
-      if (scrollContainer.scrollLeft >= maxScroll) {
-        // When reaching the end, smoothly reset to start
-        scrollContainer.scrollTo({
-          left: 0,
-          behavior: 'smooth'
-        });
-      } else {
-        scrollContainer.scrollLeft += 1;
-      }
-    };
-
-    const intervalId = setInterval(scroll, 30);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const images = [
-    { src: paciente1, alt: "Paciente 1" },
-    { src: paciente2, alt: "Paciente 2" },
-    { src: paciente3, alt: "Paciente 3" },
-    { src: paciente4, alt: "Paciente 4" },
-    { src: paciente5, alt: "Paciente 5" },
-    { src: pacienteImg, alt: "Paciente 6" },
-    // Add only first image again to create smooth transition
-    { src: paciente1, alt: "Paciente 1" }
+  const values = [
+    {
+      icon: FaHeart,
+      title: 'Calidez Humana',
+      description: 'Cuidamos de nuestros pacientes con empatía y dedicación.'
+    },
+    {
+      icon: FaLaptopMedical,
+      title: 'Tecnología Avanzada',
+      description: 'Utilizamos equipos de última generación para garantizar los mejores resultados.'
+    },
+    {
+      icon: FaUserMd,
+      title: 'Atención Personalizada',
+      description: 'Cada paciente recibe un tratamiento adaptado a sus necesidades específicas.'
+    }
   ];
 
   return (
     <div id="inicio" className="bg-gradient-to-b from-white to-[#5773BB]/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center max-w-4xl mx-auto mb-16">
-          <h1 className="font-sans text-6xl font-bold text-[#5773BB] mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          <h1 className="font-sans text-6xl font-bold text-[#5773BB] mb-8 relative">
             Sobre Nosotros
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#5773BB] rounded-full" />
           </h1>
-          <div className="text-gray-600 text-lg">
-            <p className="font-sans">
+
+          <div className="text-gray-600 text-lg mb-12">
+            <p className="font-sans leading-relaxed">
               En nuestra empresa, creemos firmemente que el cuidado renal debe ir mucho más allá de lo técnico o lo rutinario. Cada paciente es una persona con emociones, necesidades y una historia única, por lo que nos enfocamos en ofrecer una atención integral que combine tecnología confiable con una verdadera vocación de servicio. Nuestra filosofía se basa en la calidez humana, la atención personalizada y el compromiso constante con la calidad médica.
             </p>
           </div>
-        </div>
 
-        {/* Image Carousel */}
-        <div className="relative overflow-hidden">
-          <div 
-            ref={scrollRef}
-            className="flex gap-4 overflow-x-hidden whitespace-nowrap py-4 touch-none"
-          >
-            {images.map((image, index) => (
-              <div 
-                key={index} 
-                className="flex-none w-72 h-64 rounded-2xl overflow-hidden"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            {values.map((value, index) => (
+              <div
+                key={index}
+                className="relative bg-white rounded-xl p-6 shadow-lg select-none pointer-events-none"
               >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover"
-                  draggable="false"
-                />
+                <div className="relative z-10">
+                  <div className="mb-4">
+                    <value.icon className="w-12 h-12 mx-auto text-[#5773BB]" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">{value.title}</h3>
+                  <p className="text-gray-600">{value.description}</p>
+                </div>
               </div>
             ))}
           </div>

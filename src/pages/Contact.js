@@ -1,10 +1,12 @@
 import React from 'react';
+import Container1 from '../containers/contact/Container1';
+import Container2 from '../containers/contact/Container2';
 
 const Contact = () => {
   return (
-    <div className="text-center">
-      <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
-      <p className="text-xl text-gray-600">Get in touch with our team.</p>
+    <div className="relative overflow-hidden">
+      <Container1 />
+      <Container2 />
     </div>
   );
 };
