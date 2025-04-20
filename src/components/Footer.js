@@ -30,11 +30,24 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and description */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <img 
-              src={logo} 
-              alt="Renal Logo" 
-              className="h-16 mb-6"
-            />
+            <Link 
+              to="/"
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById('container1');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#container1';
+                }
+              }}
+            >
+              <img 
+                src={logo} 
+                alt="Renal Logo" 
+                className="h-16 mb-6 hover:opacity-90 transition-opacity duration-300"
+              />
+            </Link>
             <p className="text-white/80 text-sm leading-relaxed">
               {language === 'es' 
                 ? 'En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia, proporcionando atención más allá de la medicina.'
@@ -49,22 +62,38 @@ function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/80 hover:text-white transition-colors">
+                <Link 
+                  to="/" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
                   {language === 'es' ? 'Inicio' : 'Home'}
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-white/80 hover:text-white transition-colors">
+                <Link 
+                  to="/acerca-de" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
                   {language === 'es' ? 'Nosotros' : 'About'}
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-white/80 hover:text-white transition-colors">
-                  {language === 'es' ? 'Servicios' : 'Services'}
+                <Link 
+                  to="/tienda" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
+                  {language === 'es' ? 'Tienda' : 'Store'}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/80 hover:text-white transition-colors">
+                <Link 
+                  to="/contacto" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
                   {language === 'es' ? 'Contacto' : 'Contact'}
                 </Link>
               </li>
@@ -78,12 +107,20 @@ function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/services/hemodialysis" className="text-white/80 hover:text-white transition-colors">
+                <Link 
+                  to="/acerca-de#container2" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
                   {language === 'es' ? 'Hemodiálisis' : 'Hemodialysis'}
                 </Link>
               </li>
               <li>
-                <Link to="/services/supplements" className="text-white/80 hover:text-white transition-colors">
+                <Link 
+                  to="/tienda" 
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
                   {language === 'es' ? 'Suplementos' : 'Supplements'}
                 </Link>
               </li>

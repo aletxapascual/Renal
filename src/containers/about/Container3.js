@@ -27,7 +27,7 @@ function Container3() {
   ];
 
   return (
-    <div className="relative bg-white overflow-hidden py-12">
+    <div className="relative bg-white overflow-hidden py-12" id="container3">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h2 
           className="font-sans text-4xl md:text-5xl font-bold text-[#5773BB] mb-12 text-center"

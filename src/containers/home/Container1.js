@@ -102,7 +102,7 @@ function Container1() {
   }
 
   return (
-    <div className="relative min-h-[600px] bg-gradient-to-br from-white to-[#5773BB]/5">
+    <div id="container1" className="relative min-h-[600px] bg-gradient-to-br from-white to-[#5773BB]/5">
       {/* Background decorative elements with animation */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-[#5773BB]/5 blur-3xl animate-pulse" />
