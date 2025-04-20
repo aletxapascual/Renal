@@ -172,23 +172,6 @@ function Container1() {
                 <FaChevronRight className="w-6 h-6" />
               </button>
             </div>
-
-            {/* Enhanced Dots */}
-            <div className="absolute bottom-4 left-0 right-0">
-              <div className="flex items-center justify-center gap-3">
-                {slides.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-125 ${
-                      index === currentSlide 
-                        ? 'bg-[#5773BB] scale-110' 
-                        : 'bg-white/80 hover:bg-white'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
