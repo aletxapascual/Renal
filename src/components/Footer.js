@@ -7,7 +7,7 @@ function Footer() {
   const { language } = useLanguage();
 
   return (
-    <footer className="bg-[#235AA7] text-white">
+    <footer className="bg-[#5773BB] text-white">
       {/* Top banner with phone */}
       <div className="bg-[#00BFB3] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end items-center">
