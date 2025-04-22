@@ -11,6 +11,8 @@ function ProductDetail() {
   const [selectedFlavor, setSelectedFlavor] = useState(null);
   const [mainImage, setMainImage] = useState(0);
   const [images, setImages] = useState([]);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0, xPercent: 0, yPercent: 0 });
 
   const product = products[productId];
 
@@ -52,6 +54,24 @@ function ProductDetail() {
     }
   };
 
+  const handleMouseMove = (e) => {
+    if (!isZoomed) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate the percentage position
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    setZoomPosition({ x, y, xPercent, yPercent });
+  };
+
+  const handleMouseLeave = () => {
+    setIsZoomed(false);
+  };
+
   return (
     <section className="py-20 bg-gradient-to-br from-white via-[#5773BB]/5 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,36 +83,104 @@ function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white rounded-xl shadow-sm p-8 aspect-square"
+                className="bg-white rounded-xl shadow-sm p-8 aspect-square relative"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
               >
                 <img
                   src={images[mainImage]}
                   alt={product.name}
                   className="w-full h-full object-contain"
                 />
+                <button 
+                  className="absolute top-4 right-4 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors duration-300"
+                  onClick={() => setIsZoomed(!isZoomed)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+                {images.length > 1 && (
+                  <>
+                    <button 
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors duration-300"
+                      onClick={() => setMainImage((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button 
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 rounded-full shadow-md hover:bg-white transition-colors duration-300"
+                      onClick={() => setMainImage((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+                {isZoomed && (
+                  <div 
+                    className="absolute w-48 h-48 border-2 border-white pointer-events-none overflow-hidden"
+                    style={{
+                      left: `${zoomPosition.x}px`,
+                      top: `${zoomPosition.y}px`,
+                      transform: 'translate(-50%, -50%)',
+                      backgroundImage: `url(${images[mainImage]})`,
+                      backgroundSize: '400%',
+                      backgroundPosition: `${zoomPosition.xPercent}% ${zoomPosition.yPercent}%`,
+                      boxShadow: '0 0 10px rgba(0,0,0,0.3)',
+                    }}
+                  />
+                )}
               </motion.div>
             )}
             
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
-                {images.map((image, index) => (
-                  <motion.button
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    onClick={() => setMainImage(index)}
-                    className={`bg-white rounded-lg p-3 border-2 transition-all duration-300 ${
-                      mainImage === index ? 'border-[#5773BB] shadow-lg' : 'border-transparent hover:border-[#5773BB]/50'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} view ${index + 1}`}
-                      className="w-full h-full object-contain"
-                    />
-                  </motion.button>
-                ))}
+              <div className="relative">
+                <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
+                  {images.map((image, index) => (
+                    <motion.button
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      onClick={() => setMainImage(index)}
+                      className={`flex-shrink-0 w-24 h-24 bg-white rounded-lg p-2 border-2 transition-all duration-300 ${
+                        mainImage === index ? 'border-[#5773BB] shadow-lg' : 'border-transparent hover:border-[#5773BB]/50'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} view ${index + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </motion.button>
+                  ))}
+                </div>
+                <button 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors duration-300"
+                  onClick={() => {
+                    const container = document.querySelector('.scrollbar-hide');
+                    container.scrollLeft -= 100;
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors duration-300"
+                  onClick={() => {
+                    const container = document.querySelector('.scrollbar-hide');
+                    container.scrollLeft += 100;
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             )}
           </div>
@@ -159,6 +247,17 @@ function ProductDetail() {
                   </svg>
                   {language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}
                 </button>
+                <a 
+                  href={`/fichasTecnicas/${productId}.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#5773BB] hover:bg-[#4466B7] text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  {language === 'es' ? 'Ficha Técnica' : 'Technical Sheet'}
+                </a>
               </div>
             </div>
 
