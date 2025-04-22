@@ -134,25 +134,27 @@ function ProductPage() {
             </div>
 
             <div className="flex flex-col space-y-6">
-              <div className="w-full flex flex-col space-y-4">
-                <div className="flex items-center gap-4">
-                  <label className="text-lg font-medium text-gray-700">
-                    {language === 'es' ? 'Cantidad:' : 'Quantity:'}
-                  </label>
-                  <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5773BB]"
-                  >
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
+              <div className="flex flex-col space-y-6">
+                <div className="flex flex-col space-y-4">
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-lg font-medium text-gray-700">
+                      {language === 'es' ? 'Cantidad:' : 'Quantity:'}
+                    </label>
+                    <select
+                      value={quantity}
+                      onChange={(e) => setQuantity(Number(e.target.value))}
+                      className="w-24 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5773BB]"
+                    >
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="w-full grid grid-cols-1 gap-4">
+                <div className="flex flex-col space-y-4">
                   <button className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center justify-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
                     {language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
