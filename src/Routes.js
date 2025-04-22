@@ -7,6 +7,7 @@ import Container4 from './containers/home/Container4';
 import Container5 from './containers/home/Container5';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Tienda from './pages/Tienda';
 
 function HomePage() {
   return (
@@ -26,6 +27,7 @@ function Routes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/acerca-de" element={<About />} />
       <Route path="/contacto" element={<Contact />} />
+      <Route path="/tienda" element={<Tienda />} />
       {/* Add more routes here as needed */}
     </RouterRoutes>
   );
