@@ -96,7 +96,11 @@ function Container2() {
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                     <p className="text-2xl font-bold text-[#00BFB3]">{product.price}</p>
                     <button 
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.scrollTo(0, 0);
+                        navigate(`/tienda/${product.id}`);
+                      }}
                       className="bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center gap-2 px-6 py-2 rounded-lg shadow-sm hover:shadow-md"
                     >
                       {language === 'es' ? 'Comprar Ahora' : 'Buy Now'}

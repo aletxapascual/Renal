@@ -151,7 +151,7 @@ function ProductPage() {
                 </select>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4">
                 <button className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-xl flex items-center justify-center gap-3 px-8 py-4 rounded-xl shadow-lg hover:shadow-xl">
                   {language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
