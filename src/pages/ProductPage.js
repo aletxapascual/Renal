@@ -133,37 +133,39 @@ function ProductPage() {
               </p>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <label className="text-lg font-medium text-gray-700">
-                  {language === 'es' ? 'Cantidad:' : 'Quantity:'}
-                </label>
-                <select
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5773BB]"
-                >
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <option key={num} value={num}>
-                      {num}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="flex flex-col space-y-6">
+              <div className="w-full flex flex-col space-y-4">
+                <div className="flex items-center gap-4">
+                  <label className="text-lg font-medium text-gray-700">
+                    {language === 'es' ? 'Cantidad:' : 'Quantity:'}
+                  </label>
+                  <select
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#5773BB]"
+                  >
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="flex flex-col gap-4">
-                <button className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-xl flex items-center justify-center gap-3 px-8 py-4 rounded-xl shadow-lg hover:shadow-xl">
-                  {language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                  </svg>
-                </button>
-                <button className="w-full bg-[#5773BB] hover:bg-[#4A63A0] text-white transition-colors duration-300 font-medium text-xl flex items-center justify-center gap-3 px-8 py-4 rounded-xl shadow-lg hover:shadow-xl">
-                  {language === 'es' ? 'Comprar Ahora' : 'Buy Now'}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
+                <div className="w-full grid grid-cols-1 gap-4">
+                  <button className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center justify-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                    {language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                    </svg>
+                  </button>
+                  <button className="w-full bg-[#5773BB] hover:bg-[#4A63A0] text-white transition-colors duration-300 font-medium text-lg flex items-center justify-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                    {language === 'es' ? 'Ficha Técnica' : 'Technical Sheet'}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
