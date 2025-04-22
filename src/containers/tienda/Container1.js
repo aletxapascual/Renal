@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import maloobtalImg from '../../images/productos/maloobtalSinFondo.png';
 
 function Container1() {
   const { language } = useLanguage();
@@ -13,17 +12,18 @@ function Container1() {
       {/* Decorative Elements */}
       <div className="absolute top-40 right-40 w-[500px] h-[500px] bg-gradient-to-br from-[#5773BB]/10 to-transparent rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#00BFB3]/10 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-20 left-1/2 w-[300px] h-[300px] bg-gradient-to-br from-[#00BFB3]/10 to-transparent rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[90vh] flex items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-8"
           >
-            <h1 className="text-5xl sm:text-6xl font-semibold text-[#5773BB] leading-tight">
+            <h1 className="text-5xl sm:text-6xl font-bold text-[#5773BB] leading-tight">
               {language === 'es' 
                 ? 'Apoyo Nutricional Especializado' 
                 : 'Specialized Nutritional Support'}
@@ -49,9 +49,9 @@ function Container1() {
                 className="sticky top-20"
               >
                 <img
-                  src={maloobtalImg}
+                  src="/images/productos/maloobtalSinFondo.png"
                   alt="Maloobtal Product"
-                  className="w-full h-full object-contain scale-125"
+                  className="w-full h-full object-contain scale-125 drop-shadow-2xl"
                 />
               </motion.div>
             </div>

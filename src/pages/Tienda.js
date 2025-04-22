@@ -4,10 +4,10 @@ import Container2 from '../containers/tienda/Container2';
 
 function Tienda() {
   return (
-    <main className="overflow-hidden">
+    <>
       <Container1 />
       <Container2 />
-    </main>
+    </>
   );
 }
 

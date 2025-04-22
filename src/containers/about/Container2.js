@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { motion } from 'framer-motion';
-import pacienteImg from '../../images/paciente.png';
 
 function Container2() {
   const { language } = useLanguage();
@@ -156,7 +155,7 @@ function Container2() {
                 transition={{ duration: 0.3 }}
               >
                 <img 
-                  src={pacienteImg} 
+                  src="/images/paciente.png"
                   alt="Paciente recibiendo atención" 
                   className="w-full h-full object-cover"
                 />

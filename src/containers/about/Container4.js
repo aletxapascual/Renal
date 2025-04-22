@@ -1,8 +1,6 @@
 import React from 'react';
 import { FaFacebookF, FaEnvelope, FaGlobe } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import doctorImg from '../../images/doctor.jpg';
-import doctoralia from '../../images/doctoraliaLogo.png';
 
 function Container4() {
   const containerVariants = {
@@ -139,7 +137,7 @@ function Container4() {
                   className="flex-1 h-12 px-4 flex items-center justify-center rounded-full border-2 border-[#5773BB] text-[#5773BB] hover:bg-gradient-to-r hover:from-[#5773BB] hover:to-[#4466B7] hover:text-white transition-colors duration-300"
                 >
                   <img 
-                    src={doctoralia} 
+                    src="/images/doctoraliaLogo.png"
                     alt="Doctoralia Profile"
                     className="h-6 object-contain md:mr-2 [filter:brightness(0)_saturate(100%)_invert(45%)_sepia(19%)_saturate(1404%)_hue-rotate(187deg)_brightness(100%)_contrast(87%)] group-hover:brightness-0 group-hover:invert-[100%] group-hover:sepia-0 group-hover:saturate-100 group-hover:contrast-100 transition-all"
                   />
@@ -167,7 +165,7 @@ function Container4() {
               className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl"
             >
               <img 
-                src={doctorImg} 
+                src="/images/doctor.jpg"
                 alt="Dr. Mario Arturo Burgos Soto" 
                 className="w-full h-full object-cover"
               />

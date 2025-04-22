@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import hemProtImg from '../../images/hemProt.png';
-import renNutImg from '../../images/renNut.png';
-import maloobtalImg from '../../images/maloobtal.png';
+import hemProtJuntos from '../../images/productos/hemProtJuntos.png';
+import renNutJuntos from '../../images/productos/renNutJuntos.png';
+import maloobtalJuntos from '../../images/productos/maloobtalJuntos.png';
 
 function Container3() {
   const { language } = useLanguage();
@@ -12,7 +12,7 @@ function Container3() {
     {
       id: 'hemprot',
       name: 'HemProt',
-      image: hemProtImg,
+      image: hemProtJuntos,
       description: language === 'es'
         ? 'Contribuye al mantenimiento y crecimiento muscular, proporcionando los nutrientes necesarios para la recuperación y el desarrollo muscular mediante una mezcla de proteínas y minerales esenciales.'
         : 'Contributes to muscle maintenance and growth, providing the necessary nutrients for muscle recovery and development through a blend of proteins and essential minerals.',
@@ -20,7 +20,7 @@ function Container3() {
     {
       id: 'rennut',
       name: 'RenNut',
-      image: renNutImg,
+      image: renNutJuntos,
       description: language === 'es'
         ? 'Enfocado en la combinación de prebióticos y probióticos para maximizar los beneficios digestivos, promueve una salud digestiva óptima, mejorando el tránsito intestinal y contribuyendo al bienestar general del intestino.'
         : 'Focused on combining prebiotics and probiotics to maximize digestive benefits, promotes optimal digestive health, improving intestinal transit and contributing to overall intestinal well-being.',
@@ -28,7 +28,7 @@ function Container3() {
     {
       id: 'maloobtal',
       name: 'Maloobtal',
-      image: maloobtalImg,
+      image: maloobtalJuntos,
       description: language === 'es'
         ? 'Diseñados para mejorar la salud digestiva y el bienestar intestinal, comparten el objetivo de promover una digestión saludable y eficiente, contribuyendo a un equilibrio óptimo en el sistema digestivo.'
         : 'Designed to improve digestive health and intestinal well-being, sharing the goal of promoting healthy and efficient digestion, contributing to optimal balance in the digestive system.',

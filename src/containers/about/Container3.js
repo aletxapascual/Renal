@@ -1,8 +1,5 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import equipoImg from '../../images/equipo.png';
-import sillon2Img from '../../images/sillon2.png';
-import sillon3Img from '../../images/sillon3.png';
 import { motion } from 'framer-motion';
 
 function Container3() {
@@ -10,19 +7,25 @@ function Container3() {
 
   const features = [
     {
-      title: "Tecnología Alemana de Última Generación",
-      description: "Contamos con equipos Fresenius Medical Care importados de Alemania, reconocidos mundialmente por su precisión y confiabilidad. Estos equipos permiten una ultrafiltración controlada, lo que asegura tratamientos más seguros y personalizados, minimizando efectos secundarios y optimizando los resultados de cada sesión.",
-      image: sillon2Img
+      title: language === 'es' ? "Tecnología Alemana de Última Generación" : "Latest German Technology",
+      description: language === 'es' 
+        ? "Contamos con equipos Fresenius Medical Care importados de Alemania, reconocidos mundialmente por su precisión y confiabilidad. Estos equipos permiten una ultrafiltración controlada, lo que asegura tratamientos más seguros y personalizados, minimizando efectos secundarios y optimizando los resultados de cada sesión."
+        : "We have Fresenius Medical Care equipment imported from Germany, globally recognized for its precision and reliability. These devices allow controlled ultrafiltration, ensuring safer and personalized treatments, minimizing side effects, and optimizing the results of each session.",
+      image: "/images/sillon2.png"
     },
     {
-      title: "Consumibles Biocompatibles",
-      description: "Utilizamos insumos desechables de alta calidad, también de la marca Fresenius, diseñados para minimizar la irritación y mejorar la tolerancia del paciente. Cada detalle de nuestro proceso está cuidadosamente seleccionado para garantizar la máxima seguridad y comodidad.",
-      image: equipoImg
+      title: language === 'es' ? "Consumibles Biocompatibles" : "Biocompatible Consumables",
+      description: language === 'es'
+        ? "Utilizamos insumos desechables de alta calidad, también de la marca Fresenius, diseñados para minimizar la irritación y mejorar la tolerancia del paciente. Cada detalle de nuestro proceso está cuidadosamente seleccionado para garantizar la máxima seguridad y comodidad."
+        : "We use high-quality disposable supplies, also from Fresenius, designed to minimize irritation and improve patient tolerance. Every detail of our process is carefully selected to ensure maximum safety and comfort.",
+      image: "/images/equipo.png"
     },
     {
-      title: "Calidad Médica sin Ambiente Hospitalario",
-      description: "Nos diferenciamos al romper el esquema tradicional. En lugar de ser un hospital, ofrecemos un centro especializado en hemodiálisis, donde cada elemento —desde los equipos médicos hasta el diseño del espacio— está pensado para que tu experiencia sea cómoda y eficiente, sin el estrés y la frialdad de un ambiente hospitalario.",
-      image: sillon3Img
+      title: language === 'es' ? "Calidad Médica sin Ambiente Hospitalario" : "Medical Quality without Hospital Environment",
+      description: language === 'es'
+        ? "Nos diferenciamos al romper el esquema tradicional. En lugar de ser un hospital, ofrecemos un centro especializado en hemodiálisis, donde cada elemento —desde los equipos médicos hasta el diseño del espacio— está pensado para que tu experiencia sea cómoda y eficiente, sin el estrés y la frialdad de un ambiente hospitalario."
+        : "We differentiate ourselves by breaking the traditional scheme. Instead of being a hospital, we offer a specialized hemodialysis center, where every element—from medical equipment to space design—is designed to make your experience comfortable and efficient, without the stress and coldness of a hospital environment.",
+      image: "/images/sillon3.png"
     }
   ];
 
@@ -63,7 +66,7 @@ function Container3() {
           transition={{ duration: 0.3 }}
           viewport={{ once: true }}
         >
-          ¿Qué nos distingue?
+          {language === 'es' ? '¿Qué nos distingue?' : 'What sets us apart?'}
         </motion.h2>
 
         <motion.div 
