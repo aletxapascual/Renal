@@ -46,7 +46,7 @@ function Container1() {
             <div className="relative w-full max-w-2xl">
               <motion.div
                 style={{ y }}
-                className="sticky top-20"
+                className="sticky top-20 hidden lg:block"
               >
                 <img
                   src="/images/productos/maloobtalSinFondo.png"
@@ -54,6 +54,11 @@ function Container1() {
                   className="w-full h-full object-contain scale-125 drop-shadow-2xl"
                 />
               </motion.div>
+              <img
+                src="/images/productos/maloobtalSinFondo.png"
+                alt="Maloobtal Product"
+                className="w-full h-full object-contain scale-125 drop-shadow-2xl lg:hidden"
+              />
             </div>
           </motion.div>
         </div>

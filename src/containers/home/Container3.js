@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import hemProtJuntos from '../../images/productos/hemProtJuntos.png';
 import renNutJuntos from '../../images/productos/renNutJuntos.png';
@@ -7,6 +7,12 @@ import maloobtalJuntos from '../../images/productos/maloobtalJuntos.png';
 
 function Container3() {
   const { language } = useLanguage();
+  const navigate = useNavigate();
+
+  const handleProductClick = (productId) => {
+    window.scrollTo(0, 0);
+    navigate(`/tienda/${productId}`);
+  };
 
   const products = [
     {
@@ -72,13 +78,13 @@ function Container3() {
                 <p className="text-gray-700 mb-8 text-center flex-grow">
                   {product.description}
                 </p>
-                <Link
-                  to={`/productos/${product.id}`}
+                <button
+                  onClick={() => handleProductClick(product.id)}
                   className="inline-flex items-center justify-center w-full px-6 py-4 text-base font-medium text-white bg-gradient-to-r from-[#5773BB] to-[#4466B7] hover:from-[#4466B7] hover:to-[#5773BB] rounded-full transition-colors duration-300"
                 >
-                  {language === 'es' ? 'Comprar Ahora' : 'Buy Now'} 
-                  <span className="ml-2">🛒</span>
-                </Link>
+                  {language === 'es' ? 'Ver Detalles' : 'View Details'} 
+                  <span className="ml-2">→</span>
+                </button>
               </div>
             </div>
           ))}

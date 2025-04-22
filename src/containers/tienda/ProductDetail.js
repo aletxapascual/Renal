@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { products } from '../../data/products';
 
 function ProductDetail() {
@@ -75,6 +75,15 @@ function ProductDetail() {
   return (
     <section className="py-20 bg-gradient-to-br from-white via-[#5773BB]/5 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link 
+          to="/tienda"
+          className="inline-flex items-center gap-2 text-[#5773BB] hover:text-[#4466B7] transition-colors duration-300 mb-8"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          {language === 'es' ? 'Volver a Tienda' : 'Back to Shop'}
+        </Link>
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Image Gallery */}
           <div className="lg:w-1/2 space-y-6">
@@ -138,49 +147,25 @@ function ProductDetail() {
             )}
             
             {images.length > 1 && (
-              <div className="relative">
-                <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
-                  {images.map((image, index) => (
-                    <motion.button
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      onClick={() => setMainImage(index)}
-                      className={`flex-shrink-0 w-24 h-24 bg-white rounded-lg p-2 border-2 transition-all duration-300 ${
-                        mainImage === index ? 'border-[#5773BB] shadow-lg' : 'border-transparent hover:border-[#5773BB]/50'
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${product.name} view ${index + 1}`}
-                        className="w-full h-full object-contain"
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-                <button 
-                  className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors duration-300"
-                  onClick={() => {
-                    const container = document.querySelector('.scrollbar-hide');
-                    container.scrollLeft -= 100;
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button 
-                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-colors duration-300"
-                  onClick={() => {
-                    const container = document.querySelector('.scrollbar-hide');
-                    container.scrollLeft += 100;
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+              <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
+                {images.map((image, index) => (
+                  <motion.button
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    onClick={() => setMainImage(index)}
+                    className={`flex-shrink-0 w-24 h-24 bg-white rounded-lg p-2 border-2 transition-all duration-300 ${
+                      mainImage === index ? 'border-[#5773BB] shadow-lg' : 'border-transparent hover:border-[#5773BB]/50'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} view ${index + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </motion.button>
+                ))}
               </div>
             )}
           </div>
