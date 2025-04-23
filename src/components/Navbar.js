@@ -1,12 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import logo from '../images/logo.png'
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const location = useLocation()
   const { language, toggleLanguage } = useLanguage()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const isActive = (path) => {
     return location.pathname === path ? "text-blue-600 font-semibold scale-105" : "text-gray-700"
@@ -20,16 +34,16 @@ function Navbar() {
   ]
 
   return (
-    <nav className="bg-white shadow-sm relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+    <nav className={`bg-white shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'h-20' : 'h-32'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className={`flex justify-between items-center h-full transition-all duration-300`}>
           {/* Logo */}
           <div className="flex-shrink-0 w-1/4">
             <Link to="/" className="flex items-center">
               <img
                 src={logo}
                 alt="Renal Logo"
-                className="h-14 w-auto object-contain transform hover:scale-105 transition-transform duration-300"
+                className={`w-auto object-contain transform hover:scale-105 transition-all duration-300 ${isScrolled ? 'h-16' : 'h-28'}`}
                 onError={(e) => {
                   console.error('Error loading image:', e);
                   e.target.style.display = 'none';

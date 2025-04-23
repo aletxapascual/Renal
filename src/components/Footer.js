@@ -45,7 +45,7 @@ function Footer() {
               <img 
                 src={logo} 
                 alt="Renal Logo" 
-                className="h-16 mb-6 hover:opacity-90 transition-opacity duration-300"
+                className="h-32 mb-6 hover:opacity-90 transition-opacity duration-300"
               />
             </Link>
             <p className="text-white/80 text-sm leading-relaxed">

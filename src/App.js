@@ -15,7 +15,7 @@ function App() {
       <Router>
         <div className="min-h-screen flex flex-col">
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/tienda" element={<Tienda />} />
