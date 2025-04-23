@@ -121,7 +121,7 @@ function Container1() {
               Hemodiálisis Renal
             </h1>
             <p className="font-sans text-lg text-[#2B4C8C] mb-8 opacity-0 animate-fadeIn animation-delay-400 leading-relaxed">
-              Desde 2005, en <span className="font-medium text-[#2B4C8C] hover:text-[#3A5FA0] transition-colors">RENALSTAR PENINSULAR</span> ofrecemos hemodiálisis de alta calidad con tecnología avanzada y un enfoque amigable, brindando un beneficio psicológico a nuestros pacientes.
+              Desde 2005, en <span className="font-medium text-[#2B4C8C] hover:text-[#3A5FA0] transition-colors">RENAL</span> ofrecemos hemodiálisis de alta calidad con tecnología avanzada y un enfoque amigable, brindando un beneficio psicológico a nuestros pacientes.
             </p>
             <Link
               to="/contacto"
