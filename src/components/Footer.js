@@ -16,10 +16,10 @@ function Footer() {
               {language === 'es' ? '¿TIENES ALGUNA PREGUNTA?' : 'DO YOU HAVE A QUESTION?'}
             </span>
             <a 
-              href="tel:9999255435" 
+              href="tel:9999306925" 
               className="text-white text-lg font-bold hover:text-white/90 transition-colors"
             >
-              (999) 925 5435
+              (999) 930 6925
             </a>
           </div>
         </div>
@@ -138,19 +138,17 @@ function Footer() {
                   {language === 'es' ? 'Dirección' : 'Address'}
                 </h4>
                 <p className="text-white/80 text-sm">
-                  Calle 7 #338, entre 42 y 44<br />
-                  Col. García Ginerés<br />
-                  Mérida, Yucatán, México<br />
-                  C.P. 97070
+                  Altabrisa, Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas<br />
+                  97130 Mérida, Yuc.
                 </p>
               </div>
               <div>
                 <h4 className="font-medium mb-1">Email</h4>
                 <a 
-                  href="mailto:contacto@renalstar.com" 
+                  href="mailto:gerencia@hemodialisis.com.mx" 
                   className="text-white/80 hover:text-white transition-colors text-sm"
                 >
-                  contacto@renalstar.com
+                  gerencia@hemodialisis.com.mx
                 </a>
               </div>
               <div>
@@ -158,10 +156,10 @@ function Footer() {
                   {language === 'es' ? 'Teléfono' : 'Phone'}
                 </h4>
                 <a 
-                  href="tel:9999255435" 
+                  href="tel:9999306925" 
                   className="text-white/80 hover:text-white transition-colors text-sm"
                 >
-                  (999) 925 5435
+                  (999) 930 6925
                 </a>
               </div>
             </div>

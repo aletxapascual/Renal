@@ -48,24 +48,24 @@ function Container2() {
     {
       icon: FaPhone,
       label: 'Teléfono',
-      value: '+52 999 406 0838',
-      href: 'tel:+529994060838'
+      value: '999 930 6925',
+      href: 'tel:9999306925'
     },
     {
       icon: FaEnvelope,
       label: 'Email',
-      value: 'contacto@renalstarpeninsular.com',
-      href: 'mailto:contacto@renalstarpeninsular.com'
+      value: 'gerencia@hemodialisis.com.mx',
+      href: 'mailto:gerencia@hemodialisis.com.mx'
     },
     {
       icon: FaMapMarkerAlt,
       label: 'Ubicación',
-      value: 'Calle 7 #279 x 38 y 40\nCol. Campestre\nMérida, Yucatán'
+      value: 'Altabrisa \nCalle 26 No.202 Int. 5 \n6 Y 7 Plaza las Brisas\n 97130 Mérida, Yuc.'
     },
     {
       icon: FaClock,
       label: 'Horario',
-      value: 'Lunes a Viernes: 7:00 AM - 7:00 PM\nSábado: 7:00 AM - 2:00 PM'
+      value: 'Lunes a Sábado: 7:00 AM - 3:00 PM'
     }
   ];
 

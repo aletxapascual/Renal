@@ -74,10 +74,8 @@ function Container5() {
                       {language === 'es' ? 'Dirección' : 'Address'}
                     </h4>
                     <p className="font-sans text-lg text-gray-600 leading-relaxed">
-                      Calle 7 #338, entre 42 y 44<br />
-                      Col. García Gineres<br />
-                      Mérida, Yucatán, México<br />
-                      C.P. 97070
+                      Altabrisa, Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas<br />
+                      97130 Mérida, Yuc.
                     </p>
                   </div>
                 </div>
@@ -97,14 +95,14 @@ function Container5() {
                     </h4>
                     <p className="font-sans text-lg text-gray-600 leading-relaxed">
                       {language === 'es' ? 'Lunes a Sábado' : 'Monday to Saturday'}<br />
-                      7:00 AM - 7:00 PM
+                      7:00 A.M. - 3:00 P.M.
                     </p>
                   </div>
                 </div>
               </motion.div>
 
               <motion.a
-                href="https://www.google.com/maps/dir//Renal+-+Hemodi%C3%A1lisis+Cl%C3%ADnica+de+Ri%C3%B1%C3%B3n+y+trasplante+renal/@21.0149576,-89.5846563,19z/"
+                href="https://www.google.com/maps/place/Renal+-+Hemodiálisis+Clínica+de+Riñón+y+trasplante+renal/@21.014954,-89.584404,18z/data=!4m6!3m5!1s0x8f567726c5f5220d:0x3da0ddfb0de71cd1!8m2!3d21.0149535!4d-89.5844038!16s%2Fg%2F1tmplkmk?hl=es&entry=ttu&g_ep=EgoyMDI1MDQyMC4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center w-full px-8 py-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] hover:from-[#4466B7] hover:to-[#5773BB] text-white font-sans font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
