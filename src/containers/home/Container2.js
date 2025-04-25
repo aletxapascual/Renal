@@ -26,10 +26,10 @@ function Container2() {
     },
     {
       icon: <FaHeartbeat className="w-12 h-12" />,
-      title: language === 'es' ? 'Atención Personalizada' : 'Personalized Care',
-      description: language === 'es'
-        ? 'Brindamos atención personalizada y seguimiento constante a nuestros pacientes.'
-        : 'We provide personalized care and constant monitoring to our patients.'
+      title: language === 'es' ? 'Pensamos en tu futuro' : 'We Think About Your Future',
+      description: language === 'es' 
+        ? 'Te acompañamos en cada paso con un objetivo claro: ayudarte a llegar al trasplante y mejorar tu calidad de vida.'
+        : 'We accompany you every step of the way with a clear goal: to help you reach transplantation and upgrade your quality of life.'
     },
     {
       icon: <FaHandHoldingMedical className="w-12 h-12" />,
@@ -65,8 +65,9 @@ function Container2() {
     <div id="container2" className="relative py-24 bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/15 to-transparent blur-3xl" />
-        <div className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-[#5773BB]/10 to-transparent blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/5 to-transparent blur-3xl" />
+        <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#5773BB]/5 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#5773BB]/5 to-transparent blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

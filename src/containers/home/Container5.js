@@ -7,11 +7,12 @@ function Container5() {
   const { language } = useLanguage();
 
   return (
-    <div className="relative bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10 py-24 overflow-hidden">
+    <div id="container5" className="relative py-24 bg-gradient-to-b from-[#99AAD6]/20 via-[#99AAD6]/10 to-white">
       {/* Background decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#5773BB]/15 to-transparent blur-3xl" />
-        <div className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-[#5773BB]/10 to-transparent blur-3xl" />
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#99AAD6]/20 to-transparent blur-3xl" />
+        <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#99AAD6]/20 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#99AAD6]/20 to-transparent blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

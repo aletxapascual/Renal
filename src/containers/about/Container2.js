@@ -38,7 +38,7 @@ function Container2() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mission and Vision Sections */}
         <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-12"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -56,18 +56,16 @@ function Container2() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              {language === 'es' ? 'Misión' : 'Mission'}
+              Misión
             </motion.h2>
             <motion.p 
-              className="text-lg text-gray-600 leading-relaxed text-center max-w-lg"
+              className="text-lg text-gray-600 leading-relaxed text-center"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              {language === 'es' 
-                ? 'Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes.'
-                : 'Provide excellent nephrological care that combines cutting-edge technology with humane, empathetic, and personalized treatment, improving the quality of life of each of our patients.'}
+              Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes, con el trasplante renal como una meta alcanzable y parte fundamental del proceso.
             </motion.p>
           </motion.div>
 
@@ -83,23 +81,21 @@ function Container2() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              {language === 'es' ? 'Visión' : 'Vision'}
+              Visión
             </motion.h2>
             <motion.p 
-              className="text-lg text-gray-600 leading-relaxed text-center max-w-lg"
+              className="text-lg text-gray-600 leading-relaxed text-center"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              {language === 'es'
-                ? 'Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes.'
-                : 'To be the leading hemodialysis center in the Yucatan Peninsula, recognized for its technological innovation, human warmth, and commitment to the comprehensive well-being of our patients.'}
+              Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes, guiándolos en el camino hacia una vida plena y, cuando sea posible, hacia el trasplante.
             </motion.p>
           </motion.div>
         </motion.div>
 
-        {/* ¿Quiénes Somos? Section */}
+        {/* Quiénes Somos Section */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -116,32 +112,14 @@ function Container2() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                {language === 'es' ? 'Quiénes Somos' : 'Who Are We?'}
+                Quiénes Somos
               </motion.h2>
               <div className="space-y-6 text-lg text-gray-600 leading-relaxed text-justify">
                 <motion.p
                   variants={itemVariants}
                   className="transition-all duration-300 hover:text-gray-700"
                 >
-                  {language === 'es' 
-                    ? 'En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia.'
-                    : 'At Renal, we are dedicated to providing hemodialysis services with a human approach and cutting-edge technology.'}
-                </motion.p>
-                <motion.p
-                  variants={itemVariants}
-                  className="transition-all duration-300 hover:text-gray-700"
-                >
-                  {language === 'es'
-                    ? 'Nuestro objetivo es ofrecer un ambiente cálido y acogedor, donde cada paciente se sienta valorado y cuidado. Contamos con un equipo de profesionales comprometidos y equipos de última generación que garantizan tratamientos seguros y efectivos.'
-                    : 'Our goal is to provide a warm and welcoming environment where each patient feels valued and cared for. We have a team of committed professionals and state-of-the-art equipment that guarantee safe and effective treatments.'}
-                </motion.p>
-                <motion.p
-                  variants={itemVariants}
-                  className="transition-all duration-300 hover:text-gray-700"
-                >
-                  {language === 'es'
-                    ? 'Nos enorgullece ser un centro pionero en ofrecer hemodiálisis fuera del entorno hospitalario, proporcionando una experiencia más cómoda y menos estresante para nuestros pacientes.'
-                    : 'We are proud to be a pioneer center in offering hemodialysis outside the hospital environment, providing a more comfortable and less stressful experience for our patients.'}
+                  En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia. Nuestro objetivo es ofrecer un ambiente cálido y acogedor, donde cada paciente se sienta valorado y cuidado. Contamos con un equipo de profesionales comprometidos y equipos de última generación que garantizan tratamientos seguros y efectivos. Sabemos que la hemodiálisis es un paso importante, pero también trabajamos para que quienes sean candidatos puedan avanzar hacia el trasplante renal.
                 </motion.p>
               </div>
             </motion.div>

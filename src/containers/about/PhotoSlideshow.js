@@ -106,7 +106,7 @@ function PhotoSlideshow() {
         <div className="relative overflow-hidden">
           <div 
             ref={scrollRef}
-            className="flex gap-4 overflow-x-hidden whitespace-nowrap py-2 touch-none"
+            className="flex gap-4 overflow-x-hidden whitespace-nowrap touch-none py-2"
           >
             {images.map((image, index) => (
               <div 

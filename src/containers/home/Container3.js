@@ -42,7 +42,13 @@ function Container3() {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-white via-[#5773BB]/5 to-[#5773BB]/10 py-24">
+    <div id="container3" className="relative py-24 bg-gradient-to-br from-white via-[#99AAD6]/30 to-[#99AAD6]/40">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-[#99AAD6]/30 to-transparent blur-3xl" />
+        <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#99AAD6]/30 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#99AAD6]/30 to-transparent blur-3xl" />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h4 className="text-[#5773BB] text-lg font-medium mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">

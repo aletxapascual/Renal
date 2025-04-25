@@ -5,6 +5,7 @@ import equipoImg from '../../images/equipo.png';
 import exteriorImg from '../../images/exterior.png';
 import recepcionImg from '../../images/repcepcion.png';
 import sillon1Img from '../../images/sillon1.png';
+import salaImg from '../../images/sala.png';
 import { FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
 
 function Container1() {
@@ -39,6 +40,12 @@ function Container1() {
       alt: 'Área de tratamiento',
       title: 'Área de Tratamiento',
       description: 'Espacios diseñados para tu confort y seguridad.'
+    },
+    {
+      image: salaImg,
+      alt: 'Sala de espera',
+      title: 'Sala de Espera',
+      description: 'Un espacio cómodo para que las familias esperen durante el tratamiento.'
     }
   ];
 
