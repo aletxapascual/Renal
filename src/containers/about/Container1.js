@@ -13,7 +13,7 @@ function Container1() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-sans text-6xl font-bold mb-8 text-[#5773BB]"
+            className="font-sans max-[375px]:text-[72px] text-6xl font-bold mb-8 text-[#5773BB] max-[375px]:bg-red-500"
           >
             Sobre Nosotros
           </motion.h1>
