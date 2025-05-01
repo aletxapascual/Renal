@@ -22,7 +22,7 @@ function Container1() {
           viewport={{ once: true }}
         >
           <motion.h1 
-            className="font-sans text-6xl font-bold mb-8 text-[#5773BB]"
+            className="font-sans text-6xl font-bold mb-8 text-[#5773BB] mt-16"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

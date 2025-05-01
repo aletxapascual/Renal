@@ -111,13 +111,17 @@ function PhotoSlideshow() {
             {images.map((image, index) => (
               <div 
                 key={index} 
-                className="flex-none w-72 h-64 rounded-2xl overflow-hidden shadow-lg"
+                className="flex-none w-72 h-64 rounded-2xl overflow-hidden shadow-lg bg-gray-100"
               >
                 <img
                   src={image.src}
                   alt={image.alt}
                   className="w-full h-full object-cover"
                   draggable="false"
+                  onError={(e) => {
+                    console.error(`Error loading image: ${image.src}`);
+                    e.target.style.display = 'none';
+                  }}
                 />
               </div>
             ))}

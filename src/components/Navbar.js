@@ -151,7 +151,10 @@ function Navbar() {
               key={link.path}
               to={link.path}
               className={`${isActive(link.path)} hover:text-blue-600 block text-center px-4 py-3 text-lg font-medium transition-all duration-300 ease-in-out transform hover:translate-x-2`}
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                window.scrollTo(0, 0);
+              }}
             >
               {link.name}
             </Link>

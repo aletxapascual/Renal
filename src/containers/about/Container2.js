@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { motion } from 'framer-motion';
+import pacienteImg from '../../images/paciente.png';
 
 function Container2() {
   const { language } = useLanguage();
@@ -50,7 +51,7 @@ function Container2() {
             className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg ring-1 ring-[#5773BB]/10"
           >
             <motion.h2 
-              className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent mb-8 pb-2 text-center"
+              className="text-5xl font-bold mb-8 bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent text-center"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -75,7 +76,7 @@ function Container2() {
             className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg ring-1 ring-[#5773BB]/10"
           >
             <motion.h2 
-              className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent mb-8 pb-2 text-center"
+              className="text-5xl font-bold mb-8 bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent text-center"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -106,7 +107,7 @@ function Container2() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div variants={itemVariants}>
               <motion.h2 
-                className="text-4xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent mb-8 pb-2"
+                className="text-5xl font-bold mb-8 bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -133,7 +134,7 @@ function Container2() {
                 transition={{ duration: 0.3 }}
               >
                 <img 
-                  src="/images/paciente.png"
+                  src={pacienteImg}
                   alt="Paciente recibiendo atención" 
                   className="w-full h-full object-cover"
                 />
