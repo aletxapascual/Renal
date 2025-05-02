@@ -42,6 +42,8 @@ export default function CartDrawer() {
 
   // Calculate total
   const total = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  // Calculate total quantity
+  const totalQuantity = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   const handleQuantityChange = (itemId, change) => {
     const item = cartItems.find(item => item.id === itemId);
@@ -83,7 +85,7 @@ export default function CartDrawer() {
               &times;
             </button>
             <div className="p-8 pb-4 h-full flex flex-col">
-              <h2 className="text-3xl font-bold text-[#222] mb-6">Cesta <span className="text-lg font-normal">({cartItems.length})</span></h2>
+              <h2 className="text-3xl font-bold text-[#222] mb-6">Cesta <span className="text-lg font-normal">({totalQuantity})</span></h2>
               <div className="flex-1 overflow-y-auto pr-2 space-y-6">
                 {cartItems.length === 0 ? (
                   <div className="text-center text-gray-400 mt-16">Tu carrito está vacío.</div>

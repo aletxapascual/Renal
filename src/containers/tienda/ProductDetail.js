@@ -274,10 +274,10 @@ function ProductDetail() {
                   </div>
                 </div>
 
-                <div className="flex flex-row gap-4 w-full">
+                <div className="flex flex-row gap-3 w-full">
                   <button 
                     onClick={handleAddToCart}
-                    className="w-[45%] bg-[#00BFB3] hover:bg-[#00A89D] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
+                    className="w-1/2 bg-[#00BFB3] hover:bg-[#00A89D] text-white px-4 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
@@ -288,7 +288,7 @@ function ProductDetail() {
                     href={`/fichasTecnicas/${productId}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-[45%] bg-[#5773BB] hover:bg-[#4466B7] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
+                    className="w-1/2 bg-[#5773BB] hover:bg-[#4466B7] text-white px-4 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
