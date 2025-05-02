@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePickupModal } from '../context/PickupModalContext';
 
 export default function CartDrawer() {
   const { cartItems, isCartOpen, closeCart, removeFromCart, updateCartItem } = useCart();
+  const { openPickupModal } = usePickupModal();
   const drawerRef = useRef();
 
   // Close on outside click
@@ -150,7 +152,15 @@ export default function CartDrawer() {
                   <span>MXN {total.toFixed(2)}</span>
                 </div>
                 {/* Checkout button */}
-                <button className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-4 rounded-xl text-lg transition-all">Tramitar pedido</button>
+                <button
+                  className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-4 rounded-xl text-lg transition-all"
+                  onClick={() => {
+                    closeCart();
+                    setTimeout(() => openPickupModal(), 300);
+                  }}
+                >
+                  Tramitar pedido
+                </button>
               </div>
             </div>
           </motion.aside>
