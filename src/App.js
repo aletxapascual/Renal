@@ -12,29 +12,47 @@ import ScrollToTop from './components/ScrollToTop';
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/CartDrawer';
 import { PickupModalProvider } from './context/PickupModalContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import UserArea from './pages/UserArea';
 
 function App() {
   return (
     <LanguageProvider>
       <CartProvider>
         <PickupModalProvider>
-          <Router>
-            <ScrollToTop />
-            <CartDrawer />
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/tienda" element={<Tienda />} />
-                  <Route path="/acerca-de" element={<Acerca />} />
-                  <Route path="/contacto" element={<Contacto />} />
-                  <Route path="/tienda/:productId" element={<ProductDetail />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          </Router>
+          <AuthProvider>
+            <Router>
+              <ScrollToTop />
+              <CartDrawer />
+              <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/tienda" element={<Tienda />} />
+                    <Route path="/acerca-de" element={<Acerca />} />
+                    <Route path="/contacto" element={<Contacto />} />
+                    <Route path="/tienda/:productId" element={<ProductDetail />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute role="admin">
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/usuario" element={
+                      <ProtectedRoute role="cliente">
+                        <UserArea />
+                      </ProtectedRoute>
+                    } />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+            </Router>
+          </AuthProvider>
         </PickupModalProvider>
       </CartProvider>
     </LanguageProvider>
