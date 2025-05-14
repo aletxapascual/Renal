@@ -1,40 +1,112 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { FaGoogle } from 'react-icons/fa';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Login() {
   const { login } = useAuth();
-  const [username, setUsername] = useState('');
-  const [role, setRole] = useState('cliente');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(username || (role === 'admin' ? 'admin' : 'cliente'), role);
-    navigate(role === 'admin' ? '/dashboard' : '/usuario');
+    setError('');
+    setIsLoading(true);
+
+    if (!email.includes('@') || !password) {
+      setError('Por favor ingresa un correo válido y una contraseña.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // 🔍 Obtener el rol desde Firestore
+      const ref = doc(db, 'users', uid);
+      const snap = await getDoc(ref);
+      const role = snap.exists() ? snap.data().role : 'cliente';
+
+      login(email, role);
+      navigate(role === 'admin' ? '/dashboard' : '/usuario');
+    } catch (err) {
+      setError('Correo o contraseña incorrectos.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const email = result.user.email || 'cliente_google';
+      login(email, 'cliente');
+      navigate('/usuario');
+    } catch (err) {
+      console.error(err);
+      setError('No se pudo iniciar sesión con Google.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white via-[#5773BB]/5 to-white">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm space-y-6">
-        <h2 className="text-2xl font-bold text-[#5773BB] mb-4 text-center">Iniciar Sesión</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white via-[#5773BB]/5 to-white px-4">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm space-y-4">
+        <h2 className="text-2xl font-bold text-[#5773BB] mb-2 text-center">Iniciar Sesión</h2>
+
         <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-4 py-2 mb-2"
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2"
         />
-        <div className="flex gap-4 mb-4">
-          <label className="flex items-center gap-2">
-            <input type="radio" name="role" value="cliente" checked={role === 'cliente'} onChange={() => setRole('cliente')} /> Cliente
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="radio" name="role" value="admin" checked={role === 'admin'} onChange={() => setRole('admin')} /> Admin
-          </label>
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2"
+        />
+
+        <div className="flex justify-between text-sm text-blue-600">
+          <Link to="/forgot-password" className="hover:underline">¿Olvidaste tu contraseña?</Link>
+          <Link to="/register" className="hover:underline">Registrarse</Link>
         </div>
-        <button type="submit" className="w-full bg-[#5773BB] hover:bg-[#4466B7] text-white font-bold py-3 rounded-lg transition-all">Entrar</button>
+
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {isLoading && <p className="text-gray-500 text-sm text-center">Cargando...</p>}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-[#5773BB] hover:bg-[#4466B7] text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50"
+        >
+          Entrar
+        </button>
+
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50"
+        >
+          <FaGoogle />
+          Iniciar con Google
+        </button>
       </form>
     </div>
   );
-} 
+}

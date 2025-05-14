@@ -17,6 +17,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UserArea from './pages/UserArea';
+import ForgotPassword from './pages/ForgotPassword';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function App() {
                         <UserArea />
                       </ProtectedRoute>
                     } />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/register" element={<Register />} />
                   </Routes>
                 </main>
                 <Footer />

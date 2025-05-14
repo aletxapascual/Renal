@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
@@ -7,20 +10,50 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  // Estado simulado: null = no logueado, objeto = usuario logueado
   const [user, setUser] = useState(null);
 
-  // Simular login: recibe nombre y rol ('admin' o 'cliente')
   const login = (username, role) => {
     setUser({ username, role });
   };
 
-  // Simular logout
   const logout = () => setUser(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const ref = doc(db, 'users', firebaseUser.uid);
+          const snap = await getDoc(ref);
+          const data = snap.exists() ? snap.data() : {};
+          const { firstName = '', lastName = '', role = 'cliente' } = data;
+  
+          setUser({
+            username: firebaseUser.email,
+            firstName,
+            lastName,
+            role,
+          });
+        } catch (err) {
+          console.error('Error al cargar datos del usuario:', err);
+          setUser({
+            username: firebaseUser.email,
+            firstName: '',
+            lastName: '',
+            role: 'cliente',
+          });
+        }
+      } else {
+        setUser(null);
+      }
+    });
+  
+    return () => unsubscribe();
+  }, []);
+  
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-} 
+}

@@ -8,6 +8,8 @@ import Container5 from './containers/home/Container5';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Tienda from './pages/Tienda';
+import ForgotPassword from './pages/ForgotPassword';
+import Register from './pages/Register';
 
 function HomePage() {
   return (
@@ -28,6 +30,8 @@ function Routes() {
       <Route path="/acerca-de" element={<About />} />
       <Route path="/contacto" element={<Contact />} />
       <Route path="/tienda" element={<Tienda />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/register" element={<Register />} />
       {/* Add more routes here as needed */}
     </RouterRoutes>
   );
