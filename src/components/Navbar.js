@@ -3,29 +3,20 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+import { useLoginModal } from '../context/LoginModalContext';
 import logo from '../images/logo.png';
+import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa';
 
-function Navbar() {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, toggleLanguage } = useLanguage();
   const { openCart } = useCart();
-  const { user, login, logout } = useAuth();
-
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Error al cerrar sesión', error);
-    }
-  };
+  const { user, logout } = useAuth();
+  const { openLoginModal } = useLoginModal();
+  const { cartItems } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +26,10 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
+
   const isActive = (path) => location.pathname === path ? "text-blue-600 font-semibold scale-105" : "text-gray-700";
 
   const navLinks = [
@@ -43,6 +38,14 @@ function Navbar() {
     { path: "/tienda", name: language === 'es' ? "Tienda" : "Shop" },
     { path: "/contacto", name: language === 'es' ? "Contacto" : "Contact" },
   ];
+
+  const handleAccountRedirect = () => {
+    if (user?.role === 'admin') {
+      navigate('/dashboard');
+    } else {
+      navigate('/usuario');
+    }
+  };
 
   return (
     <nav className={`bg-white shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'h-20 md:h-20' : 'h-32 md:h-32'}`}>
@@ -75,19 +78,22 @@ function Navbar() {
             </button>
 
             <button onClick={openCart} className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group" aria-label="Abrir carrito" type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <FaShoppingCart className="h-6 w-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
             </button>
 
             {user ? (
-              <button onClick={handleLogout} className="px-4 py-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
-                Cerrar sesión
+              <button onClick={handleAccountRedirect} className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
+                Mi cuenta
               </button>
             ) : (
-              <Link to="/login" className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
+              <button onClick={openLoginModal} className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
                 Iniciar sesión
-              </Link>
+              </button>
             )}
           </div>
 
@@ -96,22 +102,17 @@ function Navbar() {
               <span className="text-sm font-medium">{language.toUpperCase()}</span>
             </button>
 
-            <button onClick={openCart} className="text-gray-700 hover:text-blue-600 transition-colors duration-200" aria-label="Abrir carrito" type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <button onClick={openCart} className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative" aria-label="Abrir carrito" type="button">
+              <FaShoppingCart className="h-6 w-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
             </button>
 
             <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-transform duration-200 hover:scale-110">
-              {!isOpen ? (
-                <svg className="block h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="block h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+              {!isOpen ? <FaBars className="h-7 w-7" /> : <FaTimes className="h-7 w-7" />}
             </button>
           </div>
         </div>
@@ -126,18 +127,18 @@ function Navbar() {
           ))}
 
           {user ? (
-            <button onClick={() => { setIsOpen(false); handleLogout(); }} className="w-full px-4 py-3 mt-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
-              Cerrar sesión
+            <button onClick={() => { setIsOpen(false); handleAccountRedirect(); }} className="w-full px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
+              Mi cuenta
             </button>
           ) : (
-            <Link to="/login" className="flex items-center justify-center px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium transition-colors duration-300 mx-4 rounded-full" onClick={() => setIsOpen(false)}>
+            <button onClick={() => { openLoginModal(); setIsOpen(false); }} className="flex items-center justify-center px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium transition-colors duration-300 mx-4 rounded-full">
               Iniciar sesión
-            </Link>
+            </button>
           )}
         </div>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;

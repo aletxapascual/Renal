@@ -28,20 +28,30 @@ export default function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-
-      // 🔍 Obtener el rol desde Firestore
+    
       const ref = doc(db, 'users', uid);
       const snap = await getDoc(ref);
-      const role = snap.exists() ? snap.data().role : 'cliente';
-
-      login(email, role);
+    
+      let role = 'cliente';
+      let firstName = '';
+      let lastName = '';
+    
+      if (snap.exists()) {
+        const data = snap.data();
+        role = data.role || 'cliente';
+        firstName = data.firstName || '';
+        lastName = data.lastName || '';
+      }
+    
+      login({ uid, email, firstName, lastName, role });
+    
       navigate(role === 'admin' ? '/dashboard' : '/usuario');
+    
     } catch (err) {
       setError('Correo o contraseña incorrectos.');
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
+    
   };
 
   const handleGoogleLogin = async () => {

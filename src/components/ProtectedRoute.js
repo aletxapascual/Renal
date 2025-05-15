@@ -1,19 +1,30 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLoginModal } from '../context/LoginModalContext';
+import { useNavigate } from 'react-router-dom';
 
 // role: 'admin' o 'cliente' (opcional)
 export default function ProtectedRoute({ children, role }) {
   const { user } = useAuth();
+  const { openLoginModal } = useLoginModal();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!user) {
+      openLoginModal();
+      navigate('/');
+    } else if (role && user.role !== role) {
+      openLoginModal();
+      navigate('/');
+    }
+  }, [user, role, openLoginModal, navigate]);
 
   if (!user) {
-    // No autenticado
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   if (role && user.role !== role) {
-    // No tiene el rol requerido
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   return children;
