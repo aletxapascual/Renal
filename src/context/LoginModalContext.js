@@ -7,13 +7,24 @@ export function useLoginModal() {
 }
 
 export function LoginModalProvider({ children }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'login', 'register', 'forgot-password'
 
-  const openLoginModal = () => setIsOpen(true);
-  const closeLoginModal = () => setIsOpen(false);
+  const openLoginModal = () => setModalType('login');
+  const openRegisterModal = () => setModalType('register');
+  const openForgotPasswordModal = () => setModalType('forgot-password');
+  const closeLoginModal = () => setModalType(null);
+
+  const isOpen = modalType !== null;
 
   return (
-    <LoginModalContext.Provider value={{ isOpen, openLoginModal, closeLoginModal }}>
+    <LoginModalContext.Provider value={{
+      isOpen,
+      modalType,
+      openLoginModal,
+      openRegisterModal,
+      openForgotPasswordModal,
+      closeLoginModal
+    }}>
       {children}
     </LoginModalContext.Provider>
   );

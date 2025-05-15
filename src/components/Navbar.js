@@ -17,6 +17,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const { openLoginModal } = useLoginModal();
   const { cartItems } = useCart();
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,12 +88,42 @@ const Navbar = () => {
             </button>
 
             {user ? (
-              <button onClick={handleAccountRedirect} className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
-                Mi cuenta
-              </button>
+              <div className="relative group">
+                <button 
+                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                  <span className="hidden md:inline">{user.firstName || user.username}</span>
+                  <FaUser className="text-xl" />
+                </button>
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                    <Link 
+                      to={user.role === 'admin' ? '/dashboard' : '/usuario'} 
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      {user.role === 'admin' ? 'Dashboard' : 'Mi Cuenta'}
+                    </Link>
+                    <button 
+                      onClick={() => {
+                        logout();
+                        setShowUserMenu(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <button onClick={openLoginModal} className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-sm font-medium transition-colors duration-300">
-                Iniciar sesión
+              <button 
+                onClick={openLoginModal}
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+              >
+                <span className="hidden md:inline">Iniciar Sesión</span>
+                <FaUser className="text-xl" />
               </button>
             )}
           </div>
@@ -131,7 +162,7 @@ const Navbar = () => {
               Mi cuenta
             </button>
           ) : (
-            <button onClick={() => { openLoginModal(); setIsOpen(false); }} className="flex items-center justify-center px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium transition-colors duration-300 mx-4 rounded-full">
+            <button onClick={() => { openLoginModal(); setIsOpen(false); }} className="w-full px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
               Iniciar sesión
             </button>
           )}

@@ -6,9 +6,10 @@ import { FaGoogle } from 'react-icons/fa';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import logo from '../images/logo.png';
 
 export default function LoginModal() {
-  const { isOpen, closeLoginModal } = useLoginModal();
+  const { isOpen, closeLoginModal, openRegisterModal, openForgotPasswordModal } = useLoginModal();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ export default function LoginModal() {
       const email = result.user.email || 'cliente_google';
       login({ uid, email, firstName: '', lastName: '', role: 'cliente' });
       closeLoginModal();
-      navigate('/usuario');
+      navigate('/usuario', { replace: true });
     } catch (err) {
       console.error(err);
       setError('No se pudo iniciar sesión con Google.');
@@ -68,7 +69,11 @@ export default function LoginModal() {
     
       login({ uid, email, firstName, lastName, role });
       closeLoginModal();
-      navigate(role === 'admin' ? '/dashboard' : '/usuario');
+      if (role === 'admin') {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/usuario', { replace: true });
+      }
     
     } catch (err) {
       setError('Correo o contraseña incorrectos.');
@@ -89,19 +94,19 @@ export default function LoginModal() {
           &times;
         </button>
         <div className="flex flex-col items-center mb-6">
-          <img src="/images/login-illustration.png" alt="login" className="w-20 h-20 mb-2" />
-          <h2 className="text-2xl font-bold text-center mb-2">Inicia sesión o crea tu cuenta</h2>
+          <img src={logo} alt="Renal Logo" className="h-24 w-auto object-contain mb-4" />
+          <h2 className="text-2xl font-bold text-center mb-2 text-blue-600">Inicia sesión o crea tu cuenta</h2>
         </div>
         <button
-          className="w-full border border-gray-300 rounded-lg py-3 flex items-center justify-center gap-3 font-semibold text-gray-700 mb-4 hover:bg-gray-50 transition disabled:opacity-50"
+          className="w-full border border-blue-600 text-blue-600 rounded-full py-3 flex items-center justify-center gap-3 font-semibold mb-4 hover:bg-blue-600 hover:text-white transition-all duration-300 disabled:opacity-50"
           onClick={handleGoogle}
           disabled={isLoading}
         >
-          <FaGoogle className="text-[#EA4335] text-xl" />
+          <FaGoogle className="text-xl" />
           CONTINUAR CON GOOGLE
         </button>
         <p className="text-xs text-center text-gray-500 mb-6">
-          Al iniciar sesión con mi login social, acepto vincular mi cuenta conforme a la <span className="underline cursor-pointer">Política de Privacidad</span>
+          Al iniciar sesión con mi login social, acepto vincular mi cuenta conforme a la <span className="underline cursor-pointer text-blue-600">Política de Privacidad</span>
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -109,7 +114,7 @@ export default function LoginModal() {
             placeholder="E-mail"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-4 py-3"
+            className="w-full border border-gray-200 rounded-full px-4 py-3 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all duration-300"
             disabled={isLoading}
           />
           <input
@@ -117,7 +122,7 @@ export default function LoginModal() {
             placeholder="Contraseña"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-4 py-3"
+            className="w-full border border-gray-200 rounded-full px-4 py-3 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all duration-300"
             disabled={isLoading}
           />
           <div className="flex items-center justify-between text-sm">
@@ -127,26 +132,30 @@ export default function LoginModal() {
                 checked={keepSession} 
                 onChange={() => setKeepSession(!keepSession)}
                 disabled={isLoading}
+                className="rounded text-blue-600 focus:ring-blue-600"
               />
               Mantener sesión
             </label>
-            <a href="/forgot-password" className="text-[#5773BB] hover:underline">¿Has olvidado tu contraseña?</a>
+            <button 
+              type="button"
+              onClick={openForgotPasswordModal} 
+              className="text-blue-600 hover:underline"
+            >
+              ¿Has olvidado tu contraseña?
+            </button>
           </div>
           {error && <div className="text-red-500 text-sm text-center">{error}</div>}
           {isLoading && <div className="text-gray-500 text-sm text-center">Cargando...</div>}
           <button 
             type="submit" 
-            className="w-full bg-black text-white font-bold py-3 rounded-lg mt-2 hover:bg-gray-900 transition-all disabled:opacity-50"
+            className="w-full bg-blue-600 text-white font-bold py-3 rounded-full mt-2 hover:bg-blue-700 transition-all duration-300 disabled:opacity-50"
             disabled={isLoading}
           >
             INICIAR SESIÓN
           </button>
         </form>
         <div className="text-center mt-6 text-sm">
-          ¿No tienes cuenta? <a href="/register" className="text-[#5773BB] font-semibold hover:underline">Regístrate</a>
-        </div>
-        <div className="text-center mt-4 text-xs text-gray-400">
-          <a href="/login?admin=1" className="hover:underline">Iniciar sesión para administradores</a>
+          ¿No tienes cuenta? <button onClick={openRegisterModal} className="text-blue-600 font-semibold hover:underline">Regístrate</button>
         </div>
       </div>
     </div>

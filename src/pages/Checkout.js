@@ -1,6 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { addDoc, collection, doc, runTransaction, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig';
 
 const Checkout = () => {
+  const { cartItems, updateInventoryAfterPurchase, clearCart } = useCart();
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Validar que todos los productos sean de la misma sucursal
+  const allSameBranch = cartItems.every(item => item.branch === cartItems[0]?.branch);
+  const selectedBranch = cartItems[0]?.branch || '';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    if (!allSameBranch) {
+      setError('Todos los productos del carrito deben ser de la misma sucursal.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Consecutive order ID logic
+      const counterRef = doc(db, 'pedidos', 'contador');
+      let newOrderId;
+      await runTransaction(db, async (transaction) => {
+        const counterDoc = await transaction.get(counterRef);
+        let current = 0;
+        if (counterDoc.exists()) {
+          current = counterDoc.data().value || 0;
+        }
+        newOrderId = (current + 1).toString();
+        transaction.set(counterRef, { value: current + 1 });
+      });
+
+      // Crear el pedido con el nuevo ID
+      await setDoc(doc(db, 'pedidos', newOrderId), {
+        uid: user.uid,
+        email: user.email,
+        productos: cartItems,
+        total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        estado: 'Pendiente',
+        fecha: new Date().toISOString(),
+        lugarRecogida: selectedBranch
+      });
+
+      // Actualizar el inventario
+      await updateInventoryAfterPurchase(cartItems);
+
+      // Limpiar el carrito
+      clearCart();
+
+      // Redirigir al usuario
+      navigate('/usuario');
+    } catch (err) {
+      console.error(err);
+      setError('Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="text-center">
       <h1 className="text-4xl font-bold mb-6">Checkout</h1>
@@ -91,6 +158,7 @@ const Checkout = () => {
           </form>
         </div>
       </div>
+      {error && <div className="text-red-500 font-bold mb-4">{error}</div>}
     </div>
   );
 };

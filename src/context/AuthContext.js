@@ -3,6 +3,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useLoginModal } from './LoginModalContext';
+import { useCart } from './CartContext';
 
 const AuthContext = createContext();
 
@@ -12,16 +13,19 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const { openLoginModal } = useLoginModal();
+  const { openLoginModal, closeLoginModal } = useLoginModal();
+  const { clearCart } = useCart();
 
   const login = (userData) => {
     setUser(userData);
+    closeLoginModal();
   };
 
   const logout = async () => {
     try {
       await signOut(auth);
       setUser(null);
+      clearCart();
       openLoginModal();
     } catch (error) {
       console.error('Error al cerrar sesión:', error);

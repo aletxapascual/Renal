@@ -21,6 +21,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import Register from './pages/Register';
 import { LoginModalProvider } from './context/LoginModalContext';
 import LoginModal from './components/LoginModal';
+import RegisterModal from './components/RegisterModal';
+import ForgotPasswordModal from './components/ForgotPasswordModal';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function App() {
   return (
@@ -33,6 +36,8 @@ function App() {
                 <ScrollToTop />
                 <CartDrawer />
                 <LoginModal />
+                <RegisterModal />
+                <ForgotPasswordModal />
                 <div className="min-h-screen flex flex-col">
                   <Navbar />
                   <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
@@ -55,6 +60,7 @@ function App() {
                       } />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/register" element={<Register />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     </Routes>
                   </main>
                   <Footer />

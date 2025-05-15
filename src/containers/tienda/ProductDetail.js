@@ -5,10 +5,12 @@ import { useParams, Navigate, Link } from 'react-router-dom';
 import { products } from '../../data/products';
 import { FaPaperPlane, FaStore } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const storeLocations = [
   {
-    name: 'Renal - Hemodiálisis Clínica de Riñón y trasplante renal',
+    name: 'Renal Clínica',
     address: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
     availability: 'Disponible para recoger',
     map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d931.8435183113835!2d-89.58465633065327!3d21.01495763677649!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f567726c5f5220d%3A0x3da0ddfb0de71cd1!2sRenal%20-%20Hemodi%C3%A1lisis%20Cl%C3%ADnica%20de%20Ri%C3%B1%C3%B3n%20y%20trasplante%20renal!5e0!3m2!1ses!2smx!4v1708487800790!5m2!1ses!2smx',
@@ -30,7 +32,7 @@ const storeLocations = [
 function ProductDetail() {
   const { language } = useLanguage();
   const { productId } = useParams();
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedFlavor, setSelectedFlavor] = useState(null);
   const [mainImage, setMainImage] = useState(0);
@@ -41,6 +43,9 @@ function ProductDetail() {
   const [address, setAddress] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [selectedStore, setSelectedStore] = useState(null);
+  const [stock, setStock] = useState(null);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [branchStocks, setBranchStocks] = useState({});
 
   const product = products[productId];
 
@@ -58,6 +63,66 @@ function ProductDetail() {
       }
     }
   }, [product]);
+
+  useEffect(() => {
+    const checkStock = async () => {
+      if (!selectedBranch) {
+        setStock(null);
+        return;
+      }
+      try {
+        const inventarioRef = doc(db, 'inventario', selectedBranch);
+        const inventarioSnap = await getDoc(inventarioRef);
+        if (inventarioSnap.exists()) {
+          const inventario = inventarioSnap.data();
+          const productStock = inventario[product.id];
+          if (productStock) {
+            if (product.flavors && selectedFlavor) {
+              setStock(productStock.flavors?.[selectedFlavor] ?? 0);
+            } else {
+              setStock(productStock.stock ?? 0);
+            }
+          } else {
+            setStock(0);
+          }
+        } else {
+          setStock(0);
+        }
+      } catch (error) {
+        setStock(0);
+      }
+    };
+    checkStock();
+  }, [product, selectedBranch, selectedFlavor]);
+
+  useEffect(() => {
+    const fetchAllBranchStocks = async () => {
+      const stocks = {};
+      for (const loc of storeLocations) {
+        const inventarioRef = doc(db, 'inventario', loc.name);
+        const inventarioSnap = await getDoc(inventarioRef);
+        if (inventarioSnap.exists()) {
+          const inventario = inventarioSnap.data();
+          const productStock = inventario[product.id];
+          if (productStock) {
+            if (product.flavors && selectedFlavor) {
+              stocks[loc.name] = productStock.flavors?.[selectedFlavor] ?? 0;
+            } else {
+              stocks[loc.name] = productStock.stock ?? 0;
+            }
+          } else {
+            stocks[loc.name] = 0;
+          }
+        } else {
+          stocks[loc.name] = 0;
+        }
+      }
+      setBranchStocks(stocks);
+    };
+    if (showAvailabilityModal) {
+      fetchAllBranchStocks();
+    }
+  }, [showAvailabilityModal, product, selectedFlavor]);
 
   // If product doesn't exist, redirect to shop page
   if (!product) {
@@ -103,17 +168,18 @@ function ProductDetail() {
   // Helper to get the selected store's map URL
   const selectedMapUrl = selectedStore !== null ? storeLocations[selectedStore].map : storeLocations[0].map;
 
-  const handleAddToCart = () => {
-    const itemToAdd = {
-      id: `${productId}-${selectedFlavor}`,
-      name: product.name,
-      price: parseFloat(product.price.replace('$', '')),
-      image: images[mainImage],
-      quantity: quantity,
-      description: language === 'es' ? product.description.es : product.description.en,
-      flavor: product.flavors ? product.flavors.find(f => f.id === selectedFlavor)?.name[language] : null
-    };
-    addToCart(itemToAdd);
+  const handleAddToCart = async () => {
+    if (!selectedBranch) {
+      alert('Por favor, selecciona una sucursal para recoger tu pedido');
+      return;
+    }
+
+    try {
+      await addToCart(product, quantity, selectedFlavor, selectedBranch);
+      openCart();
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -252,49 +318,49 @@ function ProductDetail() {
                 {language === 'es' ? product.description.es : product.description.en}
               </p>
 
-              <div className="flex flex-col space-y-4 flex-1">
-                <div className="flex flex-col space-y-2 mb-4">
-                  <label className="text-lg font-medium text-gray-700">
-                    {language === 'es' ? 'Cantidad:' : 'Quantity:'}
-                  </label>
-                  <div className="flex items-center border border-gray-200 rounded-lg w-32">
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">
+                    Stock disponible: {stock !== null ? stock : 'Cargando...'}
+                  </span>
+                  <select
+                    value={selectedBranch || ''}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-4 py-2"
+                  >
+                    <option value="">Selecciona una sucursal</option>
+                    {storeLocations.map(store => (
+                      <option key={store.name} value={store.name}>{store.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center border border-gray-200 rounded-lg">
                     <button
                       onClick={() => handleQuantityChange(-1)}
-                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300"
+                      disabled={quantity <= 1}
+                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 disabled:opacity-50"
                     >
                       -
                     </button>
                     <span className="px-4 py-2 border-x border-gray-200">{quantity}</span>
                     <button
                       onClick={() => handleQuantityChange(1)}
-                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300"
+                      disabled={quantity >= (stock || 0)}
+                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 disabled:opacity-50"
                     >
                       +
                     </button>
                   </div>
-                </div>
-
-                <div className="flex flex-row gap-3 w-full">
-                  <button 
+                  
+                  <button
                     onClick={handleAddToCart}
-                    className="w-1/2 bg-[#00BFB3] hover:bg-[#00A89D] text-white px-4 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
+                    disabled={!selectedBranch || stock === 0 || quantity > (stock || 0)}
+                    className="flex-1 bg-[#5773BB] text-white font-bold py-3 rounded-lg hover:bg-[#4466B7] transition-all duration-300 disabled:opacity-50"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                    </svg>
-                    <span className="text-center">{language === 'es' ? 'Agregar al Carrito' : 'Add to Cart'}</span>
+                    Agregar al carrito
                   </button>
-                  <a
-                    href={`/fichasTecnicas/${productId}.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-1/2 bg-[#5773BB] hover:bg-[#4466B7] text-white px-4 py-3 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-center">{language === 'es' ? 'Ficha Técnica' : 'Technical Sheet'}</span>
-                  </a>
                 </div>
               </div>
 
@@ -303,6 +369,23 @@ function ProductDetail() {
                 <FaStore className="text-2xl text-[#5773BB] mr-3" />
                 <span className="font-medium">Recoger en tienda</span>
               </div>
+
+              {/* After the branch selector, show the Google Maps for the selected branch */}
+              {selectedBranch && (
+                <div className="mt-4 w-full flex justify-center">
+                  <iframe
+                    src={storeLocations.find(loc => loc.name === selectedBranch)?.map}
+                    width="100%"
+                    height="250"
+                    style={{ border: 0, borderRadius: '12px', minHeight: '200px' }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={`Mapa de ${selectedBranch}`}
+                    className="w-full max-w-xl"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -357,6 +440,7 @@ function ProductDetail() {
                     <span className="font-bold text-[#5773BB] block mb-1">{store.name}</span>
                     <span className="block text-gray-700 text-sm mb-1">{store.address}</span>
                     <span className="block text-gray-500 text-xs">{store.availability}</span>
+                    <span className="block text-sm mt-1 font-semibold text-[#5773BB]">Stock: {branchStocks[store.name] ?? '...'}</span>
                   </label>
                 ))}
                 <button
