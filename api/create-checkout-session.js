@@ -53,12 +53,22 @@ export default async function handler(req, res) {
         throw new Error(`Cantidad inválida para el producto: ${item.name || 'Sin nombre'}`);
       }
 
+      // Convertir imagen relativa a absoluta
+      let imageUrl = '';
+      if (item.image) {
+        if (item.image.startsWith('http')) {
+          imageUrl = item.image;
+        } else if (item.image.startsWith('/')) {
+          imageUrl = origin + item.image;
+        }
+      }
+
       return {
         price_data: {
           currency: 'mxn',
           product_data: {
             name: item.name || item.nombre || 'Producto',
-            images: item.image ? [item.image] : [],
+            images: imageUrl ? [imageUrl] : [],
           },
           unit_amount: Math.round(price * 100), // Convertir a centavos
         },
