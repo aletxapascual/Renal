@@ -13,7 +13,8 @@ export const products = {
       '/images/productos/maloobtalDos.png',
       '/images/productos/maloobtalFondo.png',
       '/images/productos/maloobtal2Fondo.png'
-    ]
+    ],
+    fichaTecnica: '/fichasTecnicas/maloobtal.pdf'
   },
   maloobtalPro: {
     id: 'maloobtalPro',
@@ -26,7 +27,8 @@ export const products = {
     images: [
       '/images/productos/maloobtalPro.png',
       '/images/productos/maloobtal2Fondo.png'
-    ]
+    ],
+    fichaTecnica: '/fichasTecnicas/maloobtalpro.pdf'
   },
   rennut: {
     id: 'rennut',
@@ -54,7 +56,8 @@ export const products = {
         ]
       }
     ],
-    defaultFlavor: 'vainilla'
+    defaultFlavor: 'vainilla',
+    fichaTecnica: '/fichasTecnicas/rennut.pdf'
   },
   hemprot: {
     id: 'hemprot',
@@ -93,6 +96,7 @@ export const products = {
         ]
       }
     ],
-    defaultFlavor: 'chocolate'
+    defaultFlavor: 'chocolate',
+    fichaTecnica: '/fichasTecnicas/hemprot.pdf'
   }
 }; 

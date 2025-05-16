@@ -8,7 +8,7 @@ import { useCart } from '../../context/CartContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
-const storeLocations = [
+export const storeLocations = [
   {
     name: 'Renal Clínica',
     address: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
@@ -174,8 +174,14 @@ function ProductDetail() {
       return;
     }
 
+    // Buscar el objeto flavor completo si aplica
+    let flavorObj = null;
+    if (product.flavors && selectedFlavor) {
+      flavorObj = product.flavors.find(f => f.id === selectedFlavor) || null;
+    }
+
     try {
-      await addToCart(product, quantity, selectedFlavor, selectedBranch);
+      await addToCart(product, quantity, flavorObj, selectedBranch);
       openCart();
     } catch (error) {
       alert(error.message);
@@ -344,7 +350,19 @@ function ProductDetail() {
                     >
                       -
                     </button>
-                    <span className="px-4 py-2 border-x border-gray-200">{quantity}</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={stock || 1}
+                      value={quantity}
+                      onChange={e => {
+                        let val = parseInt(e.target.value, 10);
+                        if (isNaN(val) || val < 1) val = 1;
+                        if (stock && val > stock) val = stock;
+                        setQuantity(val);
+                      }}
+                      className="px-4 py-2 border-x border-gray-200 w-16 text-center"
+                    />
                     <button
                       onClick={() => handleQuantityChange(1)}
                       disabled={quantity >= (stock || 0)}
@@ -365,10 +383,26 @@ function ProductDetail() {
               </div>
 
               {/* Recoger en tienda as a plain row, at the bottom, left-aligned, font color matches product info */}
-              <div className="flex items-center py-4 mt-2 text-gray-600">
+              <div className="flex items-center py-2 text-gray-600">
                 <FaStore className="text-2xl text-[#5773BB] mr-3" />
                 <span className="font-medium">Recoger en tienda</span>
               </div>
+
+              {product.fichaTecnica && (
+                <div className="flex items-center py-2 text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5773BB] mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7V3a1 1 0 011-1h8a1 1 0 011 1v4m-2 4h2a2 2 0 012 2v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7a2 2 0 012-2h2m4 0V3m0 4v4" />
+                  </svg>
+                  <a
+                    href={product.fichaTecnica}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium hover:text-[#4466B7] transition-colors"
+                  >
+                    Ver ficha técnica
+                  </a>
+                </div>
+              )}
 
               {/* After the branch selector, show the Google Maps for the selected branch */}
               {selectedBranch && (

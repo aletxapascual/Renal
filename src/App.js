@@ -24,6 +24,7 @@ import LoginModal from './components/LoginModal';
 import RegisterModal from './components/RegisterModal';
 import ForgotPasswordModal from './components/ForgotPasswordModal';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Checkout from './pages/Checkout';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/register" element={<Register />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/checkout" element={<Checkout />} />
                     </Routes>
                   </main>
                   <Footer />
