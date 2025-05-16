@@ -37,57 +37,31 @@ const Checkout = () => {
   // Detectar regreso de Stripe
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if ((params.get('success') || params.get('canceled')) && user) {
-      // Guardar pedido en Firestore con estado de pago
-      (async () => {
-        const estadoPago = params.get('success') ? 'Pagado' : 'Cancelado';
-        const metodoPago = 'stripe';
-        const branches = Object.keys(cartByBranch);
-        for (const branch of branches) {
-          const items = cartByBranch[branch];
-          const counterRef = doc(db, 'pedidos', 'contador');
-          let newOrderId;
-          await runTransaction(db, async (transaction) => {
-            const counterDoc = await transaction.get(counterRef);
-            let current = 0;
-            if (counterDoc.exists()) {
-              current = counterDoc.data().value || 0;
-            }
-            newOrderId = (current + 1).toString();
-            transaction.set(counterRef, { value: current + 1 });
-          });
-          let nota = '';
-          if (branches.length > 1) {
-            nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
-          }
-          const pedidoData = {
-            uid: user.uid,
-            email: user.email,
-            productos: items,
-            total: items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0),
-            estado: estadoPago,
-            fecha: new Date().toISOString(),
-            lugarRecogida: branch,
-            nota,
-            metodoPago,
-          };
-          await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
-        }
-      })();
-      if (params.get('success')) {
-        // Leer el total guardado en localStorage (Stripe)
-        const lastOrderTotal = localStorage.getItem('lastOrderTotal');
-        if (lastOrderTotal) {
-          setOrderTotal(Number(lastOrderTotal));
-          localStorage.removeItem('lastOrderTotal');
-        } else {
-          setOrderTotal(total); // fallback
-        }
-        clearCart();
+    if (params.get('success')) {
+      // Leer el total guardado en localStorage (Stripe)
+      const lastOrderTotal = localStorage.getItem('lastOrderTotal');
+      if (lastOrderTotal) {
+        setOrderTotal(Number(lastOrderTotal));
+        // No limpiar localStorage ni carrito aquí, solo después de mostrar el recibo
+      } else {
+        setOrderTotal(total); // fallback
       }
-      setPaymentStatus(params.get('success') ? 'success' : 'canceled');
+      setPaymentStatus('success');
+    } else if (params.get('canceled')) {
+      setPaymentStatus('canceled');
+      // No limpiar el carrito ni el localStorage
     }
-  }, [location.search, clearCart, user, cartByBranch, total]);
+  }, [location.search, total]);
+
+  // Limpiar carrito y localStorage solo después de mostrar el recibo de éxito
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      setTimeout(() => {
+        clearCart();
+        localStorage.removeItem('lastOrderTotal');
+      }, 1000);
+    }
+  }, [paymentStatus, clearCart]);
 
   // Flujo de finalizar pedido
   const handleSubmit = async (e) => {

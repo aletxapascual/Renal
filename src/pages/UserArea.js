@@ -9,12 +9,19 @@ import { products as tiendaProducts } from '../data/products';
 const ubicaciones = {
   'Renal - Hemodiálisis Clínica de Riñón y trasplante renal': {
     direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
+    map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
+  },
+  'Renal Clínica': {
+    direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
+    map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
   },
   'Star Médica, Col. Altabrisa': {
     direccion: 'Calle 20 No. 123, Col. Altabrisa, 97130 Mérida, Yuc.',
+    map: 'https://maps.app.goo.gl/LNsgyq1MFATmL63n7',
   },
   'Cenit Medical Center': {
     direccion: 'Calle 32 No. 456, Col. Montecristo, 97133 Mérida, Yuc.',
+    map: 'https://maps.app.goo.gl/FJqUaPfP4omkxxs6A',
   },
 };
 
@@ -153,7 +160,7 @@ export default function UserArea() {
                 )}
                 {pedidoActual.lugarRecogida && (
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[pedidoActual.lugarRecogida]?.direccion || pedidoActual.lugarRecogida)}`}
+                    href={ubicaciones[pedidoActual.lugarRecogida]?.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[pedidoActual.lugarRecogida]?.direccion || pedidoActual.lugarRecogida)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700"
@@ -214,7 +221,7 @@ export default function UserArea() {
                 )}
                 {p.lugarRecogida && (
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[p.lugarRecogida]?.direccion || p.lugarRecogida)}`}
+                    href={ubicaciones[p.lugarRecogida]?.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[p.lugarRecogida]?.direccion || p.lugarRecogida)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700"
