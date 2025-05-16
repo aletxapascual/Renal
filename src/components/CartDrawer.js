@@ -5,21 +5,24 @@ import { usePickupModal } from '../context/PickupModalContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function CartDrawer() {
-  const { cartItems, isCartOpen, closeCart, removeFromCart, updateQuantity, getCartByBranch } = useCart();
+  const cartContext = useCart();
+  // LOG: Mostrar el contexto completo
+  console.log('[CartDrawer] useCart context:', cartContext);
+  const { cartItems = [], isCartOpen, closeCart, removeFromCart, updateQuantity, getCartByBranch } = cartContext || {};
   const { openPickupModal } = usePickupModal();
   const drawerRef = useRef();
   const navigate = useNavigate();
   const [cartError, setCartError] = useState('');
 
   // Agrupar productos por sucursal
-  const cartByBranch = getCartByBranch();
+  const cartByBranch = typeof getCartByBranch === 'function' ? getCartByBranch() : {};
+  // LOG: Mostrar agrupación de carrito
+  console.log('[CartDrawer] cartByBranch:', cartByBranch);
 
   // Función para obtener la imagen del producto
   const getProductImage = (item) => {
     if (!item.image) return '/images/productos/default.png';
-    // Si la imagen es una URL completa, la devolvemos tal cual
     if (item.image.startsWith('http')) return item.image;
-    // Si es una ruta relativa, aseguramos que empiece con /
     return item.image.startsWith('/') ? item.image : `/${item.image}`;
   };
 
@@ -27,7 +30,7 @@ export default function CartDrawer() {
   useEffect(() => {
     function handleOutsideClick(e) {
       if (isCartOpen && drawerRef.current && !drawerRef.current.contains(e.target)) {
-        closeCart();
+        closeCart && closeCart();
       }
     }
     
@@ -65,24 +68,46 @@ export default function CartDrawer() {
   }, [isCartOpen]);
 
   // Calcular total general
-  const total = cartItems.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+  const total = (cartItems || []).reduce((sum, item) => {
+    const price = Number(item.price);
+    const quantity = Number(item.quantity) || 1;
+    if (isNaN(price)) {
+      console.error('[CartDrawer] Precio inválido para item:', item);
+      return sum;
+    }
+    return sum + price * quantity;
+  }, 0);
+  // LOG: Mostrar total calculado
+  console.log('[CartDrawer] total:', total);
+
   // Calcular cantidad total
-  const totalQuantity = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const totalQuantity = (cartItems || []).reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
 
   // Cambiar cantidad
   const handleQuantityChange = async (item, change) => {
-    const newQuantity = (item.quantity || 1) + change;
+    const newQuantity = (Number(item.quantity) || 1) + change;
     if (newQuantity < 1) return;
+    if (typeof updateQuantity !== 'function') {
+      setCartError('Error: updateQuantity no está disponible');
+      console.error('[CartDrawer] updateQuantity no es función:', updateQuantity);
+      return;
+    }
     try {
       await updateQuantity(item.cartKey, newQuantity);
       setCartError('');
     } catch (err) {
       setCartError(err.message);
+      console.error('[CartDrawer] Error al actualizar cantidad:', err);
     }
   };
 
   // Eliminar producto
   const handleRemove = (item) => {
+    if (typeof removeFromCart !== 'function') {
+      setCartError('Error: removeFromCart no está disponible');
+      console.error('[CartDrawer] removeFromCart no es función:', removeFromCart);
+      return;
+    }
     removeFromCart(item.cartKey);
     setCartError('');
   };
@@ -91,7 +116,7 @@ export default function CartDrawer() {
   const handleCheckout = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    closeCart();
+    closeCart && closeCart();
     setTimeout(() => navigate('/checkout'), 300);
   };
 
@@ -124,7 +149,7 @@ export default function CartDrawer() {
               className="absolute top-6 right-6 text-3xl text-gray-400 hover:text-gray-700 z-10 touch-manipulation"
               onClick={(e) => {
                 e.stopPropagation();
-                closeCart();
+                closeCart && closeCart();
               }}
               aria-label="Cerrar"
             >
