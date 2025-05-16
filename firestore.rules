@@ -1,50 +1,56 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Función para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
     // Función para verificar si el usuario es admin
     function isAdmin() {
-      return request.auth != null && 
+      return isAuthenticated() && 
         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
          get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin');
     }
 
     // Función para verificar si el usuario es el propietario
     function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
     // Reglas para inventario
     match /inventario/{branchId} {
-      allow read: if true;  // Lectura pública
-      allow write: if request.auth != null;  // Cualquier usuario autenticado puede modificar inventario
+      allow read: if isAuthenticated();  // Solo usuarios autenticados pueden leer
+      allow write: if isAdmin();  // Solo admins pueden modificar
     }
     
     // Reglas para pedidos
     match /pedidos/{pedidoId} {
-      allow read: if request.auth != null;  // Usuarios autenticados pueden leer sus pedidos
-      allow create: if request.auth != null;  // Usuarios autenticados pueden crear pedidos
-      allow update: if isAdmin();  // Solo admins pueden actualizar pedidos
-      allow delete: if isAdmin();  // Solo admins pueden eliminar pedidos
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow delete: if isAdmin();
     }
 
     // Reglas específicas para el contador de pedidos
     match /pedidos/contador {
-      allow read, write: if request.auth != null;  // Cualquier usuario autenticado puede leer/escribir el contador
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
     }
     
-    // Reglas para usuarios (nueva colección)
+    // Reglas para usuarios (colección users)
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if isOwner(userId) || isAdmin();
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
       allow delete: if isAdmin();
     }
 
-    // Reglas para usuarios (colección antigua)
+    // Reglas para usuarios (colección usuarios - para compatibilidad)
     match /usuarios/{userId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if isOwner(userId) || isAdmin();
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
       allow delete: if isAdmin();
     }
   }

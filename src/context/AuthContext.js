@@ -36,38 +36,39 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          const ref = doc(db, 'users', firebaseUser.uid);
-          const snap = await getDoc(ref);
-          let data = snap.exists() ? snap.data() : {};
+          // Intentar obtener datos de la colección 'users' primero
+          let userRef = doc(db, 'users', firebaseUser.uid);
+          let userSnap = await getDoc(userRef);
+          let userData = userSnap.exists() ? userSnap.data() : null;
 
-          // Si no existe, crear el documento con nombre y apellido de Google
-          if (!snap.exists()) {
+          // Si no existe en 'users', intentar en 'usuarios'
+          if (!userData) {
+            userRef = doc(db, 'usuarios', firebaseUser.uid);
+            userSnap = await getDoc(userRef);
+            userData = userSnap.exists() ? userSnap.data() : null;
+          }
+
+          // Si no existe en ninguna colección, crear en 'users'
+          if (!userData) {
             const [firstName, ...lastNameParts] = (firebaseUser.displayName || '').split(' ');
             const lastName = lastNameParts.join(' ');
-            data = {
+            userData = {
               firstName: firstName || '',
               lastName: lastName || '',
               email: firebaseUser.email,
               role: 'cliente',
+              createdAt: new Date().toISOString()
             };
-            await setDoc(ref, data);
-          } else {
-            // Si existe pero le falta nombre o apellido, actualiza
-            if ((!data.firstName || !data.lastName) && firebaseUser.displayName) {
-              const [firstName, ...lastNameParts] = (firebaseUser.displayName || '').split(' ');
-              const lastName = lastNameParts.join(' ');
-              data.firstName = data.firstName || firstName || '';
-              data.lastName = data.lastName || lastName || '';
-              await setDoc(ref, data, { merge: true });
-            }
+            await setDoc(doc(db, 'users', firebaseUser.uid), userData);
           }
 
+          // Actualizar el estado del usuario
           setUser({
             uid: firebaseUser.uid,
             email: firebaseUser.email,
-            firstName: data.firstName || '',
-            lastName: data.lastName || '',
-            role: data.role || 'cliente',
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            role: userData.role || 'cliente'
           });
 
         } catch (err) {
@@ -77,7 +78,7 @@ export function AuthProvider({ children }) {
             email: firebaseUser.email,
             firstName: '',
             lastName: '',
-            role: 'cliente',
+            role: 'cliente'
           });
         }
       } else {
