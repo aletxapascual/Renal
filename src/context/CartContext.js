@@ -2,7 +2,18 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, runTransaction } from 'firebase/firestore';
 
-const CartContext = createContext();
+const CartContext = createContext({
+  cartItems: [],
+  isCartOpen: false,
+  openCart: () => {},
+  closeCart: () => {},
+  clearCart: () => {},
+  addToCart: async () => {},
+  removeFromCart: () => {},
+  updateQuantity: async () => {},
+  getCartByBranch: () => ({}),
+  updateInventoryAfterPurchase: async () => {},
+});
 
 export function useCart() {
   return useContext(CartContext);
@@ -23,7 +34,20 @@ export function CartProvider({ children }) {
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+      let parsed = [];
+      try {
+        parsed = JSON.parse(savedCart);
+      } catch (e) {
+        parsed = [];
+      }
+      // Filtrar productos inválidos (sin id o price válido)
+      const cleaned = parsed.filter(item => {
+        const validId = !!item.id;
+        let price = item.price;
+        if (typeof price === 'string') price = parseFloat(price.replace(/[^\d.]/g, ''));
+        return validId && !isNaN(price) && price > 0;
+      });
+      setCartItems(cleaned);
     }
   }, []);
 
@@ -82,31 +106,26 @@ export function CartProvider({ children }) {
         branch,
         product
       });
-      
       const hasStock = await checkInventory(product.id, flavorId, quantity, branch);
       console.log('Resultado de verificación de stock:', hasStock);
-      
       if (!hasStock) {
         throw new Error('No hay suficiente stock disponible');
       }
-
       setCartItems(prevItems => {
         const cartKey = `${product.id}-${flavorId || 'default'}-${branch}`;
         const existingItem = prevItems.find(item => item.cartKey === cartKey);
         let price = product.price;
-        if (typeof price === 'string') {
-          price = parseFloat(price.replace(/[^\d.]/g, ''));
-        }
-        if (isNaN(price)) price = 0;
-
+        if (typeof price === 'string') price = parseFloat(price.replace(/[^\d.]/g, ''));
+        if (isNaN(price) || price <= 0) price = 1; // fallback mínimo
         // Obtener la imagen correcta según el sabor
-        let productImage;
+        let productImage = '';
         if (flavor && flavor.images && flavor.images.length > 0) {
           productImage = flavor.images[0];
         } else if (product.images && product.images.length > 0) {
           productImage = product.images[0];
+        } else {
+          productImage = '/images/productos/default.png';
         }
-
         if (existingItem) {
           return prevItems.map(item =>
             item.cartKey === cartKey
@@ -145,14 +164,11 @@ export function CartProvider({ children }) {
       if (!item) {
         throw new Error('Producto no encontrado en el carrito');
       }
-
       const hasStock = await checkInventory(item.id, item.flavor?.id, newQuantity, item.branch);
       console.log('Verificación de stock para actualizar cantidad:', { cartKey, newQuantity, hasStock });
-
       if (!hasStock) {
         throw new Error('No hay suficiente stock disponible');
       }
-
       setCartItems(prevItems =>
         prevItems.map(item =>
           item.cartKey === cartKey
@@ -180,38 +196,30 @@ export function CartProvider({ children }) {
   const updateInventoryAfterPurchase = async (items) => {
     const branch = items[0]?.branch;
     if (!branch) return;
-
     const inventarioRef = doc(db, 'inventario', branch);
-    
     try {
       await runTransaction(db, async (transaction) => {
         const inventarioDoc = await transaction.get(inventarioRef);
         if (!inventarioDoc.exists()) {
           throw new Error('No se encontró el inventario');
         }
-
         const inventario = inventarioDoc.data();
         const newInventario = { ...inventario };
-
         items.forEach(item => {
           const productId = item.id;
           const flavorId = item.flavor?.id || 'default';
           const quantity = item.quantity;
-
           if (!newInventario[productId]) return;
-
           if (flavorId === 'default') {
             newInventario[productId].stock -= quantity;
           } else {
             newInventario[productId].flavors[flavorId] -= quantity;
           }
         });
-
         transaction.update(inventarioRef, newInventario);
       });
     } catch (error) {
-      console.error('Error updating inventory:', error);
-      throw error;
+      console.error('Error al actualizar inventario después de la compra:', error);
     }
   };
 
@@ -225,16 +233,16 @@ export function CartProvider({ children }) {
 
   const value = {
     cartItems,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
     isCartOpen,
     openCart,
     closeCart,
+    clearCart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    getCartByBranch,
     updateInventoryAfterPurchase,
-    updateCartItem,
-    getCartByBranch
+    updateCartItem
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
