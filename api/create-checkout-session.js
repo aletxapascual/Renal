@@ -27,10 +27,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No se encontró un email válido para el usuario' });
     }
 
-    // Usar URL de producción en Vercel
-    const origin = process.env.VERCEL_ENV === 'production' 
-      ? PRODUCTION_URL 
-      : (req.headers.origin || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+    // Forzar origin válido
+    let origin = 'http://localhost:3000';
+    if (process.env.VERCEL_ENV === 'production') {
+      origin = PRODUCTION_URL;
+    } else if (req.headers.origin && req.headers.origin.startsWith('http')) {
+      origin = req.headers.origin;
+    } else if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.startsWith('http')) {
+      origin = process.env.NEXT_PUBLIC_BASE_URL;
+    }
 
     // Validar y limpiar cada item
     const validItems = cartItems.map(item => {
