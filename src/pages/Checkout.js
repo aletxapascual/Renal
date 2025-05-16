@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { addDoc, collection, doc, runTransaction, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { storeLocations } from '../containers/tienda/ProductDetail';
@@ -12,16 +12,17 @@ const Checkout = () => {
   const { user } = useAuth();
   const { openLoginModal } = useLoginModal();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('sucursal');
+  const [stripeError, setStripeError] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState(null); // 'success', 'canceled', null
 
   // Agrupar productos por sucursal
   const cartByBranch = getCartByBranch();
   const branches = Object.keys(cartByBranch);
-
-  // Si no hay usuario, no renderizar nada especial (permitir ver el resumen)
 
   // Calcular total general
   const total = cartItems.reduce((sum, item) => {
@@ -32,6 +33,52 @@ const Checkout = () => {
   // Si no hay productos en el carrito, no permitir finalizar pedido
   const isCartEmpty = cartItems.length === 0;
 
+  // Detectar regreso de Stripe
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if ((params.get('success') || params.get('canceled')) && user) {
+      // Guardar pedido en Firestore con estado de pago
+      (async () => {
+        const estadoPago = params.get('success') ? 'Pagado' : 'Cancelado';
+        const metodoPago = 'stripe';
+        const branches = Object.keys(cartByBranch);
+        for (const branch of branches) {
+          const items = cartByBranch[branch];
+          const counterRef = doc(db, 'pedidos', 'contador');
+          let newOrderId;
+          await runTransaction(db, async (transaction) => {
+            const counterDoc = await transaction.get(counterRef);
+            let current = 0;
+            if (counterDoc.exists()) {
+              current = counterDoc.data().value || 0;
+            }
+            newOrderId = (current + 1).toString();
+            transaction.set(counterRef, { value: current + 1 });
+          });
+          let nota = '';
+          if (branches.length > 1) {
+            nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
+          }
+          const pedidoData = {
+            uid: user.uid,
+            email: user.email,
+            productos: items,
+            total: items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0),
+            estado: estadoPago,
+            fecha: new Date().toISOString(),
+            lugarRecogida: branch,
+            nota,
+            metodoPago,
+          };
+          await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
+        }
+      })();
+      if (params.get('success')) clearCart();
+      setPaymentStatus(params.get('success') ? 'success' : 'canceled');
+    }
+  }, [location.search, clearCart, user, cartByBranch]);
+
+  // Flujo de finalizar pedido
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isCartEmpty) {
@@ -42,95 +89,115 @@ const Checkout = () => {
       openLoginModal();
       return;
     }
-
-    // Verificar que tenemos los datos necesarios del usuario
     if (!user.uid || !user.email) {
       setError('Error: No se encontraron los datos del usuario. Por favor, cierra sesión y vuelve a iniciar sesión.');
       return;
     }
-
     setIsLoading(true);
     setError('');
     setSuccess(false);
-
     try {
-      console.log('Iniciando proceso de checkout...');
-      // Para cada sucursal, crea un pedido
+      if (paymentMethod === 'stripe') {
+        // Redirigir a Stripe Checkout
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cartItems }),
+        });
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        } else {
+          setStripeError('No se pudo iniciar el pago con Stripe.');
+          setIsLoading(false);
+          return;
+        }
+      }
+      // Pago en sucursal: flujo normal
       for (const branch of branches) {
-        console.log(`Procesando pedido para sucursal: ${branch}`);
         const items = cartByBranch[branch];
-        // Consecutive order ID logic
         const counterRef = doc(db, 'pedidos', 'contador');
         let newOrderId;
-        try {
-          await runTransaction(db, async (transaction) => {
-            console.log('Iniciando transacción para contador...');
-            const counterDoc = await transaction.get(counterRef);
-            let current = 0;
-            if (counterDoc.exists()) {
-              current = counterDoc.data().value || 0;
-            }
-            newOrderId = (current + 1).toString();
-            transaction.set(counterRef, { value: current + 1 });
-          });
-          console.log('Nuevo ID de pedido generado:', newOrderId);
-        } catch (err) {
-          console.error('Error en transacción del contador:', err);
-          throw new Error('Error al generar ID de pedido');
-        }
-
-        // Nota para indicar si hay productos de varias sucursales
+        await runTransaction(db, async (transaction) => {
+          const counterDoc = await transaction.get(counterRef);
+          let current = 0;
+          if (counterDoc.exists()) {
+            current = counterDoc.data().value || 0;
+          }
+          newOrderId = (current + 1).toString();
+          transaction.set(counterRef, { value: current + 1 });
+        });
         let nota = '';
         if (branches.length > 1) {
           nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
         }
-
-        try {
-          // Crear el pedido con el nuevo ID
-          console.log('Creando pedido en Firestore...');
-          const pedidoData = {
-            uid: user.uid,
-            email: user.email,
-            productos: items,
-            total: items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0),
-            estado: 'Pendiente',
-            fecha: new Date().toISOString(),
-            lugarRecogida: branch,
-            nota
-          };
-          console.log('Datos del pedido:', pedidoData);
-          await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
-          console.log('Pedido creado exitosamente');
-
-          // Actualizar el inventario de esa sucursal
-          console.log('Actualizando inventario...');
-          await updateInventoryAfterPurchase(items);
-          console.log('Inventario actualizado exitosamente');
-        } catch (err) {
-          console.error('Error al crear pedido o actualizar inventario:', err);
-          throw new Error('Error al procesar el pedido');
-        }
+        const pedidoData = {
+          uid: user.uid,
+          email: user.email,
+          productos: items,
+          total: items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0),
+          estado: 'Pendiente',
+          fecha: new Date().toISOString(),
+          lugarRecogida: branch,
+          nota,
+          metodoPago: 'sucursal',
+        };
+        await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
+        await updateInventoryAfterPurchase(items);
       }
-
-      // Limpiar el carrito
-      console.log('Limpiando carrito...');
       clearCart();
-
-      // Redirigir al usuario
       setSuccess(true);
     } catch (err) {
-      console.error('Error completo en checkout:', err);
       setError('Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (success) {
+  // Recibo bonito después de Stripe o compra en sucursal
+  if (paymentStatus === 'success' || success) {
     return (
-      <div className="text-center py-16">
+      <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
         <p className="text-lg mb-8">Gracias por tu compra. Pronto recibirás un correo de confirmación.</p>
+        <div className="mb-8">
+          <h3 className="text-xl font-bold text-[#5773BB] mb-4">Resumen de tu pedido</h3>
+          {branches.map(branch => {
+            const items = cartByBranch[branch];
+            return (
+              <div key={branch} className="mb-6 border-2 border-[#5773BB] bg-[#f5f8ff] rounded-xl shadow-sm p-4 text-left">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="inline-block w-3 h-3 rounded-full bg-[#5773BB]"></span>
+                  <span className="font-bold text-[#5773BB] text-lg">Sucursal: {branch}</span>
+                </div>
+                <div className="mb-2">
+                  {items.map((item, idx) => (
+                    <div key={item.cartKey || idx} className="flex items-center justify-between text-gray-700 mb-1 gap-2 border-b border-gray-200 pb-1 last:border-b-0 last:pb-0">
+                      <img src={item.image} alt={item.name} className="w-12 h-12 object-contain rounded-lg bg-gray-50 mr-2" />
+                      <span className="flex-1">{item.name} {item.flavor ? `(${item.flavor.name?.es || item.flavor.name || item.flavor})` : ''} x{item.quantity}</span>
+                      <span>MXN {Number(item.price).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2">
+                  <h3 className="text-md font-semibold mb-1 text-[#5773BB]">Datos de recolección</h3>
+                  <div className="mb-2 font-medium text-[#5773BB]">Sucursal: {branch}</div>
+                  {/* Puedes agregar aquí más datos si quieres */}
+                </div>
+              </div>
+            );
+          })}
+          <div className="flex justify-between font-bold text-lg border-t pt-2 mt-4">
+            <span>Total:</span>
+            <span>MXN {total.toFixed(2)}</span>
+          </div>
+          <div className="mt-4">
+            <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold">
+              Estado de pago: Pagado
+            </span>
+          </div>
+        </div>
         <div className="flex justify-center gap-4">
           <button
             className="bg-[#5773BB] hover:bg-[#405a99] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
@@ -145,6 +212,21 @@ const Checkout = () => {
             Volver a la tienda
           </button>
         </div>
+      </div>
+    );
+  }
+
+  if (paymentStatus === 'canceled') {
+    return (
+      <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
+        <h2 className="text-3xl font-bold text-red-600 mb-4">Pago cancelado</h2>
+        <p className="text-lg mb-8">El pago fue cancelado. Puedes intentar de nuevo o elegir otro método de pago.</p>
+        <button
+          className="bg-[#5773BB] hover:bg-[#405a99] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
+          onClick={() => navigate('/checkout')}
+        >
+          Volver al checkout
+        </button>
       </div>
     );
   }
@@ -235,19 +317,7 @@ const Checkout = () => {
             </span>
           </label>
         </div>
-        {paymentMethod === 'stripe' ? (
-          <div className="border border-dashed border-[#5773BB] rounded-lg p-6 text-center text-[#5773BB] bg-[#f5f8ff] flex flex-col items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-2 text-[#5773BB]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 7v7m0 0h4m-4 0H8" /></svg>
-            <span className="font-semibold text-lg">Paga de forma segura en línea</span>
-            <span className="text-sm text-[#5773BB]">Aquí irá el formulario de pago con Stripe.</span>
-          </div>
-        ) : (
-          <div className="border border-dashed border-[#00BFB3] rounded-lg p-6 text-center text-[#00BFB3] bg-[#e6fcfa] flex flex-col items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-2 text-[#00BFB3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7V6a2 2 0 012-2h14a2 2 0 012 2v1M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7M3 7h18" /></svg>
-            <span className="font-semibold text-lg">Paga al recoger tu pedido en la sucursal</span>
-            <span className="text-sm text-[#00BFB3]">Puedes pagar en efectivo, tarjeta o transferencia al momento de la entrega.</span>
-          </div>
-        )}
+        {stripeError && paymentMethod === 'stripe' && <div className="text-red-600 text-center font-semibold mt-2">{stripeError}</div>}
       </div>
       {error && <div className="text-red-500 font-bold mb-4">{error}</div>}
       <button

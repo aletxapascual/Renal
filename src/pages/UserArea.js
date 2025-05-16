@@ -131,6 +131,18 @@ export default function UserArea() {
             <div key={pedidoActual.id || idx} className="bg-white rounded-xl shadow p-6 space-y-4">
               <div className="flex flex-wrap items-center gap-4 mb-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${estadoColor(pedidoActual.estado)}`}>{pedidoActual.estado}</span>
+                {/* Estado de pago */}
+                {pedidoActual.metodoPago === 'stripe' ? (
+                  pedidoActual.estado === 'Pagado' ? (
+                    <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-xs">Pagado</span>
+                  ) : pedidoActual.estado === 'Cancelado' ? (
+                    <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold text-xs">Pago cancelado</span>
+                  ) : (
+                    <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-semibold text-xs">Pago pendiente</span>
+                  )
+                ) : (
+                  <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold text-xs">Se pagará en tienda</span>
+                )}
                 <span className="text-gray-500 text-sm">{pedidoActual.fecha ? pedidoActual.fecha.slice(0, 10) : ''}</span>
                 <span className="text-gray-500 text-sm">ID: {pedidoActual.id}</span>
               </div>

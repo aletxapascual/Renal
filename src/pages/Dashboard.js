@@ -313,7 +313,9 @@ export default function Dashboard() {
                 <th className="py-3 px-4 text-left">ID</th>
                 <th className="py-3 px-4 text-left">Cliente</th>
                 <th className="py-3 px-4 text-left">Total</th>
-                <th className="py-3 px-4 text-left">Estado</th>
+                <th className="py-3 px-4 text-left">Método de pago</th>
+                <th className="py-3 px-4 text-left">Estado de pago</th>
+                <th className="py-3 px-4 text-left">Estado de pedido</th>
               </tr>
             </thead>
             <tbody>
@@ -328,11 +330,21 @@ export default function Dashboard() {
                     <td className="py-2 px-4">{p.id}</td>
                     <td className="py-2 px-4">{p.cliente?.firstName || ''} {p.cliente?.lastName || ''}</td>
                     <td className="py-2 px-4">MXN {p.total}</td>
+                    <td className="py-2 px-4">{p.metodoPago === 'stripe' ? 'En línea' : 'Sucursal'}</td>
+                    <td className="py-2 px-4">
+                      {p.estado === 'Pagado' ? (
+                        <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-xs">Pagado</span>
+                      ) : p.estado === 'Cancelado' ? (
+                        <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold text-xs">Cancelado</span>
+                      ) : (
+                        <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-semibold text-xs">Pendiente</span>
+                      )}
+                    </td>
                     <td className="py-2 px-4">{p.estado}</td>
                   </tr>
                   {pedidoActivo?.id === p.id && (
                     <tr>
-                      <td colSpan="5" className="bg-gray-50 px-4 py-6">
+                      <td colSpan="8" className="bg-gray-50 px-4 py-6">
                         <div className="space-y-2">
                           <p><b>Correo:</b> {p.cliente?.email}</p>
                           <p><b>Fecha:</b> {p.fecha}</p>
@@ -358,10 +370,22 @@ export default function Dashboard() {
                             >
                               <option value="Pendiente">Pendiente</option>
                               <option value="En proceso">En proceso</option>
-                              <option value="En camino">En camino</option>
                               <option value="Entregado">Entregado</option>
                             </select>
                           </div>
+                          {p.estado !== 'Pagado' && (
+                            <div className="mt-2">
+                              <button
+                                className="px-4 py-2 rounded bg-green-200 text-green-800 text-sm font-bold hover:bg-green-300 transition"
+                                onClick={async e => {
+                                  e.stopPropagation();
+                                  // Cambia ambos estados en Firestore y en la UI
+                                  await handleEstadoChange(p.id, 'Pagado');
+                                  await handleEstadoChange(p.id, 'Entregado');
+                                }}
+                              >Marcar como pagado</button>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
