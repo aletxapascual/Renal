@@ -6,21 +6,26 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// URL base para producción
+const PRODUCTION_URL = 'https://renal-seven.vercel.app';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { cartItems } = req.body;
+    const { cartItems, email } = req.body;
     
     // Validación inicial
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
       return res.status(400).json({ error: 'No hay productos en el carrito' });
     }
 
-    // Fallback seguro para origin
-    const origin = req.headers.origin || process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app';
+    // Usar URL de producción en Vercel
+    const origin = process.env.VERCEL_ENV === 'production' 
+      ? PRODUCTION_URL 
+      : (req.headers.origin || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
 
     // Validar y limpiar cada item
     const validItems = cartItems.map(item => {
@@ -56,9 +61,9 @@ export default async function handler(req, res) {
       mode: 'payment',
       success_url: `${origin}/checkout?success=true`,
       cancel_url: `${origin}/checkout?canceled=true`,
-      customer_email: req.body.email, // Opcional: si tienes el email del usuario
+      customer_email: email, // Email del usuario
       metadata: {
-        orderId: Date.now().toString(), // Opcional: para tracking
+        orderId: Date.now().toString(),
       },
     });
 

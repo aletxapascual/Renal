@@ -125,7 +125,10 @@ const Checkout = () => {
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cartItems: cleanCartItems }),
+          body: JSON.stringify({ 
+            cartItems: cleanCartItems,
+            email: user.email // Enviar el email del usuario
+          }),
         });
 
         if (!response.ok) {
@@ -193,8 +196,12 @@ const Checkout = () => {
         await updateInventoryAfterPurchase(items);
       }
 
-      clearCart();
+      // Mover clearCart() después de setSuccess(true)
       setSuccess(true);
+      // Esperar un momento antes de limpiar el carrito
+      setTimeout(() => {
+        clearCart();
+      }, 1000);
     } catch (err) {
       console.error('Error en checkout:', err);
       setError(err.message || 'Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
