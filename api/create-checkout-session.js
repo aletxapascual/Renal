@@ -19,7 +19,12 @@ export default async function handler(req, res) {
     
     // Validación inicial
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+      console.error('Error: No hay productos en el carrito');
       return res.status(400).json({ error: 'No hay productos en el carrito' });
+    }
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      console.error('Error: Email inválido o ausente');
+      return res.status(400).json({ error: 'No se encontró un email válido para el usuario' });
     }
 
     // Usar URL de producción en Vercel
@@ -34,10 +39,12 @@ export default async function handler(req, res) {
       const quantity = Number(item.quantity) || 1;
       
       if (isNaN(price) || price <= 0) {
+        console.error('Error: Precio inválido para el producto', item);
         throw new Error(`Precio inválido para el producto: ${item.name || 'Sin nombre'}`);
       }
       
       if (isNaN(quantity) || quantity <= 0) {
+        console.error('Error: Cantidad inválida para el producto', item);
         throw new Error(`Cantidad inválida para el producto: ${item.name || 'Sin nombre'}`);
       }
 

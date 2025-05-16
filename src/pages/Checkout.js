@@ -19,6 +19,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('sucursal');
   const [stripeError, setStripeError] = useState('');
   const [paymentStatus, setPaymentStatus] = useState(null); // 'success', 'canceled', null
+  const [orderTotal, setOrderTotal] = useState(0); // Nuevo estado para guardar el total
 
   // Agrupar productos por sucursal
   const cartByBranch = getCartByBranch();
@@ -73,10 +74,13 @@ const Checkout = () => {
           await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
         }
       })();
-      if (params.get('success')) clearCart();
+      if (params.get('success')) {
+        setOrderTotal(total); // Guardar el total antes de limpiar
+        clearCart();
+      }
       setPaymentStatus(params.get('success') ? 'success' : 'canceled');
     }
-  }, [location.search, clearCart, user, cartByBranch]);
+  }, [location.search, clearCart, user, cartByBranch, total]);
 
   // Flujo de finalizar pedido
   const handleSubmit = async (e) => {
@@ -113,12 +117,22 @@ const Checkout = () => {
       if (paymentMethod === 'stripe') {
         // Validar que haya productos y precios válidos
         if (cleanCartItems.length === 0) {
-          throw new Error('No hay productos en el carrito');
+          setStripeError('No hay productos en el carrito');
+          setIsLoading(false);
+          return;
         }
 
-        const invalidItems = cleanCartItems.filter(item => !item.price || item.price <= 0);
+        const invalidItems = cleanCartItems.filter(item => !item.price || item.price <= 0 || !item.quantity || item.quantity <= 0);
         if (invalidItems.length > 0) {
-          throw new Error('Hay productos con precios inválidos');
+          setStripeError('Hay productos con precios o cantidades inválidas');
+          setIsLoading(false);
+          return;
+        }
+
+        if (!user.email) {
+          setStripeError('No se encontró el email del usuario.');
+          setIsLoading(false);
+          return;
         }
 
         // Redirigir a Stripe Checkout
@@ -132,8 +146,11 @@ const Checkout = () => {
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Error al procesar el pago');
+          let errorData = {};
+          try { errorData = await response.json(); } catch {}
+          setStripeError(errorData.error || 'Error al procesar el pago');
+          setIsLoading(false);
+          return;
         }
 
         const data = await response.json();
@@ -196,7 +213,8 @@ const Checkout = () => {
         await updateInventoryAfterPurchase(items);
       }
 
-      // Mover clearCart() después de setSuccess(true)
+      // Guardar el total antes de limpiar el carrito
+      setOrderTotal(total);
       setSuccess(true);
       // Esperar un momento antes de limpiar el carrito
       setTimeout(() => {
@@ -212,14 +230,6 @@ const Checkout = () => {
 
   // Recibo bonito después de Stripe o compra en sucursal
   if (paymentStatus === 'success' || success) {
-    // Calcular el total a partir de los productos del pedido
-    let totalPedido = 0;
-    branches.forEach(branch => {
-      const items = cartByBranch[branch];
-      if (items && items.length > 0) {
-        totalPedido += items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
-      }
-    });
     return (
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
@@ -246,14 +256,13 @@ const Checkout = () => {
                 <div className="mt-2">
                   <h3 className="text-md font-semibold mb-1 text-[#5773BB]">Datos de recolección</h3>
                   <div className="mb-2 font-medium text-[#5773BB]">Sucursal: {branch}</div>
-                  {/* Puedes agregar aquí más datos si quieres */}
                 </div>
               </div>
             );
           })}
           <div className="flex justify-between font-bold text-lg border-t pt-2 mt-4">
             <span>Total:</span>
-            <span>MXN {totalPedido.toFixed(2)}</span>
+            <span>MXN {orderTotal.toFixed(2)}</span>
           </div>
           <div className="mt-4">
             <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold">
