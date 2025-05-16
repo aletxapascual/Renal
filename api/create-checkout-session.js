@@ -14,58 +14,57 @@ export default async function handler(req, res) {
   try {
     const { cartItems } = req.body;
     
+    // Validación inicial
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
       return res.status(400).json({ error: 'No hay productos en el carrito' });
     }
 
-    // Validar que cada item tenga los campos necesarios
-    const validItems = cartItems.every(item => 
-      item && 
-      (item.name || item.nombre) && 
-      typeof item.price === 'number' && 
-      typeof item.quantity === 'number'
-    );
+    // Validar y limpiar cada item
+    const validItems = cartItems.map(item => {
+      // Asegurar que price y quantity sean números
+      const price = Number(item.price);
+      const quantity = Number(item.quantity) || 1;
+      
+      if (isNaN(price) || price <= 0) {
+        throw new Error(`Precio inválido para el producto: ${item.name || 'Sin nombre'}`);
+      }
+      
+      if (isNaN(quantity) || quantity <= 0) {
+        throw new Error(`Cantidad inválida para el producto: ${item.name || 'Sin nombre'}`);
+      }
 
-    if (!validItems) {
-      return res.status(400).json({ error: 'Los items del carrito no tienen el formato correcto' });
-    }
-
-    const line_items = cartItems.map(item => ({
-      price_data: {
-        currency: 'mxn',
-        product_data: {
-          name: item.name || item.nombre || 'Producto',
-          images: item.image ? [item.image] : [],
+      return {
+        price_data: {
+          currency: 'mxn',
+          product_data: {
+            name: item.name || item.nombre || 'Producto',
+            images: item.image ? [item.image] : [],
+          },
+          unit_amount: Math.round(price * 100), // Convertir a centavos
         },
-        unit_amount: Math.round(Number(item.price) * 100),
-      },
-      quantity: item.quantity || 1,
-    }));
+        quantity: quantity,
+      };
+    });
 
+    // Crear la sesión de Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items,
+      line_items: validItems,
       mode: 'payment',
       success_url: `${req.headers.origin}/checkout?success=true`,
       cancel_url: `${req.headers.origin}/checkout?canceled=true`,
+      customer_email: req.body.email, // Opcional: si tienes el email del usuario
+      metadata: {
+        orderId: Date.now().toString(), // Opcional: para tracking
+      },
     });
 
     return res.status(200).json({ url: session.url });
   } catch (error) {
-    console.error('Stripe error:', error);
-    
-    // Manejar errores específicos de Stripe
-    if (error.type === 'StripeCardError') {
-      return res.status(400).json({ error: 'Error con la tarjeta de crédito' });
-    } else if (error.type === 'StripeInvalidRequestError') {
-      return res.status(400).json({ error: 'Error en la solicitud a Stripe' });
-    } else if (error.type === 'StripeAPIError') {
-      return res.status(500).json({ error: 'Error en el servidor de Stripe' });
-    }
-    
-    return res.status(500).json({ 
-      error: 'Error al crear la sesión de Stripe',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    console.error('Error en create-checkout-session:', error);
+    return res.status(400).json({ 
+      error: error.message || 'Error al procesar el pago',
+      details: error.type === 'StripeCardError' ? error.message : undefined
     });
   }
 } 

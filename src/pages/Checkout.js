@@ -96,14 +96,43 @@ const Checkout = () => {
     setIsLoading(true);
     setError('');
     setSuccess(false);
+
+    // Limpiar y validar los datos del carrito
+    const cleanCartItems = cartItems.map(item => ({
+      ...item,
+      price: Number(item.price) || 0,
+      quantity: Number(item.quantity) || 1,
+      name: item.name || item.nombre || 'Producto sin nombre'
+    }));
+
+    // Log para depuración
+    console.log('CartItems antes de enviar:', cleanCartItems);
+    console.log('Total calculado:', cleanCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+
     try {
       if (paymentMethod === 'stripe') {
+        // Validar que haya productos y precios válidos
+        if (cleanCartItems.length === 0) {
+          throw new Error('No hay productos en el carrito');
+        }
+
+        const invalidItems = cleanCartItems.filter(item => !item.price || item.price <= 0);
+        if (invalidItems.length > 0) {
+          throw new Error('Hay productos con precios inválidos');
+        }
+
         // Redirigir a Stripe Checkout
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cartItems }),
+          body: JSON.stringify({ cartItems: cleanCartItems }),
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al procesar el pago');
+        }
+
         const data = await response.json();
         if (data.url) {
           window.location.href = data.url;
@@ -114,9 +143,12 @@ const Checkout = () => {
           return;
         }
       }
+
       // Pago en sucursal: flujo normal
       for (const branch of branches) {
         const items = cartByBranch[branch];
+        if (!items || items.length === 0) continue;
+
         const counterRef = doc(db, 'pedidos', 'contador');
         let newOrderId;
         await runTransaction(db, async (transaction) => {
@@ -128,28 +160,44 @@ const Checkout = () => {
           newOrderId = (current + 1).toString();
           transaction.set(counterRef, { value: current + 1 });
         });
+
         let nota = '';
         if (branches.length > 1) {
           nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
         }
+
+        // Calcular el total para esta sucursal
+        const branchTotal = items.reduce((sum, item) => {
+          const price = Number(item.price) || 0;
+          const quantity = Number(item.quantity) || 1;
+          return sum + (price * quantity);
+        }, 0);
+
         const pedidoData = {
           uid: user.uid,
           email: user.email,
-          productos: items,
-          total: items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0),
+          productos: items.map(item => ({
+            ...item,
+            price: Number(item.price) || 0,
+            quantity: Number(item.quantity) || 1
+          })),
+          total: branchTotal,
           estado: 'Pendiente',
           fecha: new Date().toISOString(),
           lugarRecogida: branch,
           nota,
           metodoPago: 'sucursal',
         };
+
         await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
         await updateInventoryAfterPurchase(items);
       }
+
       clearCart();
       setSuccess(true);
     } catch (err) {
-      setError('Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
+      console.error('Error en checkout:', err);
+      setError(err.message || 'Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
