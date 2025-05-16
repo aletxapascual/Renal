@@ -205,6 +205,14 @@ const Checkout = () => {
 
   // Recibo bonito después de Stripe o compra en sucursal
   if (paymentStatus === 'success' || success) {
+    // Calcular el total a partir de los productos del pedido
+    let totalPedido = 0;
+    branches.forEach(branch => {
+      const items = cartByBranch[branch];
+      if (items && items.length > 0) {
+        totalPedido += items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+      }
+    });
     return (
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
@@ -238,7 +246,7 @@ const Checkout = () => {
           })}
           <div className="flex justify-between font-bold text-lg border-t pt-2 mt-4">
             <span>Total:</span>
-            <span>MXN {total.toFixed(2)}</span>
+            <span>MXN {totalPedido.toFixed(2)}</span>
           </div>
           <div className="mt-4">
             <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold">

@@ -19,6 +19,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No hay productos en el carrito' });
     }
 
+    // Fallback seguro para origin
+    const origin = req.headers.origin || process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app';
+
     // Validar y limpiar cada item
     const validItems = cartItems.map(item => {
       // Asegurar que price y quantity sean números
@@ -51,8 +54,8 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items: validItems,
       mode: 'payment',
-      success_url: `${req.headers.origin}/checkout?success=true`,
-      cancel_url: `${req.headers.origin}/checkout?canceled=true`,
+      success_url: `${origin}/checkout?success=true`,
+      cancel_url: `${origin}/checkout?canceled=true`,
       customer_email: req.body.email, // Opcional: si tienes el email del usuario
       metadata: {
         orderId: Date.now().toString(), // Opcional: para tracking
