@@ -14,15 +14,23 @@ export default function CartDrawer() {
   // Agrupar productos por sucursal
   const cartByBranch = getCartByBranch();
 
-  // Close on outside click
+  // Close on outside click/touch
   useEffect(() => {
-    function handleClick(e) {
+    function handleOutsideClick(e) {
       if (isCartOpen && drawerRef.current && !drawerRef.current.contains(e.target)) {
         closeCart();
       }
     }
-    if (isCartOpen) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    
+    if (isCartOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('touchstart', handleOutsideClick, { passive: false });
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
   }, [isCartOpen, closeCart]);
 
   // Prevent body scroll when cart is open
@@ -70,6 +78,14 @@ export default function CartDrawer() {
     setCartError('');
   };
 
+  // Manejar checkout
+  const handleCheckout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeCart();
+    setTimeout(() => navigate('/checkout'), 300);
+  };
+
   return (
     <AnimatePresence>
       {isCartOpen && (
@@ -82,6 +98,7 @@ export default function CartDrawer() {
             transition={{ duration: 0.3 }}
             className="absolute inset-0 bg-black/30"
             onClick={closeCart}
+            style={{ touchAction: 'none' }}
           />
           {/* Drawer */}
           <motion.aside
@@ -91,10 +108,15 @@ export default function CartDrawer() {
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed right-0 top-0 h-screen w-full max-w-md bg-white shadow-2xl rounded-l-3xl flex flex-col overflow-hidden"
+            style={{ touchAction: 'pan-y' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-6 right-6 text-3xl text-gray-400 hover:text-gray-700 z-10"
-              onClick={closeCart}
+              className="absolute top-6 right-6 text-3xl text-gray-400 hover:text-gray-700 z-10 touch-manipulation"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeCart();
+              }}
               aria-label="Cerrar"
             >
               &times;
@@ -125,8 +147,12 @@ export default function CartDrawer() {
                                 )}
                               </div>
                               <button
-                                onClick={() => handleRemove(item)}
-                                className="text-gray-400 hover:text-red-500 transition-colors duration-300"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleRemove(item);
+                                }}
+                                className="text-gray-400 hover:text-red-500 transition-colors duration-300 touch-manipulation"
                                 title="Eliminar"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -136,16 +162,24 @@ export default function CartDrawer() {
                             </div>
                             <div className="flex items-center border border-gray-200 rounded-lg w-max">
                               <button
-                                onClick={() => handleQuantityChange(item, -1)}
-                                className="px-3 py-1 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleQuantityChange(item, -1);
+                                }}
+                                className="px-3 py-1 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 touch-manipulation"
                                 style={{ minWidth: '2.5rem' }}
                               >
                                 -
                               </button>
                               <span className="px-3 py-1 border-x border-gray-200 min-w-[2.5rem] text-center">{item.quantity || 1}</span>
                               <button
-                                onClick={() => handleQuantityChange(item, 1)}
-                                className="px-3 py-1 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleQuantityChange(item, 1);
+                                }}
+                                className="px-3 py-1 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 touch-manipulation"
                                 style={{ minWidth: '2.5rem' }}
                               >
                                 +
@@ -169,7 +203,7 @@ export default function CartDrawer() {
                     placeholder="Código promocional"
                     className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:border-[#5773BB]"
                   />
-                  <button className="text-[#5773BB] font-semibold ml-2">Añadir</button>
+                  <button className="text-[#5773BB] font-semibold ml-2 touch-manipulation">Añadir</button>
                 </div>
                 {/* Total general */}
                 <div className="flex items-center justify-between text-xl font-bold mb-4 mt-6">
@@ -186,11 +220,8 @@ export default function CartDrawer() {
                 )}
                 {/* Checkout button */}
                 <button
-                  className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-4 rounded-xl text-lg transition-all"
-                  onClick={() => {
-                    closeCart();
-                    setTimeout(() => navigate('/checkout'), 300);
-                  }}
+                  className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-4 rounded-xl text-lg transition-all touch-manipulation"
+                  onClick={handleCheckout}
                   disabled={cartItems.length === 0}
                 >
                   Tramitar pedido
