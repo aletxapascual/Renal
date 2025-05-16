@@ -34,8 +34,7 @@ service cloud.firestore {
 
     // Reglas específicas para el contador de pedidos
     match /pedidos/contador {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow read, write: if isAuthenticated();
     }
     
     // Reglas para usuarios (colección users)
