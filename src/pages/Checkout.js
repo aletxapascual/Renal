@@ -75,7 +75,14 @@ const Checkout = () => {
         }
       })();
       if (params.get('success')) {
-        setOrderTotal(total); // Guardar el total antes de limpiar
+        // Leer el total guardado en localStorage (Stripe)
+        const lastOrderTotal = localStorage.getItem('lastOrderTotal');
+        if (lastOrderTotal) {
+          setOrderTotal(Number(lastOrderTotal));
+          localStorage.removeItem('lastOrderTotal');
+        } else {
+          setOrderTotal(total); // fallback
+        }
         clearCart();
       }
       setPaymentStatus(params.get('success') ? 'success' : 'canceled');
@@ -134,6 +141,9 @@ const Checkout = () => {
           setIsLoading(false);
           return;
         }
+
+        // Guardar el total en localStorage antes de redirigir a Stripe
+        localStorage.setItem('lastOrderTotal', total.toString());
 
         // Redirigir a Stripe Checkout
         const response = await fetch('/api/create-checkout-session', {
