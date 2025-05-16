@@ -14,6 +14,15 @@ export default function CartDrawer() {
   // Agrupar productos por sucursal
   const cartByBranch = getCartByBranch();
 
+  // Función para obtener la imagen del producto
+  const getProductImage = (item) => {
+    if (!item.image) return '/images/productos/default.png';
+    // Si la imagen es una URL completa, la devolvemos tal cual
+    if (item.image.startsWith('http')) return item.image;
+    // Si es una ruta relativa, aseguramos que empiece con /
+    return item.image.startsWith('/') ? item.image : `/${item.image}`;
+  };
+
   // Close on outside click/touch
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -137,7 +146,17 @@ export default function CartDrawer() {
                       <div className="font-bold text-[#5773BB] mb-2">Sucursal: {branch}</div>
                       {items.map(item => (
                         <div key={item.cartKey} className="flex gap-4 items-center border-b border-gray-100 pb-6">
-                          <img src={item.image} alt={item.name} className="w-20 h-20 object-contain bg-gray-50 rounded-xl" />
+                          <div className="w-20 h-20 flex-shrink-0">
+                            <img 
+                              src={getProductImage(item)} 
+                              alt={item.name} 
+                              className="w-full h-full object-contain bg-gray-50 rounded-xl"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = '/images/productos/default.png';
+                              }}
+                            />
+                          </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <div>
@@ -147,6 +166,7 @@ export default function CartDrawer() {
                                 )}
                               </div>
                               <button
+                                type="button"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -162,6 +182,7 @@ export default function CartDrawer() {
                             </div>
                             <div className="flex items-center border border-gray-200 rounded-lg w-max">
                               <button
+                                type="button"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -174,6 +195,7 @@ export default function CartDrawer() {
                               </button>
                               <span className="px-3 py-1 border-x border-gray-200 min-w-[2.5rem] text-center">{item.quantity || 1}</span>
                               <button
+                                type="button"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -203,7 +225,7 @@ export default function CartDrawer() {
                     placeholder="Código promocional"
                     className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:border-[#5773BB]"
                   />
-                  <button className="text-[#5773BB] font-semibold ml-2 touch-manipulation">Añadir</button>
+                  <button type="button" className="text-[#5773BB] font-semibold ml-2 touch-manipulation">Añadir</button>
                 </div>
                 {/* Total general */}
                 <div className="flex items-center justify-between text-xl font-bold mb-4 mt-6">
@@ -220,6 +242,7 @@ export default function CartDrawer() {
                 )}
                 {/* Checkout button */}
                 <button
+                  type="button"
                   className="w-full bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-4 rounded-xl text-lg transition-all touch-manipulation"
                   onClick={handleCheckout}
                   disabled={cartItems.length === 0}
