@@ -90,6 +90,14 @@ export default async function handler(req, res) {
       },
     });
 
+    // Agrupar productos por sucursal
+    const cartByBranch = {};
+    for (const item of cartItems) {
+      const branch = item.branch || item.sucursal || item.lugarRecogida || 'Sucursal desconocida';
+      if (!cartByBranch[branch]) cartByBranch[branch] = [];
+      cartByBranch[branch].push(item);
+    }
+    const branches = Object.keys(cartByBranch);
     // Crear pedidos por sucursal
     for (const branch of branches) {
       const items = cartByBranch[branch];
