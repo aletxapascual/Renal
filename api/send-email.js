@@ -74,7 +74,7 @@ export default async function handler(req, res) {
     // Enviar al cliente
     console.log('Enviando correo a cliente:', user.email);
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+      from: 'gerencia@hemodialisis.com.mx',
       to: user.email,
       subject,
       html,
@@ -83,7 +83,7 @@ export default async function handler(req, res) {
     // Enviar a gerencia
     console.log('Enviando correo a gerencia: gerencia@hemodialisis.com.mx');
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+      from: 'gerencia@hemodialisis.com.mx',
       to: 'gerencia@hemodialisis.com.mx',
       subject: `[COPIA] ${subject}`,
       html,

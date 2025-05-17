@@ -53,6 +53,7 @@ const Checkout = () => {
         setOrderTotal(totalFromPedido);
       }
       setPaymentStatus('success');
+      setSuccess(true);
     } else if (params.get('canceled')) {
       setPaymentStatus('canceled');
     }
@@ -60,20 +61,23 @@ const Checkout = () => {
 
   // Limpiar carrito y localStorage solo después de mostrar el recibo de éxito
   useEffect(() => {
-    if (paymentStatus === 'success') {
-      setTimeout(() => {
+    if (paymentStatus === 'success' && success) {
+      // No limpiar el carrito inmediatamente para mantener los datos del pedido
+      // Solo limpiar después de que el usuario haya visto el recibo
+      const timeoutId = setTimeout(() => {
         clearCart();
         localStorage.removeItem('lastOrderTotal');
-      }, 1000);
+      }, 5000); // Dar más tiempo para ver el recibo
+      return () => clearTimeout(timeoutId);
     }
-  }, [paymentStatus, clearCart]);
+  }, [paymentStatus, success, clearCart]);
 
   // Al iniciar el checkout, limpiar recibo viejo si el carrito tiene productos (nueva compra)
   useEffect(() => {
-    if (cartItems.length > 0) {
+    if (cartItems.length > 0 && !success) {
       localStorage.removeItem('lastReceipt');
     }
-  }, [cartItems]);
+  }, [cartItems, success]);
 
   // Helper para generar el HTML del recibo
   function buildReceiptEmail({ pedido, user, branchInfo, logoUrl }) {
@@ -352,7 +356,8 @@ const Checkout = () => {
   try {
     receipt = JSON.parse(localStorage.getItem('lastReceipt'));
   } catch {}
-  if ((paymentStatus === 'success' || success || receipt) && receipt) {
+
+  if ((paymentStatus === 'success' || success) && (receipt || cartItems.length > 0)) {
     return (
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
@@ -361,6 +366,7 @@ const Checkout = () => {
           <h3 className="text-xl font-bold text-[#5773BB] mb-4">Resumen de tu pedido</h3>
           {branches.map(branch => {
             const items = cartByBranch[branch];
+            if (!items || items.length === 0) return null;
             return (
               <div key={branch} className="mb-6 border-2 border-[#5773BB] bg-[#f5f8ff] rounded-xl shadow-sm p-4 text-left">
                 <div className="flex items-center gap-2 mb-3">
