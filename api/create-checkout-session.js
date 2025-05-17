@@ -101,10 +101,30 @@ export default async function handler(req, res) {
     // Crear pedidos por sucursal
     for (const branch of branches) {
       const items = cartByBranch[branch];
-      // ... código de creación de pedido ...
+      // Calcular el total para esta sucursal
+      const branchTotal = items.reduce((sum, item) => {
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 1;
+        return sum + (price * quantity);
+      }, 0);
+      const pedidoData = {
+        uid: req.body.uid || '',
+        email,
+        productos: items.map(item => ({
+          ...item,
+          price: Number(item.price) || 0,
+          quantity: Number(item.quantity) || 1
+        })),
+        total: branchTotal,
+        estado: 'Pagado',
+        fecha: new Date().toISOString(),
+        lugarRecogida: branch,
+        nota: branches.length > 1 ? 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.' : '',
+        metodoPago: 'stripe',
+      };
+      // Guardar en Firestore...
       // ...
-      // Después de guardar el pedido en Firestore (Stripe):
-      // Llamar a /api/send-email desde el backend
+      // Enviar correo usando pedidoData
       const logoUrl = `${origin}/images/logo.png`;
       const branchInfo = {
         direccion: '',
