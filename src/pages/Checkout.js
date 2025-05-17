@@ -68,6 +68,13 @@ const Checkout = () => {
     }
   }, [paymentStatus, clearCart]);
 
+  // Al iniciar el checkout, limpiar recibo viejo si el carrito tiene productos (nueva compra)
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.removeItem('lastReceipt');
+    }
+  }, [cartItems]);
+
   // Helper para generar el HTML del recibo
   function buildReceiptEmail({ pedido, user, branchInfo, logoUrl }) {
     const productosHtml = pedido.productos.map(item => `
@@ -345,7 +352,7 @@ const Checkout = () => {
   try {
     receipt = JSON.parse(localStorage.getItem('lastReceipt'));
   } catch {}
-  if ((paymentStatus === 'success' || success) && receipt) {
+  if ((paymentStatus === 'success' || success || receipt) && receipt) {
     return (
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
@@ -389,13 +396,19 @@ const Checkout = () => {
         <div className="flex justify-center gap-4">
           <button
             className="bg-[#5773BB] hover:bg-[#405a99] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
-            onClick={() => navigate('/usuario')}
+            onClick={() => {
+              localStorage.removeItem('lastReceipt');
+              navigate('/usuario');
+            }}
           >
             Ver mis pedidos
           </button>
           <button
             className="bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              localStorage.removeItem('lastReceipt');
+              navigate('/');
+            }}
           >
             Volver a la tienda
           </button>

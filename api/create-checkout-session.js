@@ -107,6 +107,11 @@ export default async function handler(req, res) {
         const quantity = Number(item.quantity) || 1;
         return sum + (price * quantity);
       }, 0);
+      let newOrderId;
+      // Guardar en Firestore (simulado, reemplaza por tu lógica real)
+      // Aquí deberías usar Firestore Admin SDK o tu método para obtener el ID
+      // Por ahora, usamos timestamp como ID único
+      newOrderId = Date.now().toString() + Math.floor(Math.random()*1000);
       const pedidoData = {
         uid: req.body.uid || '',
         email,
@@ -122,9 +127,7 @@ export default async function handler(req, res) {
         nota: branches.length > 1 ? 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.' : '',
         metodoPago: 'stripe',
       };
-      // Guardar en Firestore...
-      // ...
-      // Enviar correo usando pedidoData
+      // Enviar correo usando pedidoData y newOrderId
       const logoUrl = `${origin}/images/logo.png`;
       const branchInfo = {
         direccion: '',
