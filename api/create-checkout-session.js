@@ -10,6 +10,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // URL base para producción
 const PRODUCTION_URL = 'https://renal-seven.vercel.app';
 
+// Función para validar URLs
+function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -41,21 +51,33 @@ export default async function handler(req, res) {
     // Crear sesión de Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: cartItems.map(item => ({
-        price_data: {
-          currency: 'mxn',
-          product_data: {
-            name: item.name || item.nombre,
-            // Usar solo la descripción en español o una descripción por defecto
-            description: typeof item.description === 'object' && item.description.es 
-              ? item.description.es 
-              : (typeof item.description === 'string' ? item.description : ''),
-            images: item.image ? [item.image] : [],
+      line_items: cartItems.map(item => {
+        // Validar y procesar la imagen
+        let imageUrl = null;
+        if (item.image) {
+          // Si la imagen es una URL relativa, convertirla a absoluta
+          if (item.image.startsWith('/')) {
+            imageUrl = `${origin}${item.image}`;
+          } else if (isValidUrl(item.image)) {
+            imageUrl = item.image;
+          }
+        }
+
+        return {
+          price_data: {
+            currency: 'mxn',
+            product_data: {
+              name: item.name || item.nombre,
+              description: typeof item.description === 'object' && item.description.es 
+                ? item.description.es 
+                : (typeof item.description === 'string' ? item.description : ''),
+              images: imageUrl ? [imageUrl] : [],
+            },
+            unit_amount: Math.round(Number(item.price) * 100),
           },
-          unit_amount: Math.round(Number(item.price) * 100),
-        },
-        quantity: Number(item.quantity) || 1,
-      })),
+          quantity: Number(item.quantity) || 1,
+        };
+      }),
       mode: 'payment',
       success_url: `${origin}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?canceled=true`,
