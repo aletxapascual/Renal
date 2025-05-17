@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { addDoc, collection, doc, runTransaction, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, runTransaction, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { storeLocations } from '../containers/tienda/ProductDetail';
 import { useLoginModal } from '../context/LoginModalContext';
@@ -62,15 +62,11 @@ const Checkout = () => {
   // Limpiar carrito y localStorage solo después de mostrar el recibo de éxito
   useEffect(() => {
     if (paymentStatus === 'success' && success) {
-      // No limpiar el carrito inmediatamente para mantener los datos del pedido
-      // Solo limpiar después de que el usuario haya visto el recibo
-      const timeoutId = setTimeout(() => {
-        clearCart();
-        localStorage.removeItem('lastOrderTotal');
-      }, 5000); // Dar más tiempo para ver el recibo
-      return () => clearTimeout(timeoutId);
+      // No limpiar el carrito automáticamente
+      // Solo limpiar cuando el usuario haga clic en uno de los botones
+      return;
     }
-  }, [paymentStatus, success, clearCart]);
+  }, [paymentStatus, success]);
 
   // Al iniciar el checkout, limpiar recibo viejo si el carrito tiene productos (nueva compra)
   useEffect(() => {
@@ -188,10 +184,6 @@ const Checkout = () => {
       name: item.name || item.nombre || 'Producto sin nombre'
     }));
 
-    // Log para depuración
-    console.log('CartItems antes de enviar:', cleanCartItems);
-    console.log('Total calculado:', cleanCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-
     try {
       if (paymentMethod === 'stripe') {
         // Validar que haya productos y precios válidos
@@ -263,6 +255,17 @@ const Checkout = () => {
           transaction.set(counterRef, { value: current + 1 });
         });
 
+        // Actualizar el stock antes de crear el pedido
+        for (const item of items) {
+          const productRef = doc(db, 'productos', item.id);
+          const productDoc = await getDoc(productRef);
+          if (productDoc.exists()) {
+            const currentStock = productDoc.data().stock || 0;
+            const newStock = Math.max(0, currentStock - item.quantity);
+            await updateDoc(productRef, { stock: newStock });
+          }
+        }
+
         let nota = '';
         if (branches.length > 1) {
           nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
@@ -297,34 +300,9 @@ const Checkout = () => {
         // Enviar correo:
         const logoUrl = window.location.origin + '/images/logo.png';
         const branchInfo = branchInfoMap[branch] || {};
-        const html = buildReceiptEmail({ pedido: { ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl });
-        const subject = `¡Gracias por tu compra en Renal! Pedido #${newOrderId}`;
-        // Enviar al cliente
-        fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: user.email,
-            subject,
-            html,
-          }),
-        });
-        // Enviar a gerencia
-        fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: 'gerencia@hemodialisis.com.mx',
-            subject: `[COPIA] ${subject}`,
-            html,
-          }),
-        });
-
-        // Guardar el recibo completo en localStorage
-        saveReceiptToLocal({ ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl);
-
+        
         // Enviar correo desde el backend
-        fetch('/api/send-email', {
+        await fetch('/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -334,15 +312,14 @@ const Checkout = () => {
             logoUrl,
           }),
         });
+
+        // Guardar el recibo completo en localStorage
+        saveReceiptToLocal({ ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl);
       }
 
       // Guardar el total antes de limpiar el carrito
       setOrderTotal(total);
       setSuccess(true);
-      // Esperar un momento antes de limpiar el carrito
-      setTimeout(() => {
-        clearCart();
-      }, 1000);
     } catch (err) {
       console.error('Error en checkout:', err);
       setError(err.message || 'Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
@@ -404,6 +381,7 @@ const Checkout = () => {
             className="bg-[#5773BB] hover:bg-[#405a99] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
             onClick={() => {
               localStorage.removeItem('lastReceipt');
+              clearCart();
               navigate('/usuario');
             }}
           >
@@ -413,6 +391,7 @@ const Checkout = () => {
             className="bg-[#00BFB3] hover:bg-[#00A89D] text-white font-bold py-3 px-6 rounded-lg text-lg transition-all"
             onClick={() => {
               localStorage.removeItem('lastReceipt');
+              clearCart();
               navigate('/');
             }}
           >

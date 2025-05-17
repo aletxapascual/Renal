@@ -18,7 +18,7 @@ function buildReceiptEmail({ pedido, user, branchInfo, logoUrl }) {
     <div style="padding:24px;">
       <h2 style="color:#2B4C8C;font-size:1.2rem;margin-bottom:8px;">Resumen de tu pedido</h2>
       <p style="margin:0 0 8px 0;font-size:1rem;">Pedido #: <b>${pedido.id || ''}</b></p>
-      <p style="margin:0 0 8px 0;font-size:1rem;">Fecha: <b>${pedido.fecha ? new Date(pedido.fecha).toLocaleString('es-MX') : ''}</b></p>
+      <p style="margin:0 0 8px 0;font-size:1rem;">Fecha: <b>${pedido.fecha ? new Date(pedido.fecha).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }) : ''}</b></p>
       <p style="margin:0 0 8px 0;font-size:1rem;">Cliente: <b>${user?.firstName || user?.email || ''}</b></p>
       <table style="width:100%;border-collapse:collapse;margin:16px 0;">
         <thead>
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,
+        user: 'gerencia@hemodialisis.com.mx',
         pass: process.env.EMAIL_PASS,
       },
     });
@@ -74,7 +74,10 @@ export default async function handler(req, res) {
     // Enviar al cliente
     console.log('Enviando correo a cliente:', user.email);
     await transporter.sendMail({
-      from: 'gerencia@hemodialisis.com.mx',
+      from: {
+        name: 'Renal - Hemodiálisis',
+        address: 'gerencia@hemodialisis.com.mx'
+      },
       to: user.email,
       subject,
       html,
@@ -83,7 +86,10 @@ export default async function handler(req, res) {
     // Enviar a gerencia
     console.log('Enviando correo a gerencia: gerencia@hemodialisis.com.mx');
     await transporter.sendMail({
-      from: 'gerencia@hemodialisis.com.mx',
+      from: {
+        name: 'Renal - Hemodiálisis',
+        address: 'gerencia@hemodialisis.com.mx'
+      },
       to: 'gerencia@hemodialisis.com.mx',
       subject: `[COPIA] ${subject}`,
       html,
