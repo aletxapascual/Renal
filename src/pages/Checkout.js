@@ -38,20 +38,25 @@ const Checkout = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('success')) {
-      // Leer el total guardado en localStorage (Stripe)
-      const lastOrderTotal = localStorage.getItem('lastOrderTotal');
+      // Leer el total guardado en localStorage (Stripe) inmediatamente
+      let lastOrderTotal = localStorage.getItem('lastOrderTotal');
       if (lastOrderTotal) {
         setOrderTotal(Number(lastOrderTotal));
-        // No limpiar localStorage ni carrito aquí, solo después de mostrar el recibo
       } else {
-        setOrderTotal(total); // fallback
+        // Fallback: intentar calcular el total a partir de los productos del pedido
+        let totalFromPedido = 0;
+        Object.values(cartByBranch).forEach(items => {
+          if (Array.isArray(items)) {
+            totalFromPedido += items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+          }
+        });
+        setOrderTotal(totalFromPedido);
       }
       setPaymentStatus('success');
     } else if (params.get('canceled')) {
       setPaymentStatus('canceled');
-      // No limpiar el carrito ni el localStorage
     }
-  }, [location.search, total]);
+  }, [location.search, cartByBranch]);
 
   // Limpiar carrito y localStorage solo después de mostrar el recibo de éxito
   useEffect(() => {
