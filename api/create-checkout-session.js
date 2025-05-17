@@ -46,7 +46,10 @@ export default async function handler(req, res) {
           currency: 'mxn',
           product_data: {
             name: item.name || item.nombre,
-            description: item.description || '',
+            // Usar solo la descripción en español o una descripción por defecto
+            description: typeof item.description === 'object' && item.description.es 
+              ? item.description.es 
+              : (typeof item.description === 'string' ? item.description : ''),
             images: item.image ? [item.image] : [],
           },
           unit_amount: Math.round(Number(item.price) * 100),
@@ -54,7 +57,7 @@ export default async function handler(req, res) {
         quantity: Number(item.quantity) || 1,
       })),
       mode: 'payment',
-      success_url: `${origin}/checkout?success=true`,
+      success_url: `${origin}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?canceled=true`,
       customer_email: email,
       metadata: {
