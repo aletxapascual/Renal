@@ -68,6 +68,76 @@ const Checkout = () => {
     }
   }, [paymentStatus, clearCart]);
 
+  // Helper para generar el HTML del recibo
+  function buildReceiptEmail({ pedido, user, branchInfo, logoUrl }) {
+    const productosHtml = pedido.productos.map(item => `
+      <tr>
+        <td style="padding:8px 4px;border-bottom:1px solid #eee;">${item.name || item.nombre}</td>
+        <td style="padding:8px 4px;text-align:center;border-bottom:1px solid #eee;">${item.quantity}</td>
+        <td style="padding:8px 4px;text-align:right;border-bottom:1px solid #eee;">MXN ${Number(item.price).toFixed(2)}</td>
+        <td style="padding:8px 4px;text-align:right;border-bottom:1px solid #eee;">MXN ${(Number(item.price) * item.quantity).toFixed(2)}</td>
+      </tr>
+    `).join('');
+    return `
+    <div style="font-family:sans-serif;max-width:600px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+      <div style="background:#2B4C8C;padding:24px 0;text-align:center;">
+        <img src="${logoUrl}" alt="Renal" style="height:60px;margin-bottom:8px;"/>
+        <h1 style="color:#fff;font-size:2rem;margin:0;">¡Gracias por tu compra!</h1>
+      </div>
+      <div style="padding:24px;">
+        <h2 style="color:#2B4C8C;font-size:1.2rem;margin-bottom:8px;">Resumen de tu pedido</h2>
+        <p style="margin:0 0 8px 0;font-size:1rem;">Pedido #: <b>${pedido.id || ''}</b></p>
+        <p style="margin:0 0 8px 0;font-size:1rem;">Fecha: <b>${pedido.fecha ? new Date(pedido.fecha).toLocaleString('es-MX') : ''}</b></p>
+        <p style="margin:0 0 8px 0;font-size:1rem;">Cliente: <b>${user?.firstName || user?.email || ''}</b></p>
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+          <thead>
+            <tr style="background:#f5f8ff;">
+              <th style="text-align:left;padding:8px 4px;">Producto</th>
+              <th style="text-align:center;padding:8px 4px;">Cantidad</th>
+              <th style="text-align:right;padding:8px 4px;">Precio</th>
+              <th style="text-align:right;padding:8px 4px;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productosHtml}
+          </tbody>
+        </table>
+        <div style="margin:16px 0 8px 0;font-size:1.1rem;"><b>Total: MXN ${Number(pedido.total).toFixed(2)}</b></div>
+        <div style="margin:8px 0;font-size:1rem;">
+          <b>Método de pago:</b> ${pedido.metodoPago === 'stripe' ? 'En línea (Stripe)' : 'En sucursal'}<br/>
+          <b>Estado de pago:</b> ${pedido.estado}
+        </div>
+        <div style="margin:8px 0;font-size:1rem;">
+          <b>Lugar de recolección:</b> ${pedido.lugarRecogida}<br/>
+          <b>Dirección:</b> ${branchInfo?.direccion || ''}<br/>
+          <a href="${branchInfo?.map || ''}" style="color:#2B4C8C;text-decoration:underline;" target="_blank">Ver en Google Maps</a>
+        </div>
+        <div style="margin-top:24px;font-size:0.95rem;color:#888;">¿Dudas? Contáctanos a <a href="mailto:gerencia@hemodialisis.com.mx">gerencia@hemodialisis.com.mx</a></div>
+      </div>
+    </div>
+    `;
+  }
+
+  // Helper para obtener info de sucursal
+  const branchInfoMap = {
+    'Renal - Hemodiálisis Clínica de Riñón y trasplante renal': {
+      direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
+      map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
+    },
+    'Renal Clínica': {
+      direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
+      map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
+    },
+    'Star Médica, Col. Altabrisa': {
+      direccion: 'Calle 20 No. 123, Col. Altabrisa, 97130 Mérida, Yuc.',
+      map: 'https://maps.app.goo.gl/LNsgyq1MFATmL63n7',
+    },
+    'Cenit Medical Center': {
+      direccion: 'Calle 32 No. 456, Col. Montecristo, 97133 Mérida, Yuc.',
+      map: 'https://maps.app.goo.gl/FJqUaPfP4omkxxs6A',
+    },
+  };
+
   // Flujo de finalizar pedido
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -200,6 +270,32 @@ const Checkout = () => {
 
         await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
         await updateInventoryAfterPurchase(items);
+
+        // Enviar correo:
+        const logoUrl = window.location.origin + '/images/logo.png';
+        const branchInfo = branchInfoMap[branch] || {};
+        const html = buildReceiptEmail({ pedido: { ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl });
+        const subject = `¡Gracias por tu compra en Renal! Pedido #${newOrderId}`;
+        // Enviar al cliente
+        fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: user.email,
+            subject,
+            html,
+          }),
+        });
+        // Enviar a gerencia
+        fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: 'gerencia@hemodialisis.com.mx',
+            subject: `[COPIA] ${subject}`,
+            html,
+          }),
+        });
       }
 
       // Guardar el total antes de limpiar el carrito
