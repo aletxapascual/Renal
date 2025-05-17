@@ -9,19 +9,23 @@ import { products as tiendaProducts } from '../data/products';
 const ubicaciones = {
   'Renal - Hemodiálisis Clínica de Riñón y trasplante renal': {
     direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
-    map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
+    map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d931.8435183113835!2d-89.58465633065327!3d21.01495763677649!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f567726c5f5220d%3A0x3da0ddfb0de71cd1!2sRenal%20-%20Hemodi%C3%A1lisis%20Cl%C3%ADnica%20de%20Ri%C3%B1%C3%B3n%20y%20trasplante%20renal!5e0!3m2!1ses!2smx!4v1708487800790!5m2!1ses!2smx',
+    mapLink: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
   },
   'Renal Clínica': {
     direccion: 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.',
-    map: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
+    map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d931.8435183113835!2d-89.58465633065327!3d21.01495763677649!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f567726c5f5220d%3A0x3da0ddfb0de71cd1!2sRenal%20-%20Hemodi%C3%A1lisis%20Cl%C3%ADnica%20de%20Ri%C3%B1%C3%B3n%20y%20trasplante%20renal!5e0!3m2!1ses!2smx!4v1708487800790!5m2!1ses!2smx',
+    mapLink: 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7',
   },
   'Star Médica, Col. Altabrisa': {
     direccion: 'Calle 20 No. 123, Col. Altabrisa, 97130 Mérida, Yuc.',
-    map: 'https://maps.app.goo.gl/LNsgyq1MFATmL63n7',
+    map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3732.073282444442!2d-89.5875506!3d21.0162088!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f56772129c11e79%3A0x5b922d04a0c4a8d5!2sStar%20M%C3%A9dica%2C%20Col.%20Altabrisa%2C%2097130%20M%C3%A9rida%2C%20Yuc.!5e0!3m2!1ses!2smx!4v1718040000000!5m2!1ses!2smx',
+    mapLink: 'https://maps.app.goo.gl/LNsgyq1MFATmL63n7',
   },
   'Cenit Medical Center': {
     direccion: 'Calle 32 No. 456, Col. Montecristo, 97133 Mérida, Yuc.',
-    map: 'https://maps.app.goo.gl/FJqUaPfP4omkxxs6A',
+    map: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3732.073282444442!2d-89.5897396!3d21.0180001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f5677e2e2e2e2e2%3A0x9f56d95d08f21021!2sCenit%20Medical%20Center!5e0!3m2!1ses!2smx!4v1718040000001!5m2!1ses!2smx',
+    mapLink: 'https://maps.app.goo.gl/FJqUaPfP4omkxxs6A',
   },
 };
 
@@ -160,7 +164,7 @@ export default function UserArea() {
                 )}
                 {pedidoActual.lugarRecogida && (
                   <a
-                    href={ubicaciones[pedidoActual.lugarRecogida]?.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[pedidoActual.lugarRecogida]?.direccion || pedidoActual.lugarRecogida)}`}
+                    href={ubicaciones[pedidoActual.lugarRecogida]?.mapLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[pedidoActual.lugarRecogida]?.direccion || pedidoActual.lugarRecogida)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700"
@@ -221,7 +225,7 @@ export default function UserArea() {
                 )}
                 {p.lugarRecogida && (
                   <a
-                    href={ubicaciones[p.lugarRecogida]?.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[p.lugarRecogida]?.direccion || p.lugarRecogida)}`}
+                    href={ubicaciones[p.lugarRecogida]?.mapLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicaciones[p.lugarRecogida]?.direccion || p.lugarRecogida)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700"

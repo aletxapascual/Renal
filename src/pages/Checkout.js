@@ -138,6 +138,18 @@ const Checkout = () => {
     },
   };
 
+  // Guardar recibo completo antes de limpiar el carrito
+  function saveReceiptToLocal(pedido, user, branchInfo, logoUrl) {
+    const receipt = {
+      pedido,
+      user,
+      branchInfo,
+      logoUrl,
+      fecha: new Date().toISOString(),
+    };
+    localStorage.setItem('lastReceipt', JSON.stringify(receipt));
+  }
+
   // Flujo de finalizar pedido
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -296,6 +308,21 @@ const Checkout = () => {
             html,
           }),
         });
+
+        // Guardar el recibo completo en localStorage
+        saveReceiptToLocal({ ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl);
+
+        // Enviar correo desde el backend
+        fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pedido: { ...pedidoData, id: newOrderId },
+            user,
+            branchInfo,
+            logoUrl,
+          }),
+        });
       }
 
       // Guardar el total antes de limpiar el carrito
@@ -314,7 +341,11 @@ const Checkout = () => {
   };
 
   // Recibo bonito después de Stripe o compra en sucursal
-  if (paymentStatus === 'success' || success) {
+  let receipt = null;
+  try {
+    receipt = JSON.parse(localStorage.getItem('lastReceipt'));
+  } catch {}
+  if ((paymentStatus === 'success' || success) && receipt) {
     return (
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-10 text-center">
         <h2 className="text-3xl font-bold text-green-600 mb-4">¡Pedido realizado!</h2>
