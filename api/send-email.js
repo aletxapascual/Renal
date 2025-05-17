@@ -72,19 +72,23 @@ export default async function handler(req, res) {
     const subject = `¡Gracias por tu compra en Renal! Pedido #${pedido.id || ''}`;
 
     // Enviar al cliente
+    console.log('Enviando correo a cliente:', user.email);
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: user.email,
       subject,
       html,
     });
+    console.log('Correo enviado correctamente a cliente:', user.email);
     // Enviar a gerencia
+    console.log('Enviando correo a gerencia: gerencia@hemodialisis.com.mx');
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: 'gerencia@hemodialisis.com.mx',
       subject: `[COPIA] ${subject}`,
       html,
     });
+    console.log('Correo enviado correctamente a gerencia');
 
     return res.status(200).json({ success: true });
   } catch (error) {

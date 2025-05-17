@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import fetch from 'node-fetch';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
@@ -88,6 +89,43 @@ export default async function handler(req, res) {
         orderId: Date.now().toString(),
       },
     });
+
+    // Después de guardar el pedido en Firestore (Stripe):
+    // Llamar a /api/send-email desde el backend
+    const logoUrl = `${origin}/images/logo.png`;
+    const branchInfo = {
+      direccion: '',
+      mapLink: '',
+    };
+    switch (branch) {
+      case 'Renal - Hemodiálisis Clínica de Riñón y trasplante renal':
+      case 'Renal Clínica':
+        branchInfo.direccion = 'Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas, 97130 Mérida, Yuc.';
+        branchInfo.mapLink = 'https://maps.app.goo.gl/2E34iFDPZAcjeunK7';
+        break;
+      case 'Star Médica, Col. Altabrisa':
+        branchInfo.direccion = 'Calle 20 No. 123, Col. Altabrisa, 97130 Mérida, Yuc.';
+        branchInfo.mapLink = 'https://maps.app.goo.gl/LNsgyq1MFATmL63n7';
+        break;
+      case 'Cenit Medical Center':
+        branchInfo.direccion = 'Calle 32 No. 456, Col. Montecristo, 97133 Mérida, Yuc.';
+        branchInfo.mapLink = 'https://maps.app.goo.gl/FJqUaPfP4omkxxs6A';
+        break;
+    }
+    try {
+      await fetch(`${origin}/api/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pedido: { ...pedidoData, id: newOrderId },
+          user: { email },
+          branchInfo,
+          logoUrl,
+        }),
+      });
+    } catch (err) {
+      console.error('Error llamando a /api/send-email:', err);
+    }
 
     return res.status(200).json({ url: session.url });
   } catch (error) {
