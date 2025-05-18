@@ -61,7 +61,9 @@ export default async function handler(req, res) {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: 'gerencia@hemodialisis.com.mx',
         pass: process.env.EMAIL_PASS,
@@ -83,7 +85,8 @@ export default async function handler(req, res) {
       html,
     });
     console.log('Correo enviado correctamente a cliente:', user.email);
-    // Enviar a gerencia
+
+    // Enviar copia a gerencia
     console.log('Enviando correo a gerencia: gerencia@hemodialisis.com.mx');
     await transporter.sendMail({
       from: {

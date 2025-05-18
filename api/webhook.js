@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
@@ -41,6 +41,9 @@ export default async function handler(req, res) {
           const currentStock = productDoc.data().stock || 0;
           const newStock = Math.max(0, currentStock - (item.quantity || 1));
           await updateDoc(productRef, { stock: newStock });
+          console.log(`Stock actualizado para ${item.name}: ${currentStock} -> ${newStock}`);
+        } else {
+          console.error(`Producto no encontrado: ${item.id}`);
         }
       }
 
@@ -49,18 +52,25 @@ export default async function handler(req, res) {
         uid: session.metadata.uid || '',
         email: session.customer_email,
         productos: cartItems.map(item => ({
-          ...item,
+          id: item.id,
+          name: item.name,
           price: Number(item.price) || 0,
-          quantity: Number(item.quantity) || 1
+          quantity: Number(item.quantity) || 1,
+          branch: item.branch
         })),
         total: session.amount_total / 100, // Convertir de centavos a pesos
         estado: 'Pagado',
         fecha: new Date().toISOString(),
-        lugarRecogida: cartItems[0]?.branch || cartItems[0]?.sucursal || 'Sucursal desconocida',
+        lugarRecogida: cartItems[0]?.branch || 'Sucursal desconocida',
         nota: cartItems.length > 1 ? 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.' : '',
         metodoPago: 'stripe',
         sessionId: session.id
       };
+
+      // Guardar el pedido en Firestore
+      const pedidosRef = collection(db, 'pedidos');
+      const newPedidoRef = await addDoc(pedidosRef, pedidoData);
+      console.log('Pedido creado con ID:', newPedidoRef.id);
 
       // Enviar correo de confirmación
       const logoUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app'}/images/logo.png`;
@@ -70,7 +80,7 @@ export default async function handler(req, res) {
       };
 
       // Determinar la información de la sucursal
-      const branch = cartItems[0]?.branch || cartItems[0]?.sucursal;
+      const branch = cartItems[0]?.branch;
       switch (branch) {
         case 'Renal - Hemodiálisis Clínica de Riñón y trasplante renal':
         case 'Renal Clínica':
@@ -88,21 +98,29 @@ export default async function handler(req, res) {
       }
 
       // Enviar correo
-      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app'}/api/send-email`, {
+      const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app'}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pedido: { ...pedidoData, id: session.id },
+          pedido: { ...pedidoData, id: newPedidoRef.id },
           user: { email: session.customer_email },
           branchInfo,
           logoUrl,
         }),
       });
 
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error('Error enviando correo:', errorText);
+        throw new Error(`Error enviando correo: ${errorText}`);
+      } else {
+        console.log('Correo enviado exitosamente');
+      }
+
       return res.status(200).json({ received: true });
     } catch (err) {
       console.error('Error procesando el pago:', err);
-      return res.status(500).json({ error: 'Error procesando el pago' });
+      return res.status(500).json({ error: 'Error procesando el pago', details: err.message });
     }
   }
 
