@@ -93,14 +93,25 @@ export default function Dashboard() {
     
     if (!inventarioSnap.exists()) {
       const initialInventory = {};
+      // Inicializar inventario para cada producto
       Object.entries(products).forEach(([productId, product]) => {
-        initialInventory[productId] = { stock: 0 };
+        initialInventory[productId] = {
+          stock: 10, // Stock inicial por defecto
+          name: product.name,
+          price: product.price
+        };
+        
+        // Si el producto tiene sabores, inicializar el inventario para cada sabor
         if (product.flavors) {
-          initialInventory[productId].flavors = Object.fromEntries(product.flavors.map(f => [f.id, 0]));
+          initialInventory[productId].flavors = {};
+          product.flavors.forEach(flavor => {
+            initialInventory[productId].flavors[flavor.id] = 10; // Stock inicial por defecto para cada sabor
+          });
         }
       });
       
       await setDoc(inventarioRef, initialInventory);
+      console.log(`Inventario inicializado para ${branch}:`, initialInventory);
     }
   };
 

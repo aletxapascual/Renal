@@ -243,16 +243,26 @@ const Checkout = () => {
         const items = cartByBranch[branch];
         if (!items || items.length === 0) continue;
 
-        const counterRef = doc(db, 'pedidos', 'contador');
-        let newOrderId;
-        await runTransaction(db, async (transaction) => {
-          const counterDoc = await transaction.get(counterRef);
-          let current = 0;
-          if (counterDoc.exists()) {
-            current = counterDoc.data().value || 0;
-          }
-          newOrderId = (current + 1).toString();
-          transaction.set(counterRef, { value: current + 1 });
+        // Crear un nuevo documento de pedido con ID automático
+        const pedidosRef = collection(db, 'pedidos');
+        const newPedidoRef = await addDoc(pedidosRef, {
+          uid: user.uid,
+          email: user.email,
+          productos: items.map(item => ({
+            ...item,
+            price: Number(item.price) || 0,
+            quantity: Number(item.quantity) || 1
+          })),
+          total: items.reduce((sum, item) => {
+            const price = Number(item.price) || 0;
+            const quantity = Number(item.quantity) || 1;
+            return sum + (price * quantity);
+          }, 0),
+          estado: 'Pendiente',
+          fecha: new Date().toISOString(),
+          lugarRecogida: branch,
+          nota: branches.length > 1 ? 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.' : '',
+          metodoPago: 'sucursal',
         });
 
         // Actualizar el stock antes de crear el pedido
@@ -293,37 +303,6 @@ const Checkout = () => {
           }
         }
 
-        let nota = '';
-        if (branches.length > 1) {
-          nota = 'Este pedido es parte de una compra con productos de varias sucursales. Recoge cada producto en su sucursal correspondiente.';
-        }
-
-        // Calcular el total para esta sucursal
-        const branchTotal = items.reduce((sum, item) => {
-          const price = Number(item.price) || 0;
-          const quantity = Number(item.quantity) || 1;
-          return sum + (price * quantity);
-        }, 0);
-
-        const pedidoData = {
-          uid: user.uid,
-          email: user.email,
-          productos: items.map(item => ({
-            ...item,
-            price: Number(item.price) || 0,
-            quantity: Number(item.quantity) || 1
-          })),
-          total: branchTotal,
-          estado: 'Pendiente',
-          fecha: new Date().toISOString(),
-          lugarRecogida: branch,
-          nota,
-          metodoPago: 'sucursal',
-        };
-
-        await setDoc(doc(db, 'pedidos', newOrderId), pedidoData);
-        await updateInventoryAfterPurchase(items);
-
         // Enviar correo:
         const logoUrl = window.location.origin + '/images/logo.png';
         const branchInfo = branchInfoMap[branch] || {};
@@ -333,7 +312,10 @@ const Checkout = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            pedido: { ...pedidoData, id: newOrderId },
+            pedido: { 
+              id: newPedidoRef.id,
+              ...(await getDoc(newPedidoRef)).data()
+            },
             user,
             branchInfo,
             logoUrl,
@@ -341,7 +323,10 @@ const Checkout = () => {
         });
 
         // Guardar el recibo completo en localStorage
-        saveReceiptToLocal({ ...pedidoData, id: newOrderId }, user, branchInfo, logoUrl);
+        saveReceiptToLocal({ 
+          id: newPedidoRef.id,
+          ...(await getDoc(newPedidoRef)).data()
+        }, user, branchInfo, logoUrl);
       }
 
       // Guardar el total antes de limpiar el carrito
