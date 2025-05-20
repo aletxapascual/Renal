@@ -57,36 +57,25 @@ export function CartProvider({ children }) {
 
   const checkInventory = async (productId, flavorId, quantity, branch) => {
     try {
-      const inventarioRef = doc(db, 'inventario', branch);
-      const inventarioSnap = await getDoc(inventarioRef);
-      if (!inventarioSnap.exists()) {
-        console.log('No existe inventario para la sucursal:', branch);
-        return false;
-      }
-      const inventario = inventarioSnap.data();
-      const product = inventario[productId];
-      if (!product) {
-        console.log('No existe el producto en el inventario:', productId);
+      const productRef = doc(db, 'productos', productId);
+      const productDoc = await getDoc(productRef);
+      
+      if (!productDoc.exists()) {
+        console.error('Producto no encontrado:', productId);
         return false;
       }
 
-      let stock;
-      if (product.flavors && flavorId) {
-        stock = product.flavors[flavorId];
-        console.log('Verificando stock con sabor:', { branch, productId, flavorId, stock, quantity });
+      const productData = productDoc.data();
+      const inventory = productData.inventory || {};
+      const branchInventory = inventory[branch] || {};
+      
+      if (flavorId) {
+        const flavorInventory = branchInventory[flavorId] || 0;
+        return flavorInventory >= quantity;
       } else {
-        stock = product.stock;
-        console.log('Verificando stock sin sabor:', { branch, productId, stock, quantity });
+        const defaultInventory = branchInventory.default || 0;
+        return defaultInventory >= quantity;
       }
-
-      stock = Number(stock);
-      if (isNaN(stock)) {
-        console.log('Stock inválido:', stock);
-        return false;
-      }
-
-      console.log('Stock final:', { stock, quantity, result: stock >= quantity });
-      return stock >= quantity;
     } catch (error) {
       console.error('Error checking inventory:', error);
       return false;
@@ -144,31 +133,30 @@ export function CartProvider({ children }) {
         }];
       });
     } catch (error) {
-      console.error('Error al agregar al carrito:', error);
+      console.error('Error adding to cart:', error);
       throw error;
     }
   };
 
   const removeFromCart = (cartKey) => {
-    console.log('Intentando eliminar del carrito:', { cartKey });
-    setCartItems(prevItems => {
-      const newItems = prevItems.filter(item => item.cartKey !== cartKey);
-      console.log('Carrito después de eliminar:', newItems);
-      return newItems;
-    });
+    setCartItems(prevItems => prevItems.filter(item => item.cartKey !== cartKey));
   };
 
   const updateQuantity = async (cartKey, newQuantity) => {
+    if (newQuantity < 1) {
+      removeFromCart(cartKey);
+      return;
+    }
+
+    const item = cartItems.find(item => item.cartKey === cartKey);
+    if (!item) return;
+
     try {
-      const item = cartItems.find(item => item.cartKey === cartKey);
-      if (!item) {
-        throw new Error('Producto no encontrado en el carrito');
-      }
       const hasStock = await checkInventory(item.id, item.flavor?.id, newQuantity, item.branch);
-      console.log('Verificación de stock para actualizar cantidad:', { cartKey, newQuantity, hasStock });
       if (!hasStock) {
         throw new Error('No hay suficiente stock disponible');
       }
+
       setCartItems(prevItems =>
         prevItems.map(item =>
           item.cartKey === cartKey
@@ -177,58 +165,57 @@ export function CartProvider({ children }) {
         )
       );
     } catch (error) {
-      console.error('Error al actualizar cantidad:', error);
+      console.error('Error updating quantity:', error);
       throw error;
     }
   };
 
   const getCartByBranch = () => {
-    const branches = {};
-    cartItems.forEach(item => {
-      if (!branches[item.branch]) {
-        branches[item.branch] = [];
+    return cartItems.reduce((acc, item) => {
+      if (!acc[item.branch]) {
+        acc[item.branch] = [];
       }
-      branches[item.branch].push(item);
-    });
-    return branches;
+      acc[item.branch].push(item);
+      return acc;
+    }, {});
   };
 
   const updateInventoryAfterPurchase = async (items) => {
-    const branch = items[0]?.branch;
-    if (!branch) return;
-    const inventarioRef = doc(db, 'inventario', branch);
     try {
-      await runTransaction(db, async (transaction) => {
-        const inventarioDoc = await transaction.get(inventarioRef);
-        if (!inventarioDoc.exists()) {
-          throw new Error('No se encontró el inventario');
-        }
-        const inventario = inventarioDoc.data();
-        const newInventario = { ...inventario };
-        items.forEach(item => {
-          const productId = item.id;
-          const flavorId = item.flavor?.id || 'default';
-          const quantity = item.quantity;
-          if (!newInventario[productId]) return;
-          if (flavorId === 'default') {
-            newInventario[productId].stock -= quantity;
-          } else {
-            newInventario[productId].flavors[flavorId] -= quantity;
+      for (const item of items) {
+        const productRef = doc(db, 'productos', item.id);
+        await runTransaction(db, async (transaction) => {
+          const productDoc = await transaction.get(productRef);
+          if (!productDoc.exists()) {
+            throw new Error('Producto no encontrado');
           }
-        });
-        transaction.update(inventarioRef, newInventario);
-      });
-    } catch (error) {
-      console.error('Error al actualizar inventario después de la compra:', error);
-    }
-  };
 
-  const updateCartItem = (itemId, updates) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === itemId ? { ...item, ...updates } : item
-      )
-    );
+          const productData = productDoc.data();
+          const inventory = productData.inventory || {};
+          const branchInventory = inventory[item.branch] || {};
+          const flavorId = item.flavor?.id || 'default';
+          const currentStock = branchInventory[flavorId] || 0;
+          const newStock = currentStock - item.quantity;
+
+          if (newStock < 0) {
+            throw new Error('Stock insuficiente');
+          }
+
+          const updatedInventory = {
+            ...inventory,
+            [item.branch]: {
+              ...branchInventory,
+              [flavorId]: newStock
+            }
+          };
+
+          transaction.update(productRef, { inventory: updatedInventory });
+        });
+      }
+    } catch (error) {
+      console.error('Error updating inventory:', error);
+      throw error;
+    }
   };
 
   const value = {
@@ -242,7 +229,6 @@ export function CartProvider({ children }) {
     updateQuantity,
     getCartByBranch,
     updateInventoryAfterPurchase,
-    updateCartItem
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

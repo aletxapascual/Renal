@@ -1,5 +1,4 @@
 import Stripe from 'stripe';
-import fetch from 'node-fetch';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
@@ -7,28 +6,25 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// URL base para producción
-const PRODUCTION_URL = 'https://renal-seven.vercel.app';
-
-// Función para validar URLs
-function isValidUrl(url) {
+// Función auxiliar para validar URLs
+function isValidUrl(string) {
   try {
-    new URL(url);
+    new URL(string);
     return true;
-  } catch {
+  } catch (_) {
     return false;
   }
 }
 
-// Función para simplificar los items del carrito
+// Función para simplificar los items del carrito para metadata
 function simplifyCartItems(items) {
   return items.map(item => ({
     id: item.id,
     name: item.name || item.nombre,
-    price: item.price,
     quantity: item.quantity,
-    branch: item.branch || item.sucursal,
-    cartKey: item.cartKey
+    price: item.price,
+    flavor: item.flavor?.id || null,
+    branch: item.branch
   }));
 }
 
@@ -39,26 +35,16 @@ export default async function handler(req, res) {
 
   try {
     const { cartItems, email } = req.body;
-    
-    // Validación inicial
+
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
-      console.error('Error: No hay productos en el carrito');
-      return res.status(400).json({ error: 'No hay productos en el carrito' });
-    }
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      console.error('Error: Email inválido o ausente');
-      return res.status(400).json({ error: 'No se encontró un email válido para el usuario' });
+      return res.status(400).json({ error: 'No items provided' });
     }
 
-    // Forzar origin válido
-    let origin = 'http://localhost:3000';
-    if (process.env.VERCEL_ENV === 'production') {
-      origin = PRODUCTION_URL;
-    } else if (req.headers.origin && req.headers.origin.startsWith('http')) {
-      origin = req.headers.origin;
-    } else if (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.startsWith('http')) {
-      origin = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!email) {
+      return res.status(400).json({ error: 'No email provided' });
     }
+
+    const origin = req.headers.origin || 'http://localhost:3000';
 
     // Crear sesión de Stripe
     const session = await stripe.checkout.sessions.create({
