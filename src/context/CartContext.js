@@ -57,24 +57,28 @@ export function CartProvider({ children }) {
 
   const checkInventory = async (productId, flavorId, quantity, branch) => {
     try {
-      const productRef = doc(db, 'productos', productId);
-      const productDoc = await getDoc(productRef);
+      const inventarioRef = doc(db, 'inventario', branch);
+      const inventarioSnap = await getDoc(inventarioRef);
       
-      if (!productDoc.exists()) {
-        console.error('Producto no encontrado:', productId);
+      if (!inventarioSnap.exists()) {
+        console.error('Inventario no encontrado para la sucursal:', branch);
         return false;
       }
 
-      const productData = productDoc.data();
-      const inventory = productData.inventory || {};
-      const branchInventory = inventory[branch] || {};
+      const inventario = inventarioSnap.data();
+      const productStock = inventario[productId];
       
+      if (!productStock) {
+        console.error('Producto no encontrado en el inventario:', productId);
+        return false;
+      }
+
       if (flavorId) {
-        const flavorInventory = branchInventory[flavorId] || 0;
-        return flavorInventory >= quantity;
+        const flavorStock = productStock.flavors?.[flavorId] || 0;
+        return flavorStock >= quantity;
       } else {
-        const defaultInventory = branchInventory.default || 0;
-        return defaultInventory >= quantity;
+        const defaultStock = productStock.stock || 0;
+        return defaultStock >= quantity;
       }
     } catch (error) {
       console.error('Error checking inventory:', error);
@@ -182,34 +186,56 @@ export function CartProvider({ children }) {
 
   const updateInventoryAfterPurchase = async (items) => {
     try {
-      for (const item of items) {
-        const productRef = doc(db, 'productos', item.id);
+      // Agrupar items por sucursal
+      const itemsByBranch = items.reduce((acc, item) => {
+        if (!acc[item.branch]) {
+          acc[item.branch] = [];
+        }
+        acc[item.branch].push(item);
+        return acc;
+      }, {});
+
+      // Actualizar inventario por sucursal
+      for (const [branch, branchItems] of Object.entries(itemsByBranch)) {
+        const inventarioRef = doc(db, 'inventario', branch);
         await runTransaction(db, async (transaction) => {
-          const productDoc = await transaction.get(productRef);
-          if (!productDoc.exists()) {
-            throw new Error('Producto no encontrado');
+          const inventarioDoc = await transaction.get(inventarioRef);
+          if (!inventarioDoc.exists()) {
+            throw new Error(`Inventario no encontrado para la sucursal: ${branch}`);
           }
 
-          const productData = productDoc.data();
-          const inventory = productData.inventory || {};
-          const branchInventory = inventory[item.branch] || {};
-          const flavorId = item.flavor?.id || 'default';
-          const currentStock = branchInventory[flavorId] || 0;
-          const newStock = currentStock - item.quantity;
+          const inventario = inventarioDoc.data();
+          const updatedInventario = { ...inventario };
 
-          if (newStock < 0) {
-            throw new Error('Stock insuficiente');
-          }
-
-          const updatedInventory = {
-            ...inventory,
-            [item.branch]: {
-              ...branchInventory,
-              [flavorId]: newStock
+          for (const item of branchItems) {
+            const productStock = updatedInventario[item.id] || { stock: 0 };
+            
+            if (item.flavor?.id) {
+              // Actualizar stock de sabor específico
+              const flavors = productStock.flavors || {};
+              const currentStock = flavors[item.flavor.id] || 0;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              
+              updatedInventario[item.id] = {
+                ...productStock,
+                flavors: {
+                  ...flavors,
+                  [item.flavor.id]: newStock
+                }
+              };
+            } else {
+              // Actualizar stock general
+              const currentStock = productStock.stock || 0;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              
+              updatedInventario[item.id] = {
+                ...productStock,
+                stock: newStock
+              };
             }
-          };
+          }
 
-          transaction.update(productRef, { inventory: updatedInventory });
+          transaction.update(inventarioRef, updatedInventario);
         });
       }
     } catch (error) {

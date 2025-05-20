@@ -257,12 +257,39 @@ const Checkout = () => {
 
         // Actualizar el stock antes de crear el pedido
         for (const item of items) {
-          const productRef = doc(db, 'productos', item.id);
-          const productDoc = await getDoc(productRef);
-          if (productDoc.exists()) {
-            const currentStock = productDoc.data().stock || 0;
-            const newStock = Math.max(0, currentStock - item.quantity);
-            await updateDoc(productRef, { stock: newStock });
+          const inventarioRef = doc(db, 'inventario', branch);
+          const inventarioSnap = await getDoc(inventarioRef);
+          if (inventarioSnap.exists()) {
+            const inventario = inventarioSnap.data();
+            const productStock = inventario[item.id] || { stock: 0 };
+            
+            if (item.flavor?.id) {
+              // Actualizar stock de sabor específico
+              const flavors = productStock.flavors || {};
+              const currentStock = flavors[item.flavor.id] || 0;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              
+              await updateDoc(inventarioRef, {
+                [item.id]: {
+                  ...productStock,
+                  flavors: {
+                    ...flavors,
+                    [item.flavor.id]: newStock
+                  }
+                }
+              });
+            } else {
+              // Actualizar stock general
+              const currentStock = productStock.stock || 0;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              
+              await updateDoc(inventarioRef, {
+                [item.id]: {
+                  ...productStock,
+                  stock: newStock
+                }
+              });
+            }
           }
         }
 
