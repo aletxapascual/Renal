@@ -90,14 +90,11 @@ function PhotoSlideshow() {
   }, []);
 
   const images = [
-    { src: paciente1, alt: "Paciente 1" },
     { src: sillon3, alt: "Sillón 3" },
     { src: paciente2, alt: "Paciente 2" },
     { src: sillon1, alt: "Sillón 1" },
     { src: paciente3, alt: "Paciente 3" },
     { src: paciente4, alt: "Paciente 4" },
-    // Add only first image again to create smooth transition
-    { src: paciente1, alt: "Paciente 1" }
   ];
 
   return (
