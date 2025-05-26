@@ -233,6 +233,22 @@ function Container2() {
             </motion.div>
           ))}
         </motion.div>
+        {/* Mapa de Google Maps */}
+        <motion.div
+          className="bg-white/80 backdrop-blur-sm p-2 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 ring-1 ring-[#5773BB]/10 overflow-hidden mt-6"
+        >
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d931.8435183113835!2d-89.58465633065327!3d21.01495763677649!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f567726c5f5220d%3A0x3da0ddfb0de71cd1!2sRenal%20-%20Hemodi%C3%A1lisis%20Cl%C3%ADnica%20de%20Ri%C3%B1%C3%B3n%20y%20trasplante%20renal!5e0!3m2!1ses!2smx!4v1708487800790!5m2!1ses!2smx"
+            width="100%"
+            height="300"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Ubicación de RENALSTAR PENINSULAR"
+            className="rounded-2xl"
+          />
+        </motion.div>
       </div>
     </div>
   );

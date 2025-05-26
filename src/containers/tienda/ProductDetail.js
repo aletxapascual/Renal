@@ -306,7 +306,7 @@ function ProductDetail() {
                   onChange={(e) => setSelectedBranch(e.target.value)}
                   className="border border-gray-300 rounded-lg px-4 py-2"
                 >
-                  <option value="">Selecciona una sucursal</option>
+                  <option value="">{language === 'es' ? 'Selecciona una sucursal' : 'Select a branch'}</option>
                   {storeLocations.map(store => (
                     <option key={store.name} value={store.name}>{store.name}</option>
                   ))}
@@ -315,7 +315,7 @@ function ProductDetail() {
 
               <div className="flex items-center py-2 text-gray-600">
                 <FaStore className="text-2xl text-[#5773BB] mr-3" />
-                <span className="font-medium">Recoger en tienda</span>
+                <span className="font-medium">{language === 'es' ? 'Recoger en tienda' : 'Pick up in store'}</span>
               </div>
 
               {product.fichaTecnica && (

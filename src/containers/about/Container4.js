@@ -81,11 +81,21 @@ function Container4() {
                 <h3 className="font-sans text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-2">
                   {language === 'es' ? 'Formación Académica' : 'Academic Background'}
                 </h3>
-                <p className="font-sans text-lg text-gray-600">
-                  {language === 'es'
-                    ? 'Médico Cirujano (UADY), Especialista en Medicina Interna y Nefrología (CMNO)\nCertificado y Recertificado por el Consejo Mexicano de Nefrología\nMiembro de la Sociedad Mexicana de Nefrología, Sociedad Mexicana de Trasplantes y American Society of Nephrology'
-                    : 'Medical Doctor (UADY), Specialist in Internal Medicine and Nephrology (CMNO)\nCertified and Recertified by the Mexican Council of Nephrology\nMember of the Mexican Society of Nephrology, Mexican Society of Transplants, and American Society of Nephrology'}
-                </p>
+                <ul className="list-disc ml-6 text-lg text-gray-600">
+                  {language === 'es' ? (
+                    <>
+                      <li>Médico Cirujano (UADY), Especialista en Medicina Interna y Nefrología (CMNO)</li>
+                      <li>Certificado y Recertificado por el Consejo Mexicano de Nefrología</li>
+                      <li>Miembro de la Sociedad Mexicana de Nefrología, Sociedad Mexicana de Trasplantes y American Society of Nephrology</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>Medical Doctor (UADY), Specialist in Internal Medicine and Nephrology (CMNO)</li>
+                      <li>Certified and Recertified by the Mexican Council of Nephrology</li>
+                      <li>Member of the Mexican Society of Nephrology, Mexican Society of Transplants, and American Society of Nephrology</li>
+                    </>
+                  )}
+                </ul>
               </motion.div>
 
               <motion.div
