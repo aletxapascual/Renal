@@ -24,6 +24,9 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [inventory, setInventory] = useState({});
   const [quantityToAdd, setQuantityToAdd] = useState({});
+  const [selectedProductId, setSelectedProductId] = useState('');
+  const [selectedFlavorId, setSelectedFlavorId] = useState('');
+  const [saleQuantity, setSaleQuantity] = useState('');
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -248,48 +251,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#5773BB]/10 p-3 rounded-lg">
-                <FaBox className="text-[#5773BB] text-2xl" />
-              </div>
-              <div>
-                <h3 className="text-gray-500 text-sm">Total Productos</h3>
-                <p className="text-2xl font-bold text-[#5773BB]">{products.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#00BFB3]/10 p-3 rounded-lg">
-                <FaChartLine className="text-[#00BFB3] text-2xl" />
-              </div>
-              <div>
-                <h3 className="text-gray-500 text-sm">Ventas Hoy</h3>
-                <p className="text-2xl font-bold text-[#00BFB3]">
-                  {sales.reduce((sum, sale) => sum + sale.cantidad, 0)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#FF6B6B]/10 p-3 rounded-lg">
-                <FaHistory className="text-[#FF6B6B] text-2xl" />
-              </div>
-              <div>
-                <h3 className="text-gray-500 text-sm">Productos Bajos en Stock</h3>
-                <p className="text-2xl font-bold text-[#FF6B6B]">
-                  {Object.values(inventory).filter(item => (item.stock || 0) < 10).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Mini Navbar */}
         <div className="bg-white rounded-xl shadow-sm mb-6">
           <div className="flex">
@@ -326,65 +287,90 @@ export default function Dashboard() {
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-4 px-6">Producto</th>
                     <th className="text-left py-4 px-6">Stock Actual</th>
-                    <th className="text-left py-4 px-6">Precio</th>
                     <th className="text-left py-4 px-6">Agregar Stock</th>
-                    <th className="text-left py-4 px-6">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product) => (
-                    <tr key={product.id} className="border-b border-gray-100">
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          {product.images && product.images[0] && (
-                            <img 
-                              src={product.images[0]} 
-                              alt={product.name}
-                              className="w-10 h-10 object-cover rounded-lg"
-                            />
-                          )}
-                          <span>{product.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="font-semibold">{inventory[product.id]?.stock || 0}</span>
-                      </td>
-                      <td className="py-4 px-6">
-                        ${product.price || 0}
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            value={quantityToAdd[product.id] || ''}
-                            onChange={(e) => setQuantityToAdd({ ...quantityToAdd, [product.id]: e.target.value })}
-                            placeholder="Cantidad"
-                            className="border border-gray-300 rounded-lg px-3 py-1 w-20"
-                            min="1"
-                          />
-                          <button
-                            onClick={() => updateInventory(product.id, parseInt(quantityToAdd[product.id] || 0))}
-                            className="bg-[#00BFB3] text-white px-3 py-1 rounded-lg hover:bg-[#00A89D] transition-colors"
-                          >
-                            <FaPlus />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <button
-                          onClick={() => addSale(product.id, 1)}
-                          disabled={!inventory[product.id]?.stock}
-                          className={`px-3 py-1 rounded-lg transition-colors ${
-                            inventory[product.id]?.stock
-                              ? 'bg-[#00BFB3] text-white hover:bg-[#00A89D]'
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          }`}
-                        >
-                          Registrar Venta
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {products.flatMap((product) => {
+                    if (product.flavors && Array.isArray(product.flavors)) {
+                      // Para productos con sabores (HemProt, RenNut)
+                      return product.flavors.map((flavor) => {
+                        const flavorId = `${product.id}_${flavor.id}`;
+                        return (
+                          <tr key={flavorId} className="border-b border-gray-100">
+                            <td className="py-4 px-6">
+                              <div className="flex items-center gap-3">
+                                {flavor.images && flavor.images[0] && (
+                                  <img
+                                    src={flavor.images[0]}
+                                    alt={`${product.name} - ${flavor.name.es}`}
+                                    className="w-10 h-10 object-cover rounded-lg"
+                                  />
+                                )}
+                                <span>{product.name} - {flavor.name.es}</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">{inventory[flavorId]?.stock || 0}</td>
+                            <td className="py-4 px-6">
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  value={quantityToAdd[flavorId] || ''}
+                                  onChange={(e) => setQuantityToAdd({ ...quantityToAdd, [flavorId]: e.target.value })}
+                                  placeholder="Cantidad"
+                                  className="border border-gray-300 rounded-lg px-3 py-1 w-20"
+                                  min="1"
+                                />
+                                <button
+                                  onClick={() => updateInventory(flavorId, parseInt(quantityToAdd[flavorId] || 0))}
+                                  className="bg-[#00BFB3] text-white px-3 py-1 rounded-lg hover:bg-[#00A89D] transition-colors"
+                                >
+                                  <FaPlus />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      });
+                    } else {
+                      // Productos normales
+                      return (
+                        <tr key={product.id} className="border-b border-gray-100">
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-3">
+                              {product.images && product.images[0] && (
+                                <img
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  className="w-10 h-10 object-cover rounded-lg"
+                                />
+                              )}
+                              <span>{product.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">{inventory[product.id]?.stock || 0}</td>
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={quantityToAdd[product.id] || ''}
+                                onChange={(e) => setQuantityToAdd({ ...quantityToAdd, [product.id]: e.target.value })}
+                                placeholder="Cantidad"
+                                className="border border-gray-300 rounded-lg px-3 py-1 w-20"
+                                min="1"
+                              />
+                              <button
+                                onClick={() => updateInventory(product.id, parseInt(quantityToAdd[product.id] || 0))}
+                                className="bg-[#00BFB3] text-white px-3 py-1 rounded-lg hover:bg-[#00A89D] transition-colors"
+                              >
+                                <FaPlus />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
                 </tbody>
               </table>
             </div>
@@ -395,7 +381,6 @@ export default function Dashboard() {
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-4 px-6">Producto</th>
                     <th className="text-left py-4 px-6">Cantidad</th>
-                    <th className="text-left py-4 px-6">Precio Unitario</th>
                     <th className="text-left py-4 px-6">Total</th>
                     <th className="text-left py-4 px-6">Hora</th>
                   </tr>
@@ -409,7 +394,6 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="py-4 px-6">{sale.cantidad}</td>
-                      <td className="py-4 px-6">${sale.precio || 0}</td>
                       <td className="py-4 px-6">${sale.total || 0}</td>
                       <td className="py-4 px-6">
                         {new Date(sale.timestamp).toLocaleTimeString()}
@@ -418,6 +402,58 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2">Registrar Nueva Venta</h3>
+                <div className="flex flex-wrap gap-4">
+                  <select
+                    value={selectedProductId || ''}
+                    onChange={(e) => setSelectedProductId(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-4 py-2"
+                  >
+                    <option value="">Seleccionar Producto</option>
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedProductId && products.find(p => p.id === selectedProductId)?.flavors && (
+                    <select
+                      value={selectedFlavorId || ''}
+                      onChange={(e) => setSelectedFlavorId(e.target.value)}
+                      className="border border-gray-300 rounded-lg px-4 py-2"
+                    >
+                      <option value="">Seleccionar Sabor</option>
+                      {products.find(p => p.id === selectedProductId).flavors.map((flavor) => (
+                        <option key={flavor.id} value={flavor.id}>
+                          {flavor.name.es}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <input
+                    type="number"
+                    value={saleQuantity || ''}
+                    onChange={(e) => setSaleQuantity(e.target.value)}
+                    placeholder="Cantidad"
+                    className="border border-gray-300 rounded-lg px-4 py-2 w-20"
+                    min="1"
+                  />
+                  <button
+                    onClick={() => {
+                      if (selectedProductId && selectedFlavorId) {
+                        const flavorId = `${selectedProductId}_${selectedFlavorId}`;
+                        addSale(flavorId, parseInt(saleQuantity || 0));
+                      } else {
+                        addSale(selectedProductId, parseInt(saleQuantity || 0));
+                      }
+                    }}
+                    className="bg-[#00BFB3] text-white px-4 py-2 rounded-lg hover:bg-[#00A89D] transition-colors"
+                  >
+                    Registrar Venta
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
