@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { products } from '../../data/products';
-import { FaPaperPlane, FaStore } from 'react-icons/fa';
-import { useCart } from '../../context/CartContext';
+import { FaStore } from 'react-icons/fa';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -35,8 +34,6 @@ export const storeLocations = [
 function ProductDetail() {
   const { language } = useLanguage();
   const { productId } = useParams();
-  const { addToCart, openCart } = useCart();
-  const [quantity, setQuantity] = useState(1);
   const [selectedFlavor, setSelectedFlavor] = useState(null);
   const [mainImage, setMainImage] = useState(0);
   const [images, setImages] = useState([]);
@@ -92,6 +89,7 @@ function ProductDetail() {
           setStock(0);
         }
       } catch (error) {
+        console.error('Error fetching stock:', error);
         setStock(0);
       }
     };
@@ -102,21 +100,26 @@ function ProductDetail() {
     const fetchAllBranchStocks = async () => {
       const stocks = {};
       for (const loc of storeLocations) {
-        const inventarioRef = doc(db, 'inventario', loc.name);
-        const inventarioSnap = await getDoc(inventarioRef);
-        if (inventarioSnap.exists()) {
-          const inventario = inventarioSnap.data();
-          const productStock = inventario[product.id];
-          if (productStock) {
-            if (product.flavors && selectedFlavor) {
-              stocks[loc.name] = productStock.flavors?.[selectedFlavor] ?? 0;
+        try {
+          const inventarioRef = doc(db, 'inventario', loc.name);
+          const inventarioSnap = await getDoc(inventarioRef);
+          if (inventarioSnap.exists()) {
+            const inventario = inventarioSnap.data();
+            const productStock = inventario[product.id];
+            if (productStock) {
+              if (product.flavors && selectedFlavor) {
+                stocks[loc.name] = productStock.flavors?.[selectedFlavor] ?? 0;
+              } else {
+                stocks[loc.name] = productStock.stock ?? 0;
+              }
             } else {
-              stocks[loc.name] = productStock.stock ?? 0;
+              stocks[loc.name] = 0;
             }
           } else {
             stocks[loc.name] = 0;
           }
-        } else {
+        } catch (error) {
+          console.error(`Error fetching stock for ${loc.name}:`, error);
           stocks[loc.name] = 0;
         }
       }
@@ -131,13 +134,6 @@ function ProductDetail() {
   if (!product) {
     return <Navigate to="/tienda" replace />;
   }
-
-  const handleQuantityChange = (change) => {
-    const newQuantity = quantity + change;
-    if (newQuantity >= 1) {
-      setQuantity(newQuantity);
-    }
-  };
 
   const handleFlavorChange = (flavorId) => {
     setSelectedFlavor(flavorId);
@@ -170,26 +166,6 @@ function ProductDetail() {
 
   // Helper to get the selected store's map URL
   const selectedMapUrl = selectedStore !== null ? storeLocations[selectedStore].map : storeLocations[0].map;
-
-  const handleAddToCart = async () => {
-    if (!selectedBranch) {
-      alert('Por favor, selecciona una sucursal para recoger tu pedido');
-      return;
-    }
-
-    // Buscar el objeto flavor completo si aplica
-    let flavorObj = null;
-    if (product.flavors && selectedFlavor) {
-      flavorObj = product.flavors.find(f => f.id === selectedFlavor) || null;
-    }
-
-    try {
-      await addToCart(product, quantity, flavorObj, selectedBranch);
-      openCart();
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   return (
     <section className="py-20 bg-gradient-to-br from-white via-[#5773BB]/5 to-white">
@@ -293,12 +269,6 @@ function ProductDetail() {
           <div className="lg:w-1/2 flex flex-col h-full flex-1">
             <div className="bg-white rounded-xl shadow-sm p-8 space-y-6 h-full flex flex-col">
               <h1 className="text-4xl font-bold text-[#5773BB] mb-4">{product.name}</h1>
-              <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-[#00BFB3]">{product.price}</span>
-                {product.originalPrice && (
-                  <span className="text-xl text-gray-400 line-through">{product.originalPrice}</span>
-                )}
-              </div>
 
               {product.flavors && (
                 <div className="space-y-4">
@@ -327,65 +297,22 @@ function ProductDetail() {
                 {language === 'es' ? product.description.es : product.description.en}
               </p>
 
-              <div className="flex flex-col space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    Stock disponible: {stock !== null ? stock : 'Cargando...'}
-                  </span>
-                  <select
-                    value={selectedBranch || ''}
-                    onChange={(e) => setSelectedBranch(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-4 py-2"
-                  >
-                    <option value="">Selecciona una sucursal</option>
-                    {storeLocations.map(store => (
-                      <option key={store.name} value={store.name}>{store.name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center border border-gray-200 rounded-lg">
-                    <button
-                      onClick={() => handleQuantityChange(-1)}
-                      disabled={quantity <= 1}
-                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 disabled:opacity-50"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min={1}
-                      max={stock || 1}
-                      value={quantity}
-                      onChange={e => {
-                        let val = parseInt(e.target.value, 10);
-                        if (isNaN(val) || val < 1) val = 1;
-                        if (stock && val > stock) val = stock;
-                        setQuantity(val);
-                      }}
-                      className="px-4 py-2 border-x border-gray-200 w-16 text-center"
-                    />
-                    <button
-                      onClick={() => handleQuantityChange(1)}
-                      disabled={quantity >= (stock || 0)}
-                      className="px-4 py-2 text-[#5773BB] hover:text-[#00BFB3] transition-colors duration-300 disabled:opacity-50"
-                    >
-                      +
-                    </button>
-                  </div>
-                  
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={!selectedBranch || stock === 0 || quantity > (stock || 0)}
-                    className="flex-1 bg-[#5773BB] text-white font-bold py-3 rounded-lg hover:bg-[#4466B7] transition-all duration-300 disabled:opacity-50"
-                  >
-                    Agregar al carrito
-                  </button>
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  Stock disponible: {stock !== null ? stock : 'Cargando...'}
+                </span>
+                <select
+                  value={selectedBranch || ''}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-4 py-2"
+                >
+                  <option value="">Selecciona una sucursal</option>
+                  {storeLocations.map(store => (
+                    <option key={store.name} value={store.name}>{store.name}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* Recoger en tienda as a plain row, at the bottom, left-aligned, font color matches product info */}
               <div className="flex items-center py-2 text-gray-600">
                 <FaStore className="text-2xl text-[#5773BB] mr-3" />
                 <span className="font-medium">Recoger en tienda</span>

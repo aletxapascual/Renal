@@ -9,8 +9,6 @@ import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import { CartProvider } from './context/CartContext';
-import CartDrawer from './components/CartDrawer';
 import { PickupModalProvider } from './context/PickupModalContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -24,53 +22,51 @@ import LoginModal from './components/LoginModal';
 import RegisterModal from './components/RegisterModal';
 import ForgotPasswordModal from './components/ForgotPasswordModal';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import Checkout from './pages/Checkout';
+import NotFound from './pages/NotFound';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <Router>
       <LanguageProvider>
-        <CartProvider>
+        <AuthProvider>
           <PickupModalProvider>
             <LoginModalProvider>
-              <AuthProvider>
-                <ScrollToTop />
-                <CartDrawer />
-                <LoginModal />
-                <RegisterModal />
-                <ForgotPasswordModal />
-                <div className="min-h-screen flex flex-col">
-                  <Navbar />
-                  <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/tienda" element={<Tienda />} />
-                      <Route path="/acerca-de" element={<Acerca />} />
-                      <Route path="/contacto" element={<Contacto />} />
-                      <Route path="/tienda/:productId" element={<ProductDetail />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/dashboard" element={
-                        <ProtectedRoute role="admin">
-                          <Dashboard />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/usuario" element={
-                        <ProtectedRoute role="cliente">
-                          <UserArea />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/forgot-password" element={<ForgotPassword />} />
-                      <Route path="/register" element={<Register />} />
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/checkout" element={<Checkout />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                </div>
-              </AuthProvider>
+              <ScrollToTop />
+              <LoginModal />
+              <RegisterModal />
+              <ForgotPasswordModal />
+              <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-grow pt-20 md:pt-32 transition-all duration-300">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/tienda" element={<Tienda />} />
+                    <Route path="/acerca-de" element={<Acerca />} />
+                    <Route path="/contacto" element={<Contacto />} />
+                    <Route path="/tienda/:productId" element={<ProductDetail />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/dashboard" element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    } />
+                    <Route path="/usuario" element={
+                      <ProtectedRoute role="cliente">
+                        <UserArea />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
             </LoginModalProvider>
           </PickupModalProvider>
-        </CartProvider>
+        </AuthProvider>
       </LanguageProvider>
     </Router>
   );

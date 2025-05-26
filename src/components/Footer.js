@@ -170,12 +170,16 @@ function Footer() {
       {/* Copyright */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-white/60 text-sm">
-            © {new Date().getFullYear()} Renal. 
-            {language === 'es' 
-              ? ' Todos los derechos reservados.'
-              : ' All rights reserved.'}
-          </p>
+          <div className="text-center text-sm text-gray-500 mt-8">
+            <p>&copy; {new Date().getFullYear()} Renal. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+            <Link to="/privacy-policy" className="text-gray-500 hover:text-[#5773BB] transition-colors">
+              {language === 'es' ? 'Política de Privacidad' : 'Privacy Policy'}
+            </Link>
+            <span className="mx-2">•</span>
+            <Link to="/login" className="text-gray-300 hover:text-gray-400 transition-colors text-xs opacity-50">
+              {language === 'es' ? 'Acceso Administrativo' : 'Admin Access'}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { FaGoogle } from 'react-icons/fa';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,52 +15,22 @@ export default function Login() {
     setError('');
     setIsLoading(true);
 
-    if (!email.includes('@') || !password) {
-      setError('Por favor ingresa un correo válido y una contraseña.');
+    if (!username || !password) {
+      setError('Por favor ingresa usuario y contraseña.');
       setIsLoading(false);
       return;
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-    
-      const ref = doc(db, 'users', uid);
-      const snap = await getDoc(ref);
-    
-      let role = 'cliente';
-      let firstName = '';
-      let lastName = '';
-    
-      if (snap.exists()) {
-        const data = snap.data();
-        role = data.role || 'cliente';
-        firstName = data.firstName || '';
-        lastName = data.lastName || '';
+      const user = await login(username, password);
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        setError('Usuario o contraseña incorrectos.');
       }
-    
-      login({ uid, email, firstName, lastName, role });
-    
-      navigate(role === 'admin' ? '/dashboard' : '/usuario');
-    
     } catch (err) {
-      setError('Correo o contraseña incorrectos.');
-      console.error(err);
-    }
-    
-  };
-
-  const handleGoogleLogin = async () => {
-    setError('');
-    setIsLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const email = result.user.email || 'cliente_google';
-      login(email, 'cliente');
-      navigate('/usuario');
-    } catch (err) {
-      console.error(err);
-      setError('No se pudo iniciar sesión con Google.');
+      console.error('Login error:', err);
+      setError('Usuario o contraseña incorrectos.');
     } finally {
       setIsLoading(false);
     }
@@ -76,10 +42,10 @@ export default function Login() {
         <h2 className="text-2xl font-bold text-[#5773BB] mb-2 text-center">Iniciar Sesión</h2>
 
         <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-4 py-2"
         />
 
@@ -91,30 +57,15 @@ export default function Login() {
           className="w-full border border-gray-300 rounded-lg px-4 py-2"
         />
 
-        <div className="flex justify-between text-sm text-blue-600">
-          <Link to="/forgot-password" className="hover:underline">¿Olvidaste tu contraseña?</Link>
-          <Link to="/register" className="hover:underline">Registrarse</Link>
-        </div>
-
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         {isLoading && <p className="text-gray-500 text-sm text-center">Cargando...</p>}
 
-        <button
-          type="submit"
+        <button 
+          type="submit" 
+          className="w-full bg-[#5773BB] hover:bg-[#4466B7] text-white font-bold py-3 rounded-lg transition-all"
           disabled={isLoading}
-          className="w-full bg-[#5773BB] hover:bg-[#4466B7] text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50"
         >
-          Entrar
-        </button>
-
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50"
-        >
-          <FaGoogle />
-          Iniciar con Google
+          {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
         </button>
       </form>
     </div>

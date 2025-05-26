@@ -12,13 +12,8 @@ function Container2() {
   const productsList = Object.values(products);
   
   const sortedProducts = [...productsList].sort((a, b) => {
-    const priceA = parseFloat(a.price.replace('$', ''));
-    const priceB = parseFloat(b.price.replace('$', ''));
-    
-    if (sortOrder === 'ascending') {
-      return priceA - priceB;
-    } else if (sortOrder === 'descending') {
-      return priceB - priceA;
+    if (sortOrder === 'default') {
+      return 0;
     }
     return 0; // default order
   });
@@ -37,45 +32,42 @@ function Container2() {
   };
 
   return (
-    <section className="bg-gradient-to-br from-white via-[#5773BB]/5 to-white py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-16">
-          <h2 className="text-2xl text-[#5773BB] font-bold">
-            {language === 'es' 
-              ? `Mostrando ${productsList.length} resultados`
-              : `Showing all ${productsList.length} results`}
+    <section className="py-20 bg-gradient-to-br from-white via-[#5773BB]/5 to-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="text-5xl font-bold text-[#5773BB]">
+            {language === 'es' ? 'Nuestros Productos' : 'Our Products'}
           </h2>
-          <select 
+          <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="border border-[#5773BB]/20 rounded-lg px-4 py-2 bg-white text-[#5773BB] font-medium focus:outline-none focus:border-[#5773BB]/40 shadow-sm hover:shadow-md transition-all duration-300"
+            className="border border-gray-300 rounded-lg px-4 py-2"
           >
-            <option value="default">{language === 'es' ? 'Ordenar por defecto' : 'Default sorting'}</option>
-            <option value="ascending">{language === 'es' ? 'Precio: Menor a Mayor' : 'Price: Low to High'}</option>
-            <option value="descending">{language === 'es' ? 'Precio: Mayor a Menor' : 'Price: High to Low'}</option>
+            <option value="default">
+              {language === 'es' ? 'Ordenar por' : 'Sort by'}
+            </option>
           </select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {sortedProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group cursor-pointer"
-              onClick={() => handleProductClick(product.id)}
-            >
-              <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 p-8 h-full flex flex-col border border-gray-100">
-                <div className="bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl overflow-hidden aspect-[3/2] mb-8 transition-all duration-300 group-hover:shadow-lg">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img
-                      src={getProductImage(product)}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                    />
-                  </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {sortedProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                onClick={() => handleProductClick(product.id)}
+                className="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition-all duration-300 flex flex-col"
+              >
+                <div className="relative aspect-square w-4/5 mx-auto mb-6">
+                  <img
+                    src={getProductImage(product)}
+                    alt={product.name}
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                  />
                 </div>
+
                 <div className="flex flex-col flex-grow space-y-4">
                   <h3 className="text-3xl font-bold text-[#5773BB]">{product.name}</h3>
                   {product.flavors && (
@@ -94,7 +86,6 @@ function Container2() {
                     {language === 'es' ? product.description.es : product.description.en}
                   </p>
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                    <p className="text-2xl font-bold text-[#00BFB3]">{product.price}</p>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -103,16 +94,16 @@ function Container2() {
                       }}
                       className="bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center gap-2 px-6 py-2 rounded-lg shadow-sm hover:shadow-md"
                     >
-                      {language === 'es' ? 'Comprar Ahora' : 'Buy Now'}
+                      {language === 'es' ? 'Ver Detalles' : 'View Details'}
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </button>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

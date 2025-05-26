@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 import { useLoginModal } from '../context/LoginModalContext';
 import logo from '../images/logo.png';
 import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa';
@@ -13,10 +12,8 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { language, toggleLanguage } = useLanguage();
-  const { openCart } = useCart();
   const { user, logout } = useAuth();
   const { openLoginModal } = useLoginModal();
-  const { cartItems } = useCart();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
@@ -48,6 +45,14 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   return (
     <nav className={`bg-white shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'h-20 md:h-20' : 'h-32 md:h-32'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -74,72 +79,36 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-6">
-            <button onClick={toggleLanguage} className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-              <span className="text-sm font-medium">{language.toUpperCase()}</span>
-            </button>
-
-            <button onClick={openCart} className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group" aria-label="Abrir carrito" type="button">
-              <FaShoppingCart className="h-6 w-6" />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItems.length}
-                </span>
-              )}
-            </button>
-
-            {user ? (
-              <div className="relative group">
-                <button 
-                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+            <div className="flex items-center gap-4">
+              {user?.role === 'admin' && (
+                <Link
+                  to="/dashboard"
+                  className="text-[#5773BB] hover:text-[#4466B7] transition-colors"
                 >
-                  <span className="hidden md:inline">{user.firstName || user.username}</span>
-                  <FaUser className="text-xl" />
-                </button>
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                    <Link 
-                      to={user.role === 'admin' ? '/dashboard' : '/usuario'} 
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      {user.role === 'admin' ? 'Dashboard' : 'Mi Cuenta'}
-                    </Link>
-                    <button 
-                      onClick={() => {
-                        logout();
-                        setShowUserMenu(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    >
-                      Cerrar Sesión
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button 
-                onClick={openLoginModal}
-                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                  Dashboard
+                </Link>
+              )}
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
               >
-                <span className="hidden md:inline">Iniciar Sesión</span>
-                <FaUser className="text-xl" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                </svg>
+                {language === 'es' ? 'EN' : 'ES'}
               </button>
-            )}
+            </div>
           </div>
 
           <div className="md:hidden flex items-center space-x-4">
-            <button onClick={toggleLanguage} className="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-              <span className="text-sm font-medium">{language.toUpperCase()}</span>
-            </button>
-
-            <button onClick={openCart} className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative" aria-label="Abrir carrito" type="button">
-              <FaShoppingCart className="h-6 w-6" />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItems.length}
-                </span>
-              )}
+            <button
+              onClick={toggleLanguage}
+              className="text-gray-700 hover:text-[#5773BB] transition-colors flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+              </svg>
+              {language === 'es' ? 'EN' : 'ES'}
             </button>
 
             <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-transform duration-200 hover:scale-110">
