@@ -118,21 +118,28 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className={`md:hidden absolute w-full bg-white shadow-lg z-50 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
-        <div className="px-2 pt-2 pb-3 space-y-1">
-          {navLinks.map(link => (
-            <Link key={link.path} to={link.path} onClick={() => { setIsOpen(false); window.scrollTo(0, 0); }} className={`${isActive(link.path)} block text-center px-4 py-3 text-lg font-medium hover:text-blue-600 transition-all duration-300`}>
-              {link.name}
-            </Link>
-          ))}
-
-          {!user && (
-            <button onClick={() => { openLoginModal(); setIsOpen(false); }} className="w-full px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
-              Iniciar sesión
-            </button>
-          )}
+      {isOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-40" onClick={() => setIsOpen(false)} />
+      )}
+      {isOpen && (
+        <div className="md:hidden fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 flex flex-col p-6">
+          <button onClick={() => setIsOpen(false)} className="self-end mb-6">
+            <FaTimes className="h-6 w-6 text-gray-700" />
+          </button>
+          <nav className="flex flex-col gap-6 flex-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={isActive(link.path) + " text-lg"}
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
         </div>
-      </div>
+      )}
     </nav>
   );
 };

@@ -299,7 +299,7 @@ function ProductDetail() {
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">
-                  Stock disponible: {stock !== null ? stock : 'Cargando...'}
+                  {language === 'es' ? 'Stock disponible:' : 'Available stock:'} {stock !== null ? stock : 'Cargando...'}
                 </span>
                 <select
                   value={selectedBranch || ''}
@@ -329,7 +329,7 @@ function ProductDetail() {
                     rel="noopener noreferrer"
                     className="font-medium hover:text-[#4466B7] transition-colors"
                   >
-                    Ver ficha técnica
+                    {language === 'es' ? 'Ficha Técnica' : 'Technical Sheet'}
                   </a>
                 </div>
               )}

@@ -1,8 +1,10 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import { FaFacebookF, FaEnvelope, FaGlobe } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 function Container4() {
+  const { language } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -57,14 +59,17 @@ function Container4() {
             <motion.h4 
               className="font-sans bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent text-xl mb-4"
             >
-              Especialista en Nefrología
+              {language === 'es' ? 'Especialista en Nefrología' : 'Nephrology Specialist'}
             </motion.h4>
-            <motion.h1 
-              className="font-sans text-5xl font-bold bg-gradient-to-r from-[#5773BB] via-[#4466B7] to-[#5773BB] bg-clip-text text-transparent mb-6 leading-normal pb-1"
-            >
+            <motion.h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
               Dr. Mario Arturo<br />
               Burgos Soto
-            </motion.h1>
+            </motion.h2>
+            <p className="text-lg text-gray-700 mb-4">
+              {language === 'es'
+                ? 'Nefrólogo certificado, especialista en hemodiálisis y trasplante renal. Con más de 15 años de experiencia, el Dr. Burgos Soto lidera nuestro equipo médico, brindando atención personalizada y de calidad a cada paciente.'
+                : 'Certified nephrologist, specialist in hemodialysis and kidney transplantation. With more than 15 years of experience, Dr. Burgos Soto leads our medical team, providing personalized and quality care to each patient.'}
+            </p>
 
             <motion.div
               className="space-y-6"
@@ -74,12 +79,12 @@ function Container4() {
                 className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-md"
               >
                 <h3 className="font-sans text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-2">
-                  Formación Académica
+                  {language === 'es' ? 'Formación Académica' : 'Academic Background'}
                 </h3>
                 <p className="font-sans text-lg text-gray-600">
-                  Médico Cirujano (UADY), Especialista en Medicina Interna y Nefrología (CMNO)<br />
-                  Certificado y Recertificado por el Consejo Mexicano de Nefrología<br />
-                  Miembro de la Sociedad Mexicana de Nefrología, Sociedad Mexicana de Trasplantes y American Society of Nephrology
+                  {language === 'es'
+                    ? 'Médico Cirujano (UADY), Especialista en Medicina Interna y Nefrología (CMNO)\nCertificado y Recertificado por el Consejo Mexicano de Nefrología\nMiembro de la Sociedad Mexicana de Nefrología, Sociedad Mexicana de Trasplantes y American Society of Nephrology'
+                    : 'Medical Doctor (UADY), Specialist in Internal Medicine and Nephrology (CMNO)\nCertified and Recertified by the Mexican Council of Nephrology\nMember of the Mexican Society of Nephrology, Mexican Society of Transplants, and American Society of Nephrology'}
                 </p>
               </motion.div>
 
@@ -87,18 +92,14 @@ function Container4() {
                 className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-md"
               >
                 <h3 className="font-sans text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-2">
-                  Áreas de especialidad
+                  {language === 'es' ? 'Áreas de especialidad' : 'Specialty Areas'}
                 </h3>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2 text-lg text-gray-600">
-                  {specialtyAreas.map((area, index) => (
-                    <motion.li 
-                      key={index}
-                      className="flex items-center space-x-2"
-                    >
-                      <span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span>
-                      <span className="whitespace-nowrap">{area}</span>
-                    </motion.li>
-                  ))}
+                  <motion.li className="flex items-center space-x-2"><span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span><span className="whitespace-nowrap">{language === 'es' ? 'Nefropatías Glomerulares' : 'Glomerular Nephropathies'}</span></motion.li>
+                  <motion.li className="flex items-center space-x-2"><span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span><span className="whitespace-nowrap">{language === 'es' ? 'Hipertensión' : 'Hypertension'}</span></motion.li>
+                  <motion.li className="flex items-center space-x-2"><span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span><span className="whitespace-nowrap">{language === 'es' ? 'Anemias' : 'Anemias'}</span></motion.li>
+                  <motion.li className="flex items-center space-x-2"><span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span><span className="whitespace-nowrap">{language === 'es' ? 'Hemodiálisis' : 'Hemodialysis'}</span></motion.li>
+                  <motion.li className="flex items-center space-x-2"><span className="w-2 h-2 bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full flex-shrink-0"></span><span className="whitespace-nowrap">{language === 'es' ? 'Trasplante Renal' : 'Kidney Transplant'}</span></motion.li>
                 </ul>
               </motion.div>
               

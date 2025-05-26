@@ -57,7 +57,7 @@ function Container2() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Misión
+              {language === 'es' ? 'Misión' : 'Mission'}
             </motion.h2>
             <motion.p 
               className="text-lg text-gray-600 leading-relaxed text-center"
@@ -66,7 +66,9 @@ function Container2() {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes, con el trasplante renal como una meta alcanzable y parte fundamental del proceso.
+              {language === 'es'
+                ? 'Brindar atención nefrológica de excelencia que combine tecnología de vanguardia con un trato humano, empático y personalizado, mejorando la calidad de vida de cada uno de nuestros pacientes, con el trasplante renal como una meta alcanzable y parte fundamental del proceso.'
+                : 'Provide excellent nephrological care that combines cutting-edge technology with a human, empathetic, and personalized approach, improving the quality of life of each of our patients, with kidney transplantation as an achievable goal and a fundamental part of the process.'}
             </motion.p>
           </motion.div>
 
@@ -82,7 +84,7 @@ function Container2() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              Visión
+              {language === 'es' ? 'Visión' : 'Vision'}
             </motion.h2>
             <motion.p 
               className="text-lg text-gray-600 leading-relaxed text-center"
@@ -91,7 +93,9 @@ function Container2() {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes, guiándolos en el camino hacia una vida plena y, cuando sea posible, hacia el trasplante.
+              {language === 'es'
+                ? 'Ser el centro de hemodiálisis líder en la Península de Yucatán, reconocido por su innovación tecnológica, calidez humana y compromiso con el bienestar integral de nuestros pacientes, guiándolos en el camino hacia una vida plena y, cuando sea posible, hacia el trasplante.'
+                : 'To be the leading hemodialysis center in the Yucatan Peninsula, recognized for its technological innovation, human warmth, and commitment to the comprehensive well-being of our patients, guiding them on the path to a full life and, when possible, towards transplantation.'}
             </motion.p>
           </motion.div>
         </motion.div>
@@ -113,14 +117,16 @@ function Container2() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                Quiénes Somos
+                {language === 'es' ? 'Quiénes Somos' : 'About Us'}
               </motion.h2>
               <div className="space-y-6 text-lg text-gray-600 leading-relaxed text-justify">
                 <motion.p
                   variants={itemVariants}
                   className="transition-all duration-300 hover:text-gray-700"
                 >
-                  En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia. Nuestro objetivo es ofrecer un ambiente cálido y acogedor, donde cada paciente se sienta valorado y cuidado. Contamos con un equipo de profesionales comprometidos y equipos de última generación que garantizan tratamientos seguros y efectivos. Sabemos que la hemodiálisis es un paso importante, pero también trabajamos para que quienes sean candidatos puedan avanzar hacia el trasplante renal.
+                  {language === 'es'
+                    ? 'En Renal nos dedicamos a brindar servicios de hemodiálisis con un enfoque humano y tecnología de vanguardia. Nuestro objetivo es ofrecer un ambiente cálido y acogedor, donde cada paciente se sienta valorado y cuidado. Contamos con un equipo de profesionales comprometidos y equipos de última generación que garantizan tratamientos seguros y efectivos. Sabemos que la hemodiálisis es un paso importante, pero también trabajamos para que quienes sean candidatos puedan avanzar hacia el trasplante renal.'
+                    : 'At Renal we are dedicated to providing hemodialysis services with a human approach and cutting-edge technology. Our goal is to offer a warm and welcoming environment where every patient feels valued and cared for. We have a team of committed professionals and state-of-the-art equipment that guarantee safe and effective treatments. We know that hemodialysis is an important step, but we also work so that those who are candidates can move towards kidney transplantation.'}
                 </motion.p>
               </div>
             </motion.div>

@@ -28,7 +28,7 @@ function Container1() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Contáctanos
+            {language === 'es' ? 'Contáctanos' : 'Contact Us'}
           </motion.h1>
 
           <motion.div 
@@ -39,9 +39,9 @@ function Container1() {
             viewport={{ once: true }}
           >
             <p className="text-xl text-gray-600 leading-relaxed">
-              Si tú o un ser querido necesitan información sobre nuestros servicios de hemodiálisis, 
-              o si deseas agendar una cita, no dudes en escribirnos o llamarnos. 
-              Nuestro equipo estará encantado de apoyarte.
+              {language === 'es'
+                ? 'Si tú o un ser querido necesitan información sobre nuestros servicios de hemodiálisis, o si deseas agendar una cita, no dudes en escribirnos o llamarnos. Nuestro equipo estará encantado de apoyarte.'
+                : 'If you or a loved one need information about our hemodialysis services, or if you want to schedule an appointment, do not hesitate to write to us or call us. Our team will be happy to support you.'}
             </p>
           </motion.div>
         </motion.div>

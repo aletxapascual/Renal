@@ -122,13 +122,15 @@ function Container1() {
           {/* Text Content with complementary colors */}
           <div className="space-y-6 transform transition-all duration-500 hover:translate-y-[-8px]">
             <h4 className="font-sans text-[#2B4C8C] text-3xl mb-4 opacity-0 animate-fadeIn">
-              Bienvenido a
+              {language === 'es' ? 'Bienvenido a' : 'Welcome to'}
             </h4>
             <h1 className="font-sans text-5xl font-bold text-[#2B4C8C] mb-8 opacity-0 animate-fadeIn animation-delay-200">
-              Hemodiálisis Renal
+              {language === 'es' ? 'Hemodiálisis Renal' : 'Renal Hemodialysis'}
             </h1>
             <p className="font-sans text-lg text-[#2B4C8C] mb-8 opacity-0 animate-fadeIn animation-delay-400 leading-relaxed">
-              Desde 2005, en <span className="font-medium text-[#2B4C8C] hover:text-[#3A5FA0] transition-colors">RENAL</span> ofrecemos hemodiálisis de alta calidad con tecnología avanzada y un enfoque amigable, brindando un beneficio psicológico a nuestros pacientes.
+              {language === 'es'
+                ? 'Desde 2005, en RENAL ofrecemos hemodiálisis de alta calidad con tecnología avanzada y un enfoque amigable, brindando un beneficio psicológico a nuestros pacientes.'
+                : 'Since 2005, at RENAL we offer high-quality hemodialysis with advanced technology and a friendly approach, providing psychological benefits to our patients.'}
             </p>
             <Link
               to="/contacto"
