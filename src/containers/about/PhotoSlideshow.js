@@ -3,8 +3,8 @@ import paciente1 from '../../images/pacientes/paciente1.png';
 import paciente2 from '../../images/pacientes/paciente2.png';
 import paciente3 from '../../images/pacientes/paciente3.png';
 import paciente4 from '../../images/pacientes/paciente4.png';
-import paciente5 from '../../images/pacientes/paciente5.png';
-import pacienteImg from '../../images/paciente.png';
+import sillon3 from '../../images/sillon3.png';
+import sillon1 from '../../images/sillon1.png';
 
 function PhotoSlideshow() {
   const scrollRef = useRef(null);
@@ -91,11 +91,11 @@ function PhotoSlideshow() {
 
   const images = [
     { src: paciente1, alt: "Paciente 1" },
+    { src: sillon3, alt: "Sillón 3" },
     { src: paciente2, alt: "Paciente 2" },
+    { src: sillon1, alt: "Sillón 1" },
     { src: paciente3, alt: "Paciente 3" },
     { src: paciente4, alt: "Paciente 4" },
-    { src: paciente5, alt: "Paciente 5" },
-    { src: pacienteImg, alt: "Paciente 6" },
     // Add only first image again to create smooth transition
     { src: paciente1, alt: "Paciente 1" }
   ];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { motion } from 'framer-motion';
-import pacienteImg from '../../images/paciente.png';
+import atencionImg from '../../images/atencion.jpg';
 
 function Container2() {
   const { language } = useLanguage();
@@ -134,8 +134,8 @@ function Container2() {
                 transition={{ duration: 0.3 }}
               >
                 <img 
-                  src={pacienteImg}
-                  alt="Paciente recibiendo atención" 
+                  src={atencionImg}
+                  alt="Atención al paciente" 
                   className="w-full h-full object-cover"
                 />
               </motion.div>

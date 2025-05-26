@@ -126,11 +126,7 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {user ? (
-            <button onClick={() => { setIsOpen(false); handleAccountRedirect(); }} className="w-full px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
-              Mi cuenta
-            </button>
-          ) : (
+          {!user && (
             <button onClick={() => { openLoginModal(); setIsOpen(false); }} className="w-full px-4 py-3 mt-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-lg font-medium rounded-full transition-colors duration-300">
               Iniciar sesión
             </button>
