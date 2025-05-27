@@ -137,6 +137,15 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+            {user?.role === 'admin' && (
+              <Link
+                to="/dashboard"
+                className={isActive('/dashboard') + " text-lg text-[#5773BB] font-semibold"}
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
           </nav>
         </div>
       )}

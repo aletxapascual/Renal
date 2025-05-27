@@ -4,7 +4,19 @@ import { db } from '../firebase';
 import { collection, getDocs, doc, updateDoc, getDoc, setDoc, query, where, addDoc } from 'firebase/firestore';
 import { products as storeProducts } from '../data/products';
 import { useNavigate } from 'react-router-dom';
-import { FaBox, FaChartLine, FaHistory, FaPlus, FaFileExport } from 'react-icons/fa';
+import { FaBox, FaChartLine, FaHistory, FaPlus } from 'react-icons/fa';
+import { Bar, Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+} from 'chart.js';
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const BRANCHES = [
   'Renal Clínica',
@@ -27,6 +39,13 @@ export default function Dashboard() {
   const [selectedProductId, setSelectedProductId] = useState('');
   const [selectedFlavorId, setSelectedFlavorId] = useState('');
   const [saleQuantity, setSaleQuantity] = useState('');
+  const [saleCart, setSaleCart] = useState([]);
+  const [salesPage, setSalesPage] = useState(1);
+  const salesPerPage = 10;
+  const paginatedSales = sales.slice((salesPage-1)*salesPerPage, salesPage*salesPerPage);
+  const totalSalesPages = Math.ceil(sales.length / salesPerPage);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const salesThisMonth = sales.filter(sale => (sale.fecha || '').startsWith(selectedMonth));
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -55,7 +74,9 @@ export default function Dashboard() {
       // Fetch inventory for selected branch
       const inventoryRef = doc(db, 'inventario', selectedBranch);
       const inventorySnap = await getDoc(inventoryRef);
+      console.log('Sucursal seleccionada:', selectedBranch);
       if (inventorySnap.exists()) {
+        console.log('Inventario obtenido de Firestore:', inventorySnap.data());
         setInventory(inventorySnap.data());
       } else {
         // Initialize inventory for this branch if it doesn't exist
@@ -69,6 +90,7 @@ export default function Dashboard() {
         });
         await setDoc(inventoryRef, initialInventory);
         setInventory(initialInventory);
+        console.log('Inventario inicializado en Firestore:', initialInventory);
       }
 
       // Fetch all sales for the selected branch
@@ -193,6 +215,115 @@ export default function Dashboard() {
     exportToCSV(salesData, `ventas_${selectedBranch}_${selectedDate}.csv`);
   };
 
+  const addProductToSaleCart = () => {
+    if (!selectedProductId || !saleQuantity || parseInt(saleQuantity) <= 0) return;
+    let product = products.find(p => p.id === selectedProductId);
+    let name = product.name;
+    let flavor = null;
+    let flavorId = null;
+    if (product.flavors && selectedFlavorId) {
+      const flavorObj = product.flavors.find(f => f.id === selectedFlavorId);
+      name = `${product.name} - ${flavorObj.name.es}`;
+      flavor = flavorObj.name.es;
+      flavorId = `${selectedProductId}_${selectedFlavorId}`;
+    }
+    const id = flavorId || selectedProductId;
+    setSaleCart([...saleCart, {
+      id,
+      name,
+      quantity: parseInt(saleQuantity),
+      price: product.price,
+      flavor
+    }]);
+    setSelectedProductId('');
+    setSelectedFlavorId('');
+    setSaleQuantity('');
+  };
+
+  const removeFromSaleCart = (idx) => {
+    setSaleCart(saleCart.filter((_, i) => i !== idx));
+  };
+
+  const registerSale = async () => {
+    try {
+      setError(null);
+      if (saleCart.length === 0) throw new Error('Agrega al menos un producto');
+      // Verificar stock suficiente para todos
+      for (const item of saleCart) {
+        const currentStock = inventory[item.id]?.stock || 0;
+        if (currentStock < item.quantity) {
+          throw new Error(`Stock insuficiente para ${item.name}`);
+        }
+      }
+      // Registrar venta en Firestore
+      const salesRef = collection(db, 'ventas');
+      const total = saleCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      await addDoc(salesRef, {
+        productos: saleCart,
+        total,
+        fecha: new Date().toISOString().split('T')[0],
+        timestamp: new Date().toISOString(),
+        sucursal: selectedBranch
+      });
+      // Descontar stock de todos los productos (uno por uno, espera cada update antes de seguir)
+      for (const item of saleCart) {
+        await updateInventory(item.id, -item.quantity);
+      }
+      setSaleCart([]);
+      await fetchData();
+    } catch (error) {
+      setError(error.message || 'Error al registrar la venta.');
+    }
+  };
+
+  // Calcular productos vendidos en el mes actual
+  const now = new Date();
+  const currentMonth = now.toISOString().slice(0, 7); // 'YYYY-MM'
+  const productSalesMap = {};
+  const productEarningsMap = {};
+  salesThisMonth.forEach(sale => {
+    (sale.productos || []).forEach(item => {
+      if (!productSalesMap[item.name]) productSalesMap[item.name] = 0;
+      if (!productEarningsMap[item.name]) productEarningsMap[item.name] = 0;
+      productSalesMap[item.name] += item.quantity;
+      productEarningsMap[item.name] += item.quantity * item.price;
+    });
+  });
+  const productSalesArray = Object.entries(productSalesMap).map(([name, quantity]) => ({ name, quantity, earnings: productEarningsMap[name] }));
+  const totalEarnings = productSalesArray.reduce((sum, p) => sum + p.earnings, 0);
+
+  // Colores para productos
+  const chartColors = [
+    '#5773BB', '#F6C85F', '#6FB07F', '#ED6A5A', '#9D79BC', '#4D9078', '#FFB85F', '#BFD7EA', '#FF6F61', '#5F4B8B'
+  ];
+
+  const doughnutData = {
+    labels: productSalesArray.map(p => p.name),
+    datasets: [
+      {
+        data: productSalesArray.map(p => p.earnings),
+        backgroundColor: chartColors.slice(0, productSalesArray.length),
+        borderWidth: 2,
+      },
+    ],
+  };
+  const doughnutOptions = {
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const idx = context.dataIndex;
+            const prod = productSalesArray[idx];
+            return `${prod.name}: ${prod.quantity} vendidos ($${prod.earnings.toLocaleString('en-US', {minimumFractionDigits: 2})})`;
+          }
+        }
+      },
+      title: { display: false }
+    },
+    cutout: '70%',
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -224,24 +355,21 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-[#5773BB]">Panel de Administración</h1>
-          <div className="flex items-center gap-4">
-            <select
-              value={selectedBranch}
-              onChange={(e) => setSelectedBranch(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2"
-            >
-              {BRANCHES.map(branch => (
-                <option key={branch} value={branch}>{branch}</option>
-              ))}
-            </select>
-            <button
-              onClick={activeTab === 'inventory' ? exportInventory : exportSales}
-              className="bg-[#5773BB] text-white px-4 py-2 rounded-lg hover:bg-[#4466B7] transition-colors flex items-center gap-2"
-            >
-              <FaFileExport />
-              Exportar {activeTab === 'inventory' ? 'Inventario' : 'Ventas'}
-            </button>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+          <div className="text-lg sm:text-xl font-semibold text-gray-700 text-center sm:text-left">
+            Sucursal: <span className="text-[#00BFB3] font-bold">{selectedBranch}</span>
           </div>
+          <select
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-auto"
+          >
+            {BRANCHES.map(branch => (
+              <option key={branch} value={branch}>{branch}</option>
+            ))}
+          </select>
         </div>
 
         {/* Mini Navbar */}
@@ -272,7 +400,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white rounded-xl shadow-sm p-2 sm:p-6 overflow-x-auto">
           {activeTab === 'inventory' ? (
             <div className="overflow-x-auto">
               <table className="min-w-full">
@@ -316,9 +444,15 @@ export default function Dashboard() {
                                 />
                                 <button
                                   onClick={() => updateInventory(flavorId, parseInt(quantityToAdd[flavorId] || 0))}
-                                  className="bg-[#00BFB3] text-white px-3 py-1 rounded-lg hover:bg-[#00A89D] transition-colors"
+                                  className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors"
                                 >
-                                  <FaPlus />
+                                  +
+                                </button>
+                                <button
+                                  onClick={() => updateInventory(flavorId, -parseInt(quantityToAdd[flavorId] || 0))}
+                                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                  -
                                 </button>
                               </div>
                             </td>
@@ -354,9 +488,15 @@ export default function Dashboard() {
                               />
                               <button
                                 onClick={() => updateInventory(product.id, parseInt(quantityToAdd[product.id] || 0))}
-                                className="bg-[#00BFB3] text-white px-3 py-1 rounded-lg hover:bg-[#00A89D] transition-colors"
+                                className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors"
                               >
-                                <FaPlus />
+                                +
+                              </button>
+                              <button
+                                onClick={() => updateInventory(product.id, -parseInt(quantityToAdd[product.id] || 0))}
+                                className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors"
+                              >
+                                -
                               </button>
                             </div>
                           </td>
@@ -372,32 +512,32 @@ export default function Dashboard() {
               <table className="min-w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-6">Producto</th>
-                    <th className="text-left py-4 px-6">Cantidad</th>
+                    <th className="text-left py-4 px-6">Productos</th>
                     <th className="text-left py-4 px-6">Total</th>
-                    <th className="text-left py-4 px-6">Hora</th>
+                    <th className="text-left py-4 px-6">Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sales.map((sale) => (
+                  {paginatedSales.map((sale) => (
                     <tr key={sale.id} className="border-b border-gray-100">
                       <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          {sale.productoNombre}
-                        </div>
+                        <ul>
+                          {(sale.productos || []).map((item, idx) => (
+                            <li key={idx}>
+                              {item.name} x {item.quantity}
+                            </li>
+                          ))}
+                        </ul>
                       </td>
-                      <td className="py-4 px-6">{sale.cantidad}</td>
                       <td className="py-4 px-6">${sale.total || 0}</td>
-                      <td className="py-4 px-6">
-                        {new Date(sale.timestamp).toLocaleTimeString()}
-                      </td>
+                      <td className="py-4 px-6">{sale.fecha ? sale.fecha : ''}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <h3 className="text-lg font-semibold mb-2">Registrar Nueva Venta</h3>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-4 items-end">
                   <select
                     value={selectedProductId || ''}
                     onChange={(e) => setSelectedProductId(e.target.value)}
@@ -433,23 +573,93 @@ export default function Dashboard() {
                     min="1"
                   />
                   <button
-                    onClick={() => {
-                      if (selectedProductId && selectedFlavorId) {
-                        const flavorId = `${selectedProductId}_${selectedFlavorId}`;
-                        addSale(flavorId, parseInt(saleQuantity || 0));
-                      } else {
-                        addSale(selectedProductId, parseInt(saleQuantity || 0));
-                      }
-                    }}
+                    onClick={addProductToSaleCart}
                     className="bg-[#00BFB3] text-white px-4 py-2 rounded-lg hover:bg-[#00A89D] transition-colors"
                   >
-                    Registrar Venta
+                    +
                   </button>
                 </div>
+                {saleCart.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold mb-2">Productos a vender:</h4>
+                    <ul className="mb-2">
+                      {saleCart.map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-2 mb-1">
+                          <span>{item.name} x {item.quantity} (${item.price * item.quantity})</span>
+                          <button onClick={() => removeFromSaleCart(idx)} className="text-red-500 hover:underline">Quitar</button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="font-bold mb-2">Total: ${saleCart.reduce((sum, item) => sum + item.price * item.quantity, 0)}</div>
+                    <button
+                      onClick={registerSale}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Registrar Venta
+                    </button>
+                  </div>
+                )}
+                {error && (
+                  <div className="mt-2 text-red-600 font-semibold text-center">{error}</div>
+                )}
               </div>
             </div>
           )}
         </div>
+        {/* Resumen de productos vendidos este mes */}
+        {activeTab === 'sales' && (
+          <div className="mt-8">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+              <label className="font-semibold">Mes:
+                <input
+                  type="month"
+                  value={selectedMonth}
+                  onChange={e => { setSelectedMonth(e.target.value); setSalesPage(1); }}
+                  className="ml-2 border border-gray-300 rounded-lg px-2 py-1"
+                />
+              </label>
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-extrabold mb-4 text-green-600 text-center">Productos vendidos este mes</h3>
+            <div className="flex flex-col md:flex-row md:items-center gap-8">
+              <div className="flex-1">
+                <ul className="mb-6">
+                  {productSalesArray.length === 0 && <li>No hay ventas este mes.</li>}
+                  {productSalesArray.map((prod, idx) => (
+                    <li key={idx} className="mb-1 flex items-center gap-2">
+                      <span style={{display:'inline-block',width:14,height:14,background:chartColors[idx],borderRadius:3}}></span>
+                      {prod.name}: <span className="font-bold">{prod.quantity}</span> vendidos <span className="text-gray-500">(${prod.earnings.toLocaleString('en-US', {minimumFractionDigits:2})})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {productSalesArray.length > 0 && (
+                <div className="relative flex-1 max-w-xs mx-auto">
+                  <Doughnut data={doughnutData} options={doughnutOptions} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <div className="text-lg font-bold text-[#5773BB] text-center">Ganancia total</div>
+                    <div className="text-2xl font-extrabold text-[#5773BB] text-center">${totalEarnings.toLocaleString('en-US', {minimumFractionDigits:2})}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Paginación */}
+            {totalSalesPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <button
+                  onClick={() => setSalesPage(p => Math.max(1, p-1))}
+                  disabled={salesPage === 1}
+                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                >Anterior</button>
+                <span className="font-semibold">Página {salesPage} de {totalSalesPages}</span>
+                <button
+                  onClick={() => setSalesPage(p => Math.min(totalSalesPages, p+1))}
+                  disabled={salesPage === totalSalesPages}
+                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                >Siguiente</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
