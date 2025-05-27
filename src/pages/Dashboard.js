@@ -223,7 +223,7 @@ export default function Dashboard() {
     let flavorId = null;
     if (product.flavors && selectedFlavorId) {
       const flavorObj = product.flavors.find(f => f.id === selectedFlavorId);
-      name = `${product.name} - ${flavorObj.name.es}`;
+      name = `${product.name} ${flavorObj.name.es}`;
       flavor = flavorObj.name.es;
       flavorId = `${selectedProductId}_${selectedFlavorId}`;
     }
@@ -424,14 +424,14 @@ export default function Dashboard() {
                                 {flavor.images && flavor.images[0] && (
                                   <img
                                     src={flavor.images[0]}
-                                    alt={`${product.name} - ${flavor.name.es}`}
+                                    alt={`${product.name} ${flavor.name.es}`}
                                     className="w-10 h-10 object-cover rounded-lg"
                                   />
                                 )}
-                                <span>{product.name} - {flavor.name.es}</span>
+                                <span>{product.name} {flavor.name.es}</span>
                               </div>
                             </td>
-                            <td className="py-4 px-6">{inventory[flavorId]?.stock || 0}</td>
+                            <td className="py-4 px-6 text-center">{inventory[flavorId]?.stock || 0}</td>
                             <td className="py-4 px-6">
                               <div className="flex items-center gap-2">
                                 <input
@@ -475,7 +475,7 @@ export default function Dashboard() {
                               <span>{product.name}</span>
                             </div>
                           </td>
-                          <td className="py-4 px-6">{inventory[product.id]?.stock || 0}</td>
+                          <td className="py-4 px-6 text-center">{inventory[product.id]?.stock || 0}</td>
                           <td className="py-4 px-6">
                             <div className="flex items-center gap-2">
                               <input
