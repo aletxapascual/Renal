@@ -71,11 +71,10 @@ export default function Dashboard() {
         setInventory(initialInventory);
       }
 
-      // Fetch sales for selected date and branch
+      // Fetch all sales for the selected branch
       const salesRef = collection(db, 'ventas');
       const salesQuery = query(
         salesRef,
-        where('fecha', '==', selectedDate),
         where('sucursal', '==', selectedBranch)
       );
       const salesSnapshot = await getDocs(salesQuery);
@@ -235,12 +234,6 @@ export default function Dashboard() {
                 <option key={branch} value={branch}>{branch}</option>
               ))}
             </select>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2"
-            />
             <button
               onClick={activeTab === 'inventory' ? exportInventory : exportSales}
               className="bg-[#5773BB] text-white px-4 py-2 rounded-lg hover:bg-[#4466B7] transition-colors flex items-center gap-2"
