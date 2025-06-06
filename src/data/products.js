@@ -28,7 +28,7 @@ export const products = {
       '/images/productos/maloobtalPro.png',
       '/images/productos/maloobtal2Fondo.png'
     ],
-    fichaTecnica: '/fichasTecnicas/maloobtalpro.pdf'
+    fichaTecnica: '/fichasTecnicas/maloobtalPro.pdf'
   },
   rennut: {
     id: 'rennut',
