@@ -85,7 +85,7 @@ function Footer() {
                   onClick={() => window.scrollTo(0, 0)}
                   className="text-white/80 hover:text-white transition-colors"
                 >
-                  {language === 'es' ? 'Tienda' : 'Store'}
+                  {language === 'es' ? 'Productos' : 'Products'}
                 </Link>
               </li>
               <li>

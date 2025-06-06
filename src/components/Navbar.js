@@ -33,7 +33,7 @@ const Navbar = () => {
   const navLinks = [
     { path: "/", name: language === 'es' ? "Inicio" : "Home" },
     { path: "/acerca-de", name: language === 'es' ? "Acerca de" : "About" },
-    { path: "/tienda", name: language === 'es' ? "Tienda" : "Shop" },
+    { path: "/tienda", name: language === 'es' ? "Productos" : "Products" },
     { path: "/contacto", name: language === 'es' ? "Contacto" : "Contact" },
   ];
 
