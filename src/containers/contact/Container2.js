@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaMapMarkedAlt, FaClock, FaPaperPlane } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaMapMarkedAlt, FaClock, FaPaperPlane, FaWhatsapp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -8,7 +8,6 @@ function Container2() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     message: ''
   });
   const [focusedField, setFocusedField] = useState(null);
@@ -22,15 +21,26 @@ function Container2() {
     });
   };
 
+  const handleWhatsAppRedirect = () => {
+    const message = `Nombre: ${formData.name}%0AEmail: ${formData.email}%0AMensaje: ${formData.message}`;
+    const whatsappUrl = `https://wa.me/529994511893?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Redirigir a WhatsApp
+    handleWhatsAppRedirect();
+
+    // Mostrar mensaje de éxito y limpiar formulario
     setTimeout(() => {
       setShowSuccess(true);
       setIsSubmitting(false);
       setTimeout(() => {
         setShowSuccess(false);
-        setFormData({ name: '', email: '', phone: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
       }, 3000);
     }, 1000);
   };
@@ -85,12 +95,6 @@ function Container2() {
       label: language === 'es' ? '¿Cuál es tu correo electrónico?' : 'What is your email?',
       type: 'email',
       placeholder: language === 'es' ? 'correo@ejemplo.com' : 'email@example.com'
-    },
-    {
-      id: 'phone',
-      label: language === 'es' ? '¿Cuál es tu número telefónico?' : 'What is your phone number?',
-      type: 'tel',
-      placeholder: language === 'es' ? '(999) 123-4567' : '(999) 123-4567'
     }
   ];
 
@@ -170,8 +174,8 @@ function Container2() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span>{language === 'es' ? 'Enviar Mensaje' : 'Send Message'}</span>
-              <FaPaperPlane className={`w-4 h-4 transition-transform duration-300 ${isSubmitting ? 'animate-pulse' : ''}`} />
+              <FaWhatsapp className="w-5 h-5 mr-2" />
+              <span>{language === 'es' ? 'Enviar por WhatsApp' : 'Send via WhatsApp'}</span>
             </motion.button>
             {showSuccess && (
               <motion.div
@@ -180,8 +184,8 @@ function Container2() {
                 className="text-green-600 text-center mt-4"
               >
                 {language === 'es'
-                  ? '¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.'
-                  : 'Message sent successfully! We will contact you soon.'}
+                  ? '¡Mensaje enviado con éxito! Te redirigimos a WhatsApp.'
+                  : 'Message sent successfully! Redirecting you to WhatsApp.'}
               </motion.div>
             )}
           </form>
