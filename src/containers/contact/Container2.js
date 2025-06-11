@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaMapMarkedAlt, FaClock, FaPaperPlane, FaWhatsapp } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaMapMarkedAlt, FaClock, FaWhatsapp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 

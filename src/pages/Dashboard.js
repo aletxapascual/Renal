@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { collection, getDocs, doc, updateDoc, getDoc, setDoc, query, where, addDoc } from 'firebase/firestore';
 import { products as storeProducts } from '../data/products';
 import { useNavigate } from 'react-router-dom';
-import { FaBox, FaChartLine, FaHistory, FaPlus } from 'react-icons/fa';
+import { FaBox, FaChartLine } from 'react-icons/fa';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,

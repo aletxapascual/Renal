@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import pacienteImg from '../../images/paciente.png'
 import { useLanguage } from '../../context/LanguageContext'
@@ -7,7 +7,6 @@ import { motion } from 'framer-motion'
 
 function Container2() {
   const { language } = useLanguage()
-  const [hoveredFeature, setHoveredFeature] = useState(null)
 
   const features = [
     {

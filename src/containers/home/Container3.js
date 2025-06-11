@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import hemProtJuntos from '../../images/productos/hemProtJuntos.png';
 import renNutJuntos from '../../images/productos/renNutJuntos.png';
 import maloobtalJuntos from '../../images/productos/maloobtalJuntos.png';

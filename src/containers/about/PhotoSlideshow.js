@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import paciente1 from '../../images/pacientes/paciente1.png';
+import React, { useEffect, useRef } from 'react';
 import paciente2 from '../../images/pacientes/paciente2.png';
 import paciente3 from '../../images/pacientes/paciente3.png';
 import paciente4 from '../../images/pacientes/paciente4.png';
@@ -7,7 +6,6 @@ import sillon3 from '../../images/sillon3.png';
 
 function PhotoSlideshow() {
   const scrollRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
@@ -71,7 +69,6 @@ function PhotoSlideshow() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          setIsVisible(entry.isIntersecting);
           isScrolling = entry.isIntersecting;
         });
       },
