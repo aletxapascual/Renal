@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import equipoImg from '../../images/equipo.png';
-import exteriorImg from '../../images/exterior.png';
-import recepcionImg from '../../images/repcepcion.png';
-import sillon1Img from '../../images/sillon1.png';
-import salaImg from '../../images/sala.png';
 import { FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
+
+// Import optimized images
+import equipoImg from '../../images/optimized/equipo.webp';
+import exteriorImg from '../../images/optimized/exterior.webp';
+import recepcionImg from '../../images/optimized/repcepcion.webp';
+import sillon1Img from '../../images/optimized/sillon1.webp';
+import salaImg from '../../images/optimized/sala.webp';
 
 function Container1() {
   const { language } = useLanguage();
@@ -143,7 +145,7 @@ function Container1() {
             </Link>
           </div>
 
-          {/* Enhanced Slideshow with improved styling */}
+          {/* Enhanced Slideshow with improved styling and lazy loading */}
           <div className="relative transform transition-all duration-500 hover:translate-y-[-8px]">
             <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-300 ring-1 ring-[#2B4C8C]/10">
               {slides.map((slide, index) => (
@@ -157,6 +159,7 @@ function Container1() {
                     src={slide.image}
                     alt={slide.alt}
                     className="w-full h-full object-cover transform transition-transform duration-700 hover:scale-105"
+                    loading={index === 0 ? "eager" : "lazy"}
                   />
                   {/* Enhanced Slide Caption */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#2B4C8C]/90 via-[#2B4C8C]/70 to-transparent p-6 transform transition-transform duration-300">
