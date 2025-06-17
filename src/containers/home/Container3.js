@@ -86,26 +86,29 @@ function Container3() {
                   {product.name}
                 </h3>
                 <p className="text-gray-700 mb-8 text-center flex-grow">
-                  {language === 'es' ? product.shortDescription.es : product.shortDescription.en}
+                  {product.description[language]}
                 </p>
-                {product.flavors && (
+                {Array.isArray(product.flavors) && product.flavors.length > 0 && (
                   <div className="flex flex-wrap gap-2 justify-center mb-6">
-                    {product.flavors.map((flavor, index) => (
-                      <span
-                        key={index}
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          flavor.name.es.toLowerCase().includes('vainilla')
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : flavor.name.es.toLowerCase().includes('chocolate')
-                            ? 'bg-[#8B4513]/20 text-[#8B4513]'
-                            : flavor.name.es.toLowerCase().includes('fresa')
-                            ? 'bg-pink-100 text-pink-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {language === 'es' ? flavor.name.es : flavor.name.en}
-                      </span>
-                    ))}
+                    {product.flavors.map((flavor, index) => {
+                      if (!flavor || typeof flavor !== 'object' || !flavor.name || typeof flavor.name !== 'object' || typeof flavor.name.es !== 'string' || !flavor.name.es || typeof flavor.name.en !== 'string' || !flavor.name.en) return null;
+                      return (
+                        <span
+                          key={index}
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            flavor.name.es.toLowerCase().includes('vainilla')
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : flavor.name.es.toLowerCase().includes('chocolate')
+                              ? 'bg-[#8B4513]/20 text-[#8B4513]'
+                              : flavor.name.es.toLowerCase().includes('fresa')
+                              ? 'bg-pink-100 text-pink-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {language === 'es' ? flavor.name.es : flavor.name.en}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
                 <button
