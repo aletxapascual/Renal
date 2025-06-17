@@ -54,51 +54,54 @@ function Container2() {
             {sortedProducts.map((product) => (
               <motion.div
                 key={product.id}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                whileHover={{ y: -5 }}
-                onClick={() => handleProductClick(product.id)}
+                className="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 ring-1 ring-[#5773BB]/10 flex flex-col h-full"
               >
-                <div className="flex flex-col md:flex-row">
-                  <div className="w-full md:w-1/3 bg-gray-50 p-6 flex items-center justify-center">
-                    <img
-                      src={getProductImage(product)}
-                      alt={product.name}
-                      className="w-full h-48 object-contain"
-                    />
-                  </div>
-
-                  <div className="flex flex-col flex-grow space-y-4 p-6">
-                    <h3 className="text-3xl font-bold text-[#5773BB]">{product.name}</h3>
-                    {product.flavors && (
-                      <div className="flex flex-wrap gap-2">
-                        {product.flavors.map(flavor => (
-                          <span
-                            key={flavor.id}
-                            className="inline-block px-3 py-1 bg-[#5773BB]/10 text-[#5773BB] rounded-full text-sm font-medium"
-                          >
-                            {language === 'es' ? flavor.name.es : flavor.name.en}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-base text-gray-600 leading-relaxed flex-grow">
-                      {language === 'es' ? product.shortDescription.es : product.shortDescription.en}
-                    </p>
-                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.scrollTo(0, 0);
-                          navigate(`/tienda/${product.id}`);
-                        }}
-                        className="bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center gap-2 px-6 py-2 rounded-lg shadow-sm hover:shadow-md"
-                      >
-                        {language === 'es' ? 'Ver Detalles' : 'View Details'}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                      </button>
+                <div className="aspect-[3/2] overflow-hidden bg-white p-4">
+                  <img
+                    src={getProductImage(product)}
+                    alt={product.name}
+                    className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-8 flex flex-col flex-grow">
+                  <h3 className="text-3xl font-bold text-[#5773BB] mb-8">{product.name}</h3>
+                  {product.flavors && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {product.flavors.map((flavor, index) => (
+                        <span
+                          key={index}
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            flavor.name.es.toLowerCase().includes('vainilla')
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : flavor.name.es.toLowerCase().includes('chocolate')
+                              ? 'bg-[#8B4513]/20 text-[#8B4513]'
+                              : flavor.name.es.toLowerCase().includes('fresa')
+                              ? 'bg-pink-100 text-pink-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {language === 'es' ? flavor.name.es : flavor.name.en}
+                        </span>
+                      ))}
                     </div>
+                  )}
+                  <p className="text-gray-700 mb-8 flex-grow">
+                    {language === 'es' ? product.shortDescription.es : product.shortDescription.en}
+                  </p>
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.scrollTo(0, 0);
+                        navigate(`/tienda/${product.id}`);
+                      }}
+                      className="bg-[#00BFB3] hover:bg-[#00A89D] text-white transition-colors duration-300 font-medium text-lg flex items-center gap-2 px-6 py-2 rounded-lg shadow-sm hover:shadow-md"
+                    >
+                      {language === 'es' ? 'Ver Detalles' : 'View Details'}
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </motion.div>

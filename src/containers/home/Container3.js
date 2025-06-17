@@ -74,20 +74,40 @@ function Container3() {
               key={product.id}
               className="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 ring-1 ring-[#5773BB]/10 flex flex-col h-full"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-white p-8">
+              <div className="aspect-[3/2] overflow-hidden bg-white p-4">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <div className="p-8 flex flex-col flex-grow">
-                <h3 className="text-2xl font-bold text-[#5773BB] mb-4 text-center">
+                <h3 className="text-2xl font-bold text-[#5773BB] mb-8 text-center">
                   {product.name}
                 </h3>
                 <p className="text-gray-700 mb-8 text-center flex-grow">
-                  {product.description[language]}
+                  {language === 'es' ? product.shortDescription.es : product.shortDescription.en}
                 </p>
+                {product.flavors && (
+                  <div className="flex flex-wrap gap-2 justify-center mb-6">
+                    {product.flavors.map((flavor, index) => (
+                      <span
+                        key={index}
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          flavor.name.es.toLowerCase().includes('vainilla')
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : flavor.name.es.toLowerCase().includes('chocolate')
+                            ? 'bg-[#8B4513]/20 text-[#8B4513]'
+                            : flavor.name.es.toLowerCase().includes('fresa')
+                            ? 'bg-pink-100 text-pink-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {language === 'es' ? flavor.name.es : flavor.name.en}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={() => handleProductClick(product.id)}
                   className="inline-flex items-center justify-center w-full px-6 py-4 text-base font-medium text-white bg-gradient-to-r from-[#5773BB] to-[#4466B7] hover:from-[#4466B7] hover:to-[#5773BB] rounded-full transition-colors duration-300"

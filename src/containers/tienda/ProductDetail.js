@@ -280,10 +280,22 @@ function ProductDetail() {
                       <button
                         key={flavor.id}
                         onClick={() => handleFlavorChange(flavor.id)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-                          selectedFlavor === flavor.id
-                            ? 'bg-[#5773BB] text-white shadow-lg'
-                            : 'bg-[#5773BB]/10 text-[#5773BB] hover:bg-[#5773BB]/20'
+                        className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 border-2 focus:outline-none ${
+                          flavor.name.es.toLowerCase().includes('vainilla')
+                            ? (selectedFlavor === flavor.id
+                                ? 'bg-yellow-100 text-yellow-800 border-yellow-400 shadow-lg'
+                                : 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100')
+                          : flavor.name.es.toLowerCase().includes('chocolate')
+                            ? (selectedFlavor === flavor.id
+                                ? 'bg-[#8B4513]/20 text-[#8B4513] border-[#8B4513] shadow-lg'
+                                : 'bg-[#8B4513]/10 text-[#8B4513] border-[#8B4513]/30 hover:bg-[#8B4513]/20')
+                          : flavor.name.es.toLowerCase().includes('fresa')
+                            ? (selectedFlavor === flavor.id
+                                ? 'bg-pink-100 text-pink-800 border-pink-400 shadow-lg'
+                                : 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100')
+                          : (selectedFlavor === flavor.id
+                                ? 'bg-[#5773BB] text-white border-[#5773BB] shadow-lg'
+                                : 'bg-[#5773BB]/10 text-[#5773BB] border-[#5773BB]/20 hover:bg-[#5773BB]/20')
                         }`}
                       >
                         {language === 'es' ? flavor.name.es : flavor.name.en}
@@ -296,6 +308,28 @@ function ProductDetail() {
               <p className="text-gray-600 leading-relaxed">
                 {language === 'es' ? product.description.es : product.description.en}
               </p>
+
+              {product.preparation && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-[#5773BB] mb-4">
+                    {language === 'es' ? 'Preparación' : 'Preparation'}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {language === 'es' ? product.preparation.es : product.preparation.en}
+                  </p>
+                </div>
+              )}
+
+              {product.technicalSheet && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-[#5773BB] mb-4">
+                    {language === 'es' ? 'Ficha Técnica' : 'Technical Sheet'}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {language === 'es' ? product.technicalSheet.es : product.technicalSheet.en}
+                  </p>
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">
