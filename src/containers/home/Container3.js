@@ -19,26 +19,29 @@ function Container3() {
       id: 'hemprot',
       name: 'HemProt',
       image: hemProtJuntos,
-      description: language === 'es'
-        ? 'Contribuye al mantenimiento y crecimiento muscular, proporcionando los nutrientes necesarios para la recuperación y el desarrollo muscular mediante una mezcla de proteínas y minerales esenciales.'
-        : 'Contributes to muscle maintenance and growth, providing the necessary nutrients for muscle recovery and development through a blend of proteins and essential minerals.',
+      description: {
+        es: 'Suplemento alto en proteína a base de albúmina de huevo, ideal para pacientes en diálisis. Bajo en sodio, fósforo y potasio.',
+        en: 'High-protein supplement based on egg albumin, ideal for dialysis patients. Low in sodium, phosphorus and potassium.'
+      }
     },
     {
       id: 'rennut',
       name: 'RenNut',
       image: renNutJuntos,
-      description: language === 'es'
-        ? 'Enfocado en la combinación de prebióticos y probióticos para maximizar los beneficios digestivos, promueve una salud digestiva óptima, mejorando el tránsito intestinal y contribuyendo al bienestar general del intestino.'
-        : 'Focused on combining prebiotics and probiotics to maximize digestive benefits, promotes optimal digestive health, improving intestinal transit and contributing to overall intestinal well-being.',
+      description: {
+        es: 'Suplemento nutricional con L-carnitina, bajo en proteína. Diseñado para pacientes renales sin diálisis que requieren calorías sin sobrecargar al riñón.',
+        en: 'Nutritional supplement with L-carnitine, low in protein. Designed for renal patients without dialysis who require calories without overloading the kidney.'
+      }
     },
     {
       id: 'maloobtal',
       name: 'Maloobtal',
       image: maloobtalJuntos,
-      description: language === 'es'
-        ? 'Diseñados para mejorar la salud digestiva y el bienestar intestinal, comparten el objetivo de promover una digestión saludable y eficiente, contribuyendo a un equilibrio óptimo en el sistema digestivo.'
-        : 'Designed to improve digestive health and intestinal well-being, sharing the goal of promoting healthy and efficient digestion, contributing to optimal balance in the digestive system.',
-    },
+      description: {
+        es: 'Bicarbonato de sodio en dosis práctica para corregir acidosis metabólica en pacientes con enfermedad renal crónica.',
+        en: 'Sodium bicarbonate in practical doses to correct metabolic acidosis in patients with chronic kidney disease.'
+      }
+    }
   ];
 
   return (
@@ -49,6 +52,7 @@ function Container3() {
         <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#99AAD6]/30 to-transparent blur-3xl" />
         <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#99AAD6]/30 to-transparent blur-3xl" />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h4 className="text-[#5773BB] text-lg font-medium mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
@@ -82,7 +86,7 @@ function Container3() {
                   {product.name}
                 </h3>
                 <p className="text-gray-700 mb-8 text-center flex-grow">
-                  {product.description}
+                  {product.description[language]}
                 </p>
                 <button
                   onClick={() => handleProductClick(product.id)}
