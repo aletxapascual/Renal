@@ -61,8 +61,61 @@ function ProductDetail() {
       } else {
         setImages(product.images);
       }
+
+      // Log detailed product information
+      console.log('Detalles del producto:', {
+        nombre: product.name,
+        precio: product.price,
+        sabores: product.flavors ? product.flavors.map(f => ({
+          nombre: f.name.es,
+          imagenes: f.images.length
+        })) : 'No tiene sabores',
+        descripcion: product.description[language],
+        totalImagenes: product.flavors ? 
+          product.flavors.reduce((total, f) => total + f.images.length, 0) : 
+          (product.images ? product.images.length : 0)
+      });
     }
-  }, [product]);
+  }, [product, language]);
+
+  useEffect(() => {
+    const fetchAllBranchStocks = async () => {
+      const stocks = {};
+      
+      for (const loc of storeLocations) {
+        try {
+          const inventarioRef = doc(db, 'inventario', loc.name);
+          const inventarioSnap = await getDoc(inventarioRef);
+          
+          if (inventarioSnap.exists()) {
+            const inventario = inventarioSnap.data();
+            
+            if (product.flavors && selectedFlavor) {
+              // Para productos con sabores (HemProt y RenNut)
+              const flavorId = `${product.id}_${selectedFlavor}`;
+              const flavorStock = inventario[flavorId]?.stock ?? 0;
+              stocks[loc.name] = flavorStock;
+            } else {
+              // Para productos sin sabores
+              const productStock = inventario[product.id]?.stock ?? 0;
+              stocks[loc.name] = productStock;
+            }
+          } else {
+            stocks[loc.name] = 0;
+          }
+        } catch (error) {
+          console.error(`Error al obtener stock de ${loc.name}:`, error);
+          stocks[loc.name] = 0;
+        }
+      }
+      
+      setBranchStocks(stocks);
+    };
+
+    if (showAvailabilityModal) {
+      fetchAllBranchStocks();
+    }
+  }, [showAvailabilityModal, product, selectedFlavor]);
 
   useEffect(() => {
     const checkStock = async () => {
@@ -75,15 +128,14 @@ function ProductDetail() {
         const inventarioSnap = await getDoc(inventarioRef);
         if (inventarioSnap.exists()) {
           const inventario = inventarioSnap.data();
-          const productStock = inventario[product.id];
-          if (productStock) {
-            if (product.flavors && selectedFlavor) {
-              setStock(productStock.flavors?.[selectedFlavor] ?? 0);
-            } else {
-              setStock(productStock.stock ?? 0);
-            }
+          
+          if (product.flavors && selectedFlavor) {
+            // Para productos con sabores (HemProt y RenNut)
+            const flavorId = `${product.id}_${selectedFlavor}`;
+            setStock(inventario[flavorId]?.stock ?? 0);
           } else {
-            setStock(0);
+            // Para productos sin sabores
+            setStock(inventario[product.id]?.stock ?? 0);
           }
         } else {
           setStock(0);
@@ -96,39 +148,17 @@ function ProductDetail() {
     checkStock();
   }, [product, selectedBranch, selectedFlavor]);
 
-  useEffect(() => {
-    const fetchAllBranchStocks = async () => {
-      const stocks = {};
-      for (const loc of storeLocations) {
-        try {
-          const inventarioRef = doc(db, 'inventario', loc.name);
-          const inventarioSnap = await getDoc(inventarioRef);
-          if (inventarioSnap.exists()) {
-            const inventario = inventarioSnap.data();
-            const productStock = inventario[product.id];
-            if (productStock) {
-              if (product.flavors && selectedFlavor) {
-                stocks[loc.name] = productStock.flavors?.[selectedFlavor] ?? 0;
-              } else {
-                stocks[loc.name] = productStock.stock ?? 0;
-              }
-            } else {
-              stocks[loc.name] = 0;
-            }
-          } else {
-            stocks[loc.name] = 0;
-          }
-        } catch (error) {
-          console.error(`Error fetching stock for ${loc.name}:`, error);
-          stocks[loc.name] = 0;
-        }
-      }
-      setBranchStocks(stocks);
-    };
-    if (showAvailabilityModal) {
-      fetchAllBranchStocks();
-    }
-  }, [showAvailabilityModal, product, selectedFlavor]);
+  const handleStoreSelect = (storeIndex) => {
+    setSelectedStore(storeIndex);
+    const store = storeLocations[storeIndex];
+    console.log('Sucursal seleccionada:', {
+      nombre: store.name,
+      direccion: store.address,
+      producto: product.name,
+      sabor: selectedFlavor ? product.flavors.find(f => f.id === selectedFlavor)?.name.es : 'Sin sabor',
+      stock: branchStocks[store.name] ?? 0
+    });
+  };
 
   // If product doesn't exist, redirect to shop page
   if (!product) {
@@ -433,12 +463,14 @@ function ProductDetail() {
                       name="store"
                       className="mr-3 accent-[#5773BB]"
                       checked={selectedStore === idx}
-                      onChange={() => setSelectedStore(idx)}
+                      onChange={() => handleStoreSelect(idx)}
                     />
                     <span className="font-bold text-[#5773BB] block mb-1">{store.name}</span>
                     <span className="block text-gray-700 text-sm mb-1">{store.address}</span>
                     <span className="block text-gray-500 text-xs">{store.availability}</span>
-                    <span className="block text-sm mt-1 font-semibold text-[#5773BB]">Stock: {branchStocks[store.name] ?? '...'}</span>
+                    <span className="block text-sm mt-1 font-semibold text-[#5773BB]">
+                      Stock: {branchStocks[store.name] ?? '...'}
+                    </span>
                   </label>
                 ))}
                 <button

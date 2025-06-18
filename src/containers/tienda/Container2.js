@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,24 @@ function Container2() {
 
   const productsList = Object.values(products);
   
+  useEffect(() => {
+    // Log product information for all users
+    console.log('Productos disponibles:', productsList.map(product => ({
+      nombre: product.name,
+      precio: product.price,
+      sabores: product.flavors ? product.flavors.map(f => ({
+        nombre: f.name.es,
+        imagenes: f.images.length
+      })) : 'No tiene sabores',
+      totalImagenes: product.flavors ? 
+        product.flavors.reduce((total, f) => total + f.images.length, 0) : 
+        (product.images ? product.images.length : 0)
+    })));
+    console.log('Total de productos:', productsList.length);
+    console.log('Productos con sabores:', productsList.filter(p => p.flavors && p.flavors.length > 0).length);
+    console.log('Productos sin sabores:', productsList.filter(p => !p.flavors || p.flavors.length === 0).length);
+  }, [productsList]);
+
   const sortedProducts = [...productsList].sort((a, b) => {
     if (sortOrder === 'default') {
       return 0;

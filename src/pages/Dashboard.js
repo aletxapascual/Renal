@@ -76,8 +76,24 @@ export default function Dashboard() {
       const inventorySnap = await getDoc(inventoryRef);
       console.log('Sucursal seleccionada:', selectedBranch);
       if (inventorySnap.exists()) {
-        console.log('Inventario obtenido de Firestore:', inventorySnap.data());
-        setInventory(inventorySnap.data());
+        const inventoryData = inventorySnap.data();
+        console.log('Inventario completo:', {
+          sucursal: selectedBranch,
+          productos: Object.entries(inventoryData).map(([productId, data]) => {
+            const product = productsData.find(p => p.id === productId);
+            return {
+              producto: product?.name || productId,
+              stock: data.stock || 0,
+              sabores: product?.flavors ? 
+                product.flavors.map(flavor => ({
+                  sabor: flavor.name.es,
+                  stock: data.flavors?.[flavor.id] || 0
+                })) : [],
+              tipo: product?.flavors ? 'Con sabores' : 'Sin sabores'
+            };
+          })
+        });
+        setInventory(inventoryData);
       } else {
         // Initialize inventory for this branch if it doesn't exist
         const initialInventory = {};
@@ -85,7 +101,10 @@ export default function Dashboard() {
           initialInventory[product.id] = {
             stock: 0,
             name: product.name,
-            price: product.price
+            price: product.price,
+            flavors: product.flavors ? 
+              Object.fromEntries(product.flavors.map(f => [f.id, 0])) : 
+              undefined
           };
         });
         await setDoc(inventoryRef, initialInventory);
