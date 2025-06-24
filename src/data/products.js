@@ -75,13 +75,6 @@ export const products = {
           '/images/productos/renNutChocolate.png',
           '/images/productos/renNutJuntos.png'
         ]
-      },
-      {
-        id: 'fresa',
-        name: { es: 'Fresa', en: 'Strawberry' },
-        images: [
-          '/images/productos/renNutJuntos.png'
-        ]
       }
     ],
     defaultFlavor: 'vainilla',
