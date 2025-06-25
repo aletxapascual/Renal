@@ -25,7 +25,6 @@ async function migrateBranch(branch) {
   const ref = doc(db, 'inventario', branch);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
-    console.log(`No existe inventario para sucursal: ${branch}`);
     return;
   }
   const data = snap.data();
@@ -36,7 +35,6 @@ async function migrateBranch(branch) {
   if (data.hemprot && data.hemprot.flavors) {
     for (const [flavor, stock] of Object.entries(data.hemprot.flavors)) {
       updates[`hemprot_${flavor}`] = { stock };
-      console.log(`Sucursal ${branch}: hemprot_${flavor} => stock ${stock}`);
     }
     delete updates.hemprot;
     changed = true;
@@ -45,7 +43,6 @@ async function migrateBranch(branch) {
   if (data.rennut && data.rennut.flavors) {
     for (const [flavor, stock] of Object.entries(data.rennut.flavors)) {
       updates[`rennut_${flavor}`] = { stock };
-      console.log(`Sucursal ${branch}: rennut_${flavor} => stock ${stock}`);
     }
     delete updates.rennut;
     changed = true;
@@ -61,9 +58,6 @@ async function migrateBranch(branch) {
   }
   if (changed) {
     await updateDoc(ref, updates);
-    console.log(`Sucursal ${branch}: inventario migrado correctamente.`);
-  } else {
-    console.log(`Sucursal ${branch}: no se detectaron cambios necesarios.`);
   }
 }
 
@@ -71,7 +65,6 @@ async function main() {
   for (const branch of BRANCHES) {
     await migrateBranch(branch);
   }
-  console.log('Migración finalizada.');
 }
 
 main().catch(e => {

@@ -61,20 +61,6 @@ function ProductDetail() {
       } else {
         setImages(product.images);
       }
-
-      // Log detailed product information
-      console.log('Detalles del producto:', {
-        nombre: product.name,
-        precio: product.price,
-        sabores: product.flavors ? product.flavors.map(f => ({
-          nombre: f.name.es,
-          imagenes: f.images.length
-        })) : 'No tiene sabores',
-        descripcion: product.description[language],
-        totalImagenes: product.flavors ? 
-          product.flavors.reduce((total, f) => total + f.images.length, 0) : 
-          (product.images ? product.images.length : 0)
-      });
     }
   }, [product, language]);
 
@@ -151,13 +137,6 @@ function ProductDetail() {
   const handleStoreSelect = (storeIndex) => {
     setSelectedStore(storeIndex);
     const store = storeLocations[storeIndex];
-    console.log('Sucursal seleccionada:', {
-      nombre: store.name,
-      direccion: store.address,
-      producto: product.name,
-      sabor: selectedFlavor ? product.flavors.find(f => f.id === selectedFlavor)?.name.es : 'Sin sabor',
-      stock: branchStocks[store.name] ?? 0
-    });
   };
 
   // If product doesn't exist, redirect to shop page

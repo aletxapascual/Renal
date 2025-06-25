@@ -24,7 +24,6 @@ async function migrateBranch(branch) {
   const ref = doc(db, 'inventario', branch);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
-    console.log(`No existe inventario para sucursal: ${branch}`);
     return;
   }
   const data = snap.data();
@@ -52,9 +51,6 @@ async function migrateBranch(branch) {
   // Ejecutar update solo si hay cambios
   if (Object.keys(updates).length > 0) {
     await updateDoc(ref, updates);
-    console.log(`Migración completada para sucursal: ${branch}`);
-  } else {
-    console.log(`No hay cambios para sucursal: ${branch}`);
   }
 }
 

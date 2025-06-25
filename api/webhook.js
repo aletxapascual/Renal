@@ -41,7 +41,6 @@ export default async function handler(req, res) {
           const currentStock = productDoc.data().stock || 0;
           const newStock = Math.max(0, currentStock - (item.quantity || 1));
           await updateDoc(productRef, { stock: newStock });
-          console.log(`Stock actualizado para ${item.name}: ${currentStock} -> ${newStock}`);
         } else {
           console.error(`Producto no encontrado: ${item.id}`);
         }
@@ -70,7 +69,6 @@ export default async function handler(req, res) {
       // Guardar el pedido en Firestore
       const pedidosRef = collection(db, 'pedidos');
       const newPedidoRef = await addDoc(pedidosRef, pedidoData);
-      console.log('Pedido creado con ID:', newPedidoRef.id);
 
       // Enviar correo de confirmación
       const logoUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://renal-seven.vercel.app'}/images/logo.png`;
@@ -113,8 +111,6 @@ export default async function handler(req, res) {
         const errorText = await emailResponse.text();
         console.error('Error enviando correo:', errorText);
         throw new Error(`Error enviando correo: ${errorText}`);
-      } else {
-        console.log('Correo enviado exitosamente');
       }
 
       return res.status(200).json({ received: true });
