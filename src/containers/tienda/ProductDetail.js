@@ -314,9 +314,12 @@ function ProductDetail() {
                 </div>
               )}
 
-              <p className="text-gray-600 leading-relaxed">
-                {language === 'es' ? product.description.es : product.description.en}
-              </p>
+              <div 
+                className="text-gray-600 leading-relaxed"
+                dangerouslySetInnerHTML={{ 
+                  __html: language === 'es' ? product.description.es : product.description.en 
+                }}
+              />
 
               {product.preparation && (
                 <div className="mt-8">
