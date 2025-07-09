@@ -3,6 +3,7 @@ import paciente2 from '../../images/pacientes/paciente2.png';
 import paciente3 from '../../images/pacientes/paciente3.png';
 import paciente4 from '../../images/pacientes/paciente4.png';
 import sillon3 from '../../images/sillon3.png';
+import repcepcionImg from '../../images/optimized/repcepcion.webp';
 
 function PhotoSlideshow() {
   const scrollRef = useRef(null);
@@ -88,7 +89,7 @@ function PhotoSlideshow() {
   const images = [
     { src: sillon3, alt: "Sillón 3" },
     { src: paciente2, alt: "Paciente 2" },
-    { src: '/images/optimized/sillon1.webp', alt: "Sillón 1" },
+    { src: repcepcionImg, alt: "Recepción" },
     { src: paciente3, alt: "Paciente 3" },
     { src: paciente4, alt: "Paciente 4" },
   ];

@@ -7,7 +7,7 @@ import { FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
 import equipoImg from '../../images/optimized/equipo.webp';
 import exteriorImg from '../../images/optimized/exterior.webp';
 import recepcionImg from '../../images/optimized/repcepcion.webp';
-import sillon1Img from '../../images/optimized/sillon1.webp';
+import sillon3Img from '../../images/sillon3.png';
 import salaImg from '../../images/optimized/sala.webp';
 
 function Container1() {
@@ -38,7 +38,7 @@ function Container1() {
       description: 'Te recibimos con calidez y profesionalismo.'
     },
     {
-      image: sillon1Img,
+      image: sillon3Img,
       alt: 'Área de tratamiento',
       title: 'Área de Tratamiento',
       description: 'Espacios diseñados para tu confort y seguridad.'
@@ -63,7 +63,9 @@ function Container1() {
     slides.forEach((slide, index) => {
       const img = new Image();
       img.src = slide.image;
+      console.log(`Loading image ${index}:`, slide.image);
       img.onload = () => {
+        console.log(`Successfully loaded image ${index}:`, slide.image);
         setImagesLoaded(prev => ({ ...prev, [index]: true }));
       };
       img.onerror = () => {
