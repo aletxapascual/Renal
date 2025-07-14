@@ -3,7 +3,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import hemProtJuntos from '../../images/productos/hemProtJuntos.png';
 import renNutJuntos from '../../images/productos/renNutJuntos.png';
-import maloobtalJuntos from '../../images/productos/maloobtalJuntos.png';
+import maloobtalImg from '../../images/productos/maloobtal.png';
+import maloobtalProImg from '../../images/productos/maloobtalPro.png';
 
 function Container3() {
   const { language } = useLanguage();
@@ -15,6 +16,24 @@ function Container3() {
   };
 
   const products = [
+    {
+      id: 'maloobtalPro',
+      name: 'Maloobtal Pro',
+      image: maloobtalProImg,
+      description: {
+        es: 'Simbiótico con Rhamnosus y Longum. Diseñado para pacientes en hemodiálisis con síntomas digestivos por uremia.',
+        en: 'Symbiotic with Rhamnosus and Longum. Designed for hemodialysis patients with digestive symptoms from uremia.'
+      }
+    },
+    {
+      id: 'maloobtal',
+      name: 'Maloobtal HCO3',
+      image: maloobtalImg,
+      description: {
+        es: 'Bicarbonato de sodio en dosis práctica para corregir acidosis metabólica en pacientes con enfermedad renal crónica.',
+        en: 'Sodium bicarbonate in practical doses to correct metabolic acidosis in patients with chronic kidney disease.'
+      }
+    },
     {
       id: 'hemprot',
       name: 'HemProt',
@@ -29,17 +48,8 @@ function Container3() {
       name: 'RenNut',
       image: renNutJuntos,
       description: {
-        es: 'Suplemento nutricional con L-carnitina, bajo en proteína. Diseñado para pacientes renales sin diálisis que requieren calorías sin sobrecargar al riñón.',
-        en: 'Nutritional supplement with L-carnitine, low in protein. Designed for renal patients without dialysis who require calories without overloading the kidney.'
-      }
-    },
-    {
-      id: 'maloobtal',
-      name: 'Maloobtal',
-      image: maloobtalJuntos,
-      description: {
-        es: 'Bicarbonato de sodio en dosis práctica para corregir acidosis metabólica en pacientes con enfermedad renal crónica.',
-        en: 'Sodium bicarbonate in practical doses to correct metabolic acidosis in patients with chronic kidney disease.'
+        es: 'Suplemento con L-carnitina, bajo en proteína. Ideal para pacientes renales sin diálisis que necesitan calorías sin sobrecargar el riñón.',
+        en: 'Supplement with L-carnitine, low in protein. Ideal for renal patients without dialysis who need calories without overloading the kidney.'
       }
     }
   ];
@@ -68,7 +78,7 @@ function Container3() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product) => (
             <div 
               key={product.id}

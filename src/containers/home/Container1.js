@@ -59,24 +59,44 @@ function Container1() {
   }, [slides.length]);
 
   useEffect(() => {
-    // Preload images
-    slides.forEach((slide, index) => {
-      const img = new Image();
-      img.src = slide.image;
-      console.log(`Loading image ${index}:`, slide.image);
-      img.onload = () => {
-        console.log(`Successfully loaded image ${index}:`, slide.image);
-        setImagesLoaded(prev => ({ ...prev, [index]: true }));
-      };
-      img.onerror = () => {
-        console.error(`Failed to load image ${index}:`, slide.image);
-      };
+    // Preload images with timeout
+    const imagePromises = slides.map((slide, index) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = slide.image;
+        console.log(`Loading image ${index}:`, slide.image);
+        
+        const timeout = setTimeout(() => {
+          console.warn(`Image ${index} loading timeout:`, slide.image);
+          setImagesLoaded(prev => ({ ...prev, [index]: true })); // Mark as loaded even if timeout
+          resolve();
+        }, 5000); // 5 second timeout
+        
+        img.onload = () => {
+          clearTimeout(timeout);
+          console.log(`Successfully loaded image ${index}:`, slide.image);
+          setImagesLoaded(prev => ({ ...prev, [index]: true }));
+          resolve();
+        };
+        
+        img.onerror = () => {
+          clearTimeout(timeout);
+          console.error(`Failed to load image ${index}:`, slide.image);
+          setImagesLoaded(prev => ({ ...prev, [index]: true })); // Mark as loaded even if error
+          resolve();
+        };
+      });
     });
 
-    startAutoSlide();
+    // Start slideshow after a short delay, regardless of image loading
+    const timer = setTimeout(() => {
+      startAutoSlide();
+    }, 1000);
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      clearTimeout(timer);
     };
   }, [startAutoSlide]);
 
@@ -104,7 +124,8 @@ function Container1() {
     handleSlideChange(index);
   };
 
-  if (!Object.values(imagesLoaded).every(Boolean)) {
+  // Show loading spinner only if no images have loaded yet
+  if (Object.keys(imagesLoaded).length === 0) {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5773BB]"></div>

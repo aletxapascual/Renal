@@ -9,7 +9,12 @@ function Container2() {
   const [sortOrder, setSortOrder] = useState('default');
   const navigate = useNavigate();
 
-  const productsList = Object.values(products);
+  // Define the order we want to display products
+  const productOrder = ['maloobtalPro', 'maloobtal', 'hemprot', 'rennut'];
+  
+  const productsList = productOrder
+    .map(id => products[id])
+    .filter(product => product); // Filter out any undefined products
   
   const sortedProducts = [...productsList].sort((a, b) => {
     if (sortOrder === 'default') {
