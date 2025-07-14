@@ -92,7 +92,7 @@ function Container3() {
                 />
               </div>
               <div className="p-8 flex flex-col flex-grow">
-                <h3 className="text-2xl font-bold text-[#5773BB] mb-8 text-center">
+                <h3 className="text-2xl font-bold text-[#5773BB] mb-4 text-center">
                   {product.name}
                 </h3>
                 <p className="text-gray-700 mb-8 text-center flex-grow">
