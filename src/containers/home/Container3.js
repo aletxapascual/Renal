@@ -48,8 +48,8 @@ function Container3() {
       name: 'RenNut',
       image: renNutJuntos,
       description: {
-        es: 'Suplemento con L-carnitina, bajo en proteína. Ideal para pacientes renales sin diálisis que necesitan calorías sin sobrecargar el riñón.',
-        en: 'Supplement with L-carnitine, low in protein. Ideal for renal patients without dialysis who need calories without overloading the kidney.'
+        es: 'Suplemento con L-carnitina, bajo en proteína. Ideal para pacientes renales sin hemodiálisis que necesitan calorías sin sobrecargar el riñón.',
+        en: 'Supplement with L-carnitine, low in protein. Ideal for renal patients without hemodialysis who need calories without overloading the kidney.'
       }
     }
   ];
