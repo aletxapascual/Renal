@@ -52,12 +52,12 @@ export const products = {
     name: 'RenNut',
     price: '$670.00',
     shortDescription: {
-      es: 'Suplemento nutricional con L-carnitina, bajo en proteína. Diseñado para pacientes renales sin diálisis que requieren calorías sin sobrecargar al riñón.',
-      en: 'Nutritional supplement with L-carnitine, low in protein. Designed for renal patients without dialysis who require calories without overloading the kidney.'
+      es: 'Suplemento nutricional con L-carnitina, bajo en proteína. Diseñado para pacientes renales sin hemodiálisis que requieren calorías sin sobrecargar al riñón.',
+      en: 'Nutritional supplement with L-carnitine, low in protein. Designed for renal patients without hemodialysis who require calories without overloading the kidney.'
     },
     description: {
-      es: 'Rennut es un polvo nutricional formulado a base de L-carnitina y fructanos de agave, diseñado para pacientes con enfermedad renal crónica sin tratamiento de sustitución (sin diálisis). Su contenido proteico es reducido (5 g por cada 70 g), por lo que permite mejorar la calidad nutricional del paciente sin aportar un exceso de proteína. También es bajo en sodio, fósforo y potasio, lo que lo hace seguro para el riñón.',
-      en: 'Rennut is a nutritional powder formulated with L-carnitine and agave fructans, designed for patients with chronic kidney disease without replacement therapy (without dialysis). Its protein content is reduced (5g per 70g), allowing it to improve the patient\'s nutritional quality without providing excess protein. It is also low in sodium, phosphorus and potassium, making it safe for the kidney.'
+      es: 'Rennut es un polvo nutricional formulado a base de L-carnitina y fructanos de agave, diseñado para pacientes con enfermedad renal crónica sin tratamiento de sustitución (sin hemodiálisis). Su contenido proteico es reducido (5 g por cada 70 g), por lo que permite mejorar la calidad nutricional del paciente sin aportar un exceso de proteína. También es bajo en sodio, fósforo y potasio, lo que lo hace seguro para el riñón.',
+      en: 'Rennut is a nutritional powder formulated with L-carnitine and agave fructans, designed for patients with chronic kidney disease without replacement therapy (without hemodialysis). Its protein content is reduced (5g per 70g), allowing it to improve the patient\'s nutritional quality without providing excess protein. It is also low in sodium, phosphorus and potassium, making it safe for the kidney.'
     },
     flavors: [
       {
