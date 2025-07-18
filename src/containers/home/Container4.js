@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar, FaVolumeUp, FaVolumeMute, FaPlay, FaPause } from 'react-icons/fa';
 
 function Container4() {
   const { language } = useLanguage();
   const [currentReview, setCurrentReview] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(null);
+  const [currentVideo, setCurrentVideo] = useState(0);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [showVideoControls, setShowVideoControls] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const videoRef = useRef(null);
+  const controlsTimeoutRef = useRef(null);
 
   const reviews = [
     {
@@ -54,6 +62,26 @@ function Container4() {
     }
   ];
 
+  const videoTestimonials = [
+    {
+      id: 1,
+      src: '/videos/testimonio1.mp4'
+    },
+    {
+      id: 2,
+      src: '/videos/testimonio2.mp4'
+    },
+    {
+      id: 3,
+      src: '/videos/testimonio3.mp4'
+    },
+    {
+      id: 4,
+      src: '/videos/testimonio4.mp4'
+    }
+  ];
+
+  // Reviews auto-rotation
   useEffect(() => {
     if (isHovered) return;
 
@@ -64,12 +92,88 @@ function Container4() {
     return () => clearInterval(interval);
   }, [isHovered, reviews.length]);
 
+  // Video ended handler
+  const handleVideoEnded = () => {
+    setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
+    setIsVideoPlaying(true);
+  };
+
+  // Video time update
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  // Toggle audio
+  const toggleAudio = () => {
+    setIsVideoMuted(!isVideoMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = !isVideoMuted;
+    }
+  };
+
+  // Toggle play/pause
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+        setIsVideoPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsVideoPlaying(true);
+      }
+    }
+  };
+
+  // Handle timeline click
+  const handleTimelineClick = (e) => {
+    if (videoRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newTime = (clickX / rect.width) * duration;
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  // Show controls on hover/touch
+  const showControls = () => {
+    setShowVideoControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+  };
+
+  // Hide controls with delay
+  const hideControls = () => {
+    controlsTimeoutRef.current = setTimeout(() => {
+      setShowVideoControls(false);
+    }, 3000);
+  };
+
+  // Format time
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const nextReview = () => {
     setCurrentReview((prev) => (prev + 1) % reviews.length);
   };
 
   const prevReview = () => {
     setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length);
+  };
+
+  const nextVideo = () => {
+    setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
+  };
+
+  const prevVideo = () => {
+    setCurrentVideo((prev) => (prev - 1 + videoTestimonials.length) % videoTestimonials.length);
   };
 
   return (
@@ -80,6 +184,7 @@ function Container4() {
         <div className="absolute top-20 -left-40 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#99AAD6]/20 to-transparent blur-3xl" />
         <div className="absolute bottom-0 right-20 w-[300px] h-[300px] rounded-full bg-gradient-to-tl from-[#99AAD6]/20 to-transparent blur-3xl" />
       </div>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h4 className="text-lg font-medium mb-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
@@ -93,80 +198,224 @@ function Container4() {
           </h2>
         </div>
 
-        <div 
-          className="relative max-w-4xl mx-auto px-12"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <button
-            onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
-            aria-label="Previous review"
-          >
-            <FaChevronLeft className="w-8 h-8" />
-          </button>
-
-          <button
-            onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
-            aria-label="Next review"
-          >
-            <FaChevronRight className="w-8 h-8" />
-          </button>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentReview}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-12 ring-1 ring-[#5773BB]/10"
-            >
-              <p className="text-2xl text-gray-700 mb-8 text-center leading-relaxed">
-                "{reviews[currentReview].text}"
-              </p>
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex gap-1">
-                  {[...Array(reviews[currentReview].stars)].map((_, i) => (
+        {/* Combined Video and Reviews Section */}
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 lg:p-8 ring-1 ring-[#5773BB]/10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Video Section - Left on desktop, Top on mobile */}
+              <div className="flex flex-col items-center h-auto lg:h-[500px] justify-center order-1 lg:order-1">
+                <div 
+                  className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] rounded-2xl overflow-hidden bg-black mb-6"
+                  onMouseEnter={showControls}
+                  onMouseLeave={hideControls}
+                  onTouchStart={showControls}
+                >
+                  <AnimatePresence mode="wait">
                     <motion.div
-                      key={i}
-                      onHoverStart={() => setHoveredStar(i)}
-                      onHoverEnd={() => setHoveredStar(null)}
-                      animate={{
-                        rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
-                      }}
-                      transition={{
-                        rotate: {
-                          duration: 0.5,
-                          ease: "easeInOut"
-                        }
-                      }}
+                      key={currentVideo}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full"
                     >
-                      <FaStar className={`w-6 h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
+                      <video
+                        ref={videoRef}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted={isVideoMuted}
+                        playsInline
+                        onEnded={handleVideoEnded}
+                        onTimeUpdate={handleTimeUpdate}
+                        onLoadedMetadata={handleTimeUpdate}
+                        onPlay={() => setIsVideoPlaying(true)}
+                        onPause={() => setIsVideoPlaying(false)}
+                      >
+                        <source src={videoTestimonials[currentVideo].src} type="video/mp4" />
+                        {language === 'es' ? 'Tu navegador no soporta videos.' : 'Your browser does not support videos.'}
+                      </video>
                     </motion.div>
-                  ))}
-                </div>
-                <h4 className="text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
-                  {reviews[currentReview].name}
-                </h4>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+                  </AnimatePresence>
+                  
+                  {/* Audio Toggle Button */}
+                  <button
+                    onClick={toggleAudio}
+                    className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
+                    aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
+                  >
+                    {isVideoMuted ? (
+                      <FaVolumeMute className="w-4 h-4 lg:w-5 lg:h-5" />
+                    ) : (
+                      <FaVolumeUp className="w-4 h-4 lg:w-5 lg:h-5" />
+                    )}
+                  </button>
 
-          <div className="flex justify-center gap-2 mt-8">
-            {reviews.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentReview(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentReview
-                    ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
-                    : 'bg-[#5773BB]/30 hover:bg-[#5773BB]/50'
-                }`}
-                aria-label={`Go to review ${index + 1}`}
-              />
-            ))}
+                  {/* Video Controls */}
+                  <AnimatePresence>
+                    {showVideoControls && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4"
+                      >
+                        {/* Timeline */}
+                        <div className="mb-3">
+                          <div 
+                            className="w-full h-2 bg-black/30 rounded-full cursor-pointer hover:h-3 transition-all duration-200"
+                            onClick={handleTimelineClick}
+                          >
+                            <div 
+                              className="h-full bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full transition-all duration-200"
+                              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="flex items-center justify-between">
+                          <button
+                            onClick={togglePlayPause}
+                            className="p-2 text-white hover:text-[#5773BB] transition-colors"
+                            aria-label={isVideoPlaying ? 'Pausar video' : 'Reproducir video'}
+                          >
+                            {isVideoPlaying ? (
+                              <FaPause className="w-4 h-4" />
+                            ) : (
+                              <FaPlay className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          <div className="text-white text-sm font-medium">
+                            {formatTime(currentTime)} / {formatTime(duration)}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Video Navigation - Bottom */}
+                <div className="flex items-center gap-3 lg:gap-4">
+                  <button
+                    onClick={prevVideo}
+                    className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
+                    aria-label="Previous video"
+                  >
+                    <FaChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
+                  </button>
+
+                  <div className="flex gap-2">
+                    {videoTestimonials.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentVideo(index)}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          index === currentVideo
+                            ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
+                            : 'bg-[#5773BB]/30 hover:bg-[#5773BB]/50'
+                        }`}
+                        aria-label={`Go to video ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={nextVideo}
+                    className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
+                    aria-label="Next video"
+                  >
+                    <FaChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Reviews Section - Right on desktop, Bottom on mobile */}
+              <div className="flex flex-col items-center h-auto lg:h-[500px] justify-center order-2 lg:order-2">
+                <div 
+                  className="relative flex flex-col items-center"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <div className="w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] mb-6 flex items-center justify-center">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentReview}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-3 sm:p-6 lg:p-8 ring-1 ring-[#5773BB]/10 h-full w-full flex flex-col justify-center"
+                      >
+                        <p className="text-base sm:text-base lg:text-lg text-gray-700 mb-3 sm:mb-6 lg:mb-8 text-center leading-relaxed px-1">
+                          "{reviews[currentReview].text}"
+                        </p>
+                        <div className="flex flex-col items-center gap-2 sm:gap-4 lg:gap-6">
+                          <div className="flex gap-1">
+                            {[...Array(reviews[currentReview].stars)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                onHoverStart={() => setHoveredStar(i)}
+                                onHoverEnd={() => setHoveredStar(null)}
+                                animate={{
+                                  rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{
+                                  rotate: {
+                                    duration: 0.5,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                              >
+                                <FaStar className={`w-5 h-5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
+                              </motion.div>
+                            ))}
+                          </div>
+                          <h4 className="text-lg sm:text-lg lg:text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
+                            {reviews[currentReview].name}
+                          </h4>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Reviews Navigation - Bottom */}
+                  <div className="flex items-center gap-3 lg:gap-4">
+                    <button
+                      onClick={prevReview}
+                      className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
+                      aria-label="Previous review"
+                    >
+                      <FaChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
+                    </button>
+
+                    <div className="flex gap-2">
+                      {reviews.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentReview(index)}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            index === currentReview
+                              ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
+                              : 'bg-[#5773BB]/30 hover:bg-[#5773BB]/50'
+                          }`}
+                          aria-label={`Go to review ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={nextReview}
+                      className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
+                      aria-label="Next review"
+                    >
+                      <FaChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
