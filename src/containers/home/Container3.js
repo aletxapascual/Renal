@@ -39,8 +39,8 @@ function Container3() {
       name: 'HemProt',
       image: hemProtJuntos,
       description: {
-        es: 'Suplemento alto en proteína a base de albúmina de huevo, ideal para pacientes en diálisis. Bajo en sodio, fósforo y potasio.',
-        en: 'High-protein supplement based on egg albumin, ideal for dialysis patients. Low in sodium, phosphorus and potassium.'
+        es: 'Suplemento alto en proteína a base de albúmina de huevo, ideal para pacientes en hemodiálisis. Bajo en sodio, fósforo y potasio.',
+        en: 'High-protein supplement based on egg albumin, ideal for hemodialysis patients. Low in sodium, phosphorus and potassium.'
       }
     },
     {

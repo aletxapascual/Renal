@@ -4,8 +4,8 @@ export const products = {
     name: 'HemProt',
     price: '$670.00',
     shortDescription: {
-      es: 'Suplemento alto en proteína a base de albúmina de huevo, ideal para pacientes en diálisis. Bajo en sodio, fósforo y potasio.',
-      en: 'High-protein supplement based on egg albumin, ideal for dialysis patients. Low in sodium, phosphorus and potassium.'
+      es: 'Suplemento alto en proteína a base de albúmina de huevo, ideal para pacientes en hemodiálisis. Bajo en sodio, fósforo y potasio.',
+      en: 'High-protein supplement based on egg albumin, ideal for hemodialysis patients. Low in sodium, phosphorus and potassium.'
     },
     description: {
       es: 'Hemprot es un suplemento nutricional en polvo elaborado con albúmina de huevo y fructanos de agave, diseñado especialmente para pacientes en diálisis peritoneal o hemodiálisis que presentan desnutrición. Su fórmula aporta 20 gramos de proteína por cada 70 gramos de producto, lo que lo hace ideal para aumentar el aporte calórico y proteico sin comprometer el riñón, ya que es bajo en sodio, fósforo y potasio.',
