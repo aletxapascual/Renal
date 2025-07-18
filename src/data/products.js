@@ -75,6 +75,14 @@ export const products = {
           '/images/productos/renNutChocolate.png',
           '/images/productos/renNutJuntos.png'
         ]
+      },
+      {
+        id: 'fresa',
+        name: { es: 'Fresa', en: 'Strawberry' },
+        images: [
+          '/images/productos/renNutFresa.png',
+          '/images/productos/renNutJuntos.png'
+        ]
       }
     ],
     defaultFlavor: 'vainilla',
@@ -86,7 +94,7 @@ export const products = {
   },
   maloobtal: {
     id: 'maloobtal',
-    name: 'Maloobtal',
+    name: 'Maloobtal HCO3',
     price: '$350.00',
     shortDescription: {
       es: 'Bicarbonato de sodio en dosis práctica para corregir acidosis metabólica en pacientes con enfermedad renal crónica.',

@@ -50,13 +50,13 @@ function Container1() {
               >
                 <img
                   src="/images/productos/maloobtalSinFondo.png"
-                  alt="Maloobtal Product"
+                  alt="Maloobtal HCO3 Product"
                   className="w-full h-full object-contain scale-125 drop-shadow-2xl"
                 />
               </motion.div>
               <img
                 src="/images/productos/maloobtalSinFondo.png"
-                alt="Maloobtal Product"
+                alt="Maloobtal HCO3 Product"
                 className="w-full h-full object-contain scale-125 drop-shadow-2xl lg:hidden"
               />
             </div>

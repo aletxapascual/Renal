@@ -145,10 +145,10 @@ function Footer() {
               <div>
                 <h4 className="font-medium mb-1">Email</h4>
                 <a 
-                  href="mailto:gerencia@hemodialisis.com.mx" 
+                  href="mailto:administracion@hemodialisis.com.mx" 
                   className="text-white/80 hover:text-white transition-colors text-sm"
                 >
-                  gerencia@hemodialisis.com.mx
+                  administracion@hemodialisis.com.mx
                 </a>
               </div>
               <div>
@@ -170,9 +170,9 @@ function Footer() {
       {/* Copyright */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-sm text-gray-500 mt-8">
+          <div className="text-center text-sm text-gray-900 mt-8">
             <p>&copy; {new Date().getFullYear()} Renal. {language === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
-            <Link to="/privacy-policy" className="text-gray-500 hover:text-[#5773BB] transition-colors">
+            <Link to="/privacy-policy" className="text-gray-900 hover:text-[#5773BB] transition-colors">
               {language === 'es' ? 'Política de Privacidad' : 'Privacy Policy'}
             </Link>
             <span className="mx-2">•</span>

@@ -275,17 +275,17 @@ function Container4() {
 
                         {/* Controls */}
                         <div className="flex items-center justify-between">
-                          <button
+          <button
                             onClick={togglePlayPause}
                             className="p-2 text-white hover:text-[#5773BB] transition-colors"
                             aria-label={isVideoPlaying ? 'Pausar video' : 'Reproducir video'}
-                          >
+          >
                             {isVideoPlaying ? (
                               <FaPause className="w-4 h-4" />
                             ) : (
                               <FaPlay className="w-4 h-4" />
                             )}
-                          </button>
+          </button>
 
                           <div className="text-white text-sm font-medium">
                             {formatTime(currentTime)} / {formatTime(duration)}
@@ -298,13 +298,13 @@ function Container4() {
 
                 {/* Video Navigation - Bottom */}
                 <div className="flex items-center gap-3 lg:gap-4">
-                  <button
+          <button
                     onClick={prevVideo}
                     className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
                     aria-label="Previous video"
-                  >
+          >
                     <FaChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
-                  </button>
+          </button>
 
                   <div className="flex gap-2">
                     {videoTestimonials.map((_, index) => (
@@ -339,45 +339,45 @@ function Container4() {
                   onMouseLeave={() => setIsHovered(false)}
                 >
                   <div className="w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] mb-6 flex items-center justify-center">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={currentReview}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentReview}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
                         className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-3 sm:p-6 lg:p-8 ring-1 ring-[#5773BB]/10 h-full w-full flex flex-col justify-center"
-                      >
+            >
                         <p className="text-base sm:text-base lg:text-lg text-gray-700 mb-3 sm:mb-6 lg:mb-8 text-center leading-relaxed px-1">
-                          "{reviews[currentReview].text}"
-                        </p>
+                "{reviews[currentReview].text}"
+              </p>
                         <div className="flex flex-col items-center gap-2 sm:gap-4 lg:gap-6">
-                          <div className="flex gap-1">
-                            {[...Array(reviews[currentReview].stars)].map((_, i) => (
-                              <motion.div
-                                key={i}
-                                onHoverStart={() => setHoveredStar(i)}
-                                onHoverEnd={() => setHoveredStar(null)}
-                                animate={{
-                                  rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
-                                }}
-                                transition={{
-                                  rotate: {
-                                    duration: 0.5,
-                                    ease: "easeInOut"
-                                  }
-                                }}
-                              >
+                <div className="flex gap-1">
+                  {[...Array(reviews[currentReview].stars)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      onHoverStart={() => setHoveredStar(i)}
+                      onHoverEnd={() => setHoveredStar(null)}
+                      animate={{
+                        rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
+                      }}
+                      transition={{
+                        rotate: {
+                          duration: 0.5,
+                          ease: "easeInOut"
+                        }
+                      }}
+                    >
                                 <FaStar className={`w-5 h-5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
-                              </motion.div>
-                            ))}
-                          </div>
+                    </motion.div>
+                  ))}
+                </div>
                           <h4 className="text-lg sm:text-lg lg:text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
-                            {reviews[currentReview].name}
-                          </h4>
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
+                  {reviews[currentReview].name}
+                </h4>
+              </div>
+            </motion.div>
+          </AnimatePresence>
                   </div>
 
                   {/* Reviews Navigation - Bottom */}
@@ -391,18 +391,18 @@ function Container4() {
                     </button>
 
                     <div className="flex gap-2">
-                      {reviews.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentReview(index)}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentReview
-                              ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
-                              : 'bg-[#5773BB]/30 hover:bg-[#5773BB]/50'
-                          }`}
-                          aria-label={`Go to review ${index + 1}`}
-                        />
-                      ))}
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentReview(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === currentReview
+                    ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
+                    : 'bg-[#5773BB]/30 hover:bg-[#5773BB]/50'
+                }`}
+                aria-label={`Go to review ${index + 1}`}
+              />
+            ))}
                     </div>
 
                     <button
