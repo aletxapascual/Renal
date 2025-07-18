@@ -10,6 +10,8 @@ function Container4() {
   const [hoveredStar, setHoveredStar] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [showVideoControls, setShowVideoControls] = useState(false);
+  const [isVideoHovered, setIsVideoHovered] = useState(false);
   const videoRef = useRef(null);
 
   const reviews = [
@@ -90,6 +92,7 @@ function Container4() {
   // Video ended handler
   const handleVideoEnded = () => {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
+    setShowVideoControls(false);
   };
 
   // Toggle audio
@@ -98,6 +101,21 @@ function Container4() {
     if (videoRef.current) {
       videoRef.current.muted = !isVideoMuted;
     }
+  };
+
+  // Handle video controls visibility
+  const handleVideoMouseEnter = () => {
+    setIsVideoHovered(true);
+    setShowVideoControls(true);
+  };
+
+  const handleVideoMouseLeave = () => {
+    setIsVideoHovered(false);
+    setShowVideoControls(false);
+  };
+
+  const handleVideoClick = () => {
+    setShowVideoControls(!showVideoControls);
   };
 
   const nextReview = () => {
@@ -110,10 +128,12 @@ function Container4() {
 
   const nextVideo = () => {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
+    setShowVideoControls(false);
   };
 
   const prevVideo = () => {
     setCurrentVideo((prev) => (prev - 1 + videoTestimonials.length) % videoTestimonials.length);
+    setShowVideoControls(false);
   };
 
   return (
@@ -139,19 +159,24 @@ function Container4() {
         </div>
 
         {/* Combined Video and Reviews Section */}
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 ring-1 ring-[#5773BB]/10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Video Section - Left */}
-              <div className="flex flex-col items-center h-[600px] justify-center">
-                <div className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden bg-black mb-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 lg:p-8 ring-1 ring-[#5773BB]/10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Video Section - Left on desktop, Top on mobile */}
+              <div className="flex flex-col items-center h-auto lg:h-[500px] justify-center order-1 lg:order-1">
+                <div 
+                  className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] rounded-2xl overflow-hidden bg-black mb-6"
+                  onMouseEnter={handleVideoMouseEnter}
+                  onMouseLeave={handleVideoMouseLeave}
+                  onClick={handleVideoClick}
+                >
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentVideo}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="w-full h-full"
                     >
                       <video
@@ -160,6 +185,7 @@ function Container4() {
                         autoPlay
                         muted={isVideoMuted}
                         playsInline
+                        controls={showVideoControls}
                         onEnded={handleVideoEnded}
                       >
                         <source src={videoTestimonials[currentVideo].src} type="video/mp4" />
@@ -168,35 +194,43 @@ function Container4() {
                     </motion.div>
                   </AnimatePresence>
                   
-                  {/* Audio Toggle Button */}
-                  <button
-                    onClick={toggleAudio}
-                    className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
-                    aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
-                  >
-                    {isVideoMuted ? (
-                      <FaVolumeMute className="w-5 h-5" />
-                    ) : (
-                      <FaVolumeUp className="w-5 h-5" />
-                    )}
-                  </button>
+                  {/* Audio Toggle Button - Only show when not showing controls */}
+                  {!showVideoControls && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleAudio();
+                      }}
+                      className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
+                      aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
+                    >
+                      {isVideoMuted ? (
+                        <FaVolumeMute className="w-4 h-4 lg:w-5 lg:h-5" />
+                      ) : (
+                        <FaVolumeUp className="w-4 h-4 lg:w-5 lg:h-5" />
+                      )}
+                    </button>
+                  )}
                 </div>
 
                 {/* Video Navigation - Bottom */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 lg:gap-4">
                   <button
                     onClick={prevVideo}
                     className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
                     aria-label="Previous video"
                   >
-                    <FaChevronLeft className="w-6 h-6" />
+                    <FaChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                   </button>
 
                   <div className="flex gap-2">
                     {videoTestimonials.map((_, index) => (
                       <button
                         key={index}
-                        onClick={() => setCurrentVideo(index)}
+                        onClick={() => {
+                          setCurrentVideo(index);
+                          setShowVideoControls(false);
+                        }}
                         className={`w-2 h-2 rounded-full transition-colors ${
                           index === currentVideo
                             ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
@@ -212,19 +246,19 @@ function Container4() {
                     className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
                     aria-label="Next video"
                   >
-                    <FaChevronRight className="w-6 h-6" />
+                    <FaChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
                   </button>
                 </div>
               </div>
 
-              {/* Reviews Section - Right */}
-              <div className="flex flex-col items-center h-[600px] justify-center">
+              {/* Reviews Section - Right on desktop, Bottom on mobile */}
+              <div className="flex flex-col items-center h-auto lg:h-[500px] justify-center order-2 lg:order-2">
                 <div 
                   className="relative flex flex-col items-center"
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                 >
-                  <div className="w-[500px] h-[500px] mb-6 flex items-center justify-center">
+                  <div className="w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] mb-6 flex items-center justify-center">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={currentReview}
@@ -232,12 +266,12 @@ function Container4() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-8 ring-1 ring-[#5773BB]/10 h-full w-full flex flex-col justify-center"
+                        className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-3 sm:p-6 lg:p-8 ring-1 ring-[#5773BB]/10 h-full w-full flex flex-col justify-center"
                       >
-                        <p className="text-lg text-gray-700 mb-8 text-center leading-relaxed">
+                        <p className="text-base sm:text-base lg:text-lg text-gray-700 mb-3 sm:mb-6 lg:mb-8 text-center leading-relaxed px-1">
                           "{reviews[currentReview].text}"
                         </p>
-                        <div className="flex flex-col items-center gap-6">
+                        <div className="flex flex-col items-center gap-2 sm:gap-4 lg:gap-6">
                           <div className="flex gap-1">
                             {[...Array(reviews[currentReview].stars)].map((_, i) => (
                               <motion.div
@@ -254,11 +288,11 @@ function Container4() {
                                   }
                                 }}
                               >
-                                <FaStar className={`w-6 h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
+                                <FaStar className={`w-5 h-5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
                               </motion.div>
                             ))}
                           </div>
-                          <h4 className="text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
+                          <h4 className="text-lg sm:text-lg lg:text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
                             {reviews[currentReview].name}
                           </h4>
                         </div>
@@ -267,13 +301,13 @@ function Container4() {
                   </div>
 
                   {/* Reviews Navigation - Bottom */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 lg:gap-4">
                     <button
                       onClick={prevReview}
                       className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
                       aria-label="Previous review"
                     >
-                      <FaChevronLeft className="w-6 h-6" />
+                      <FaChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                     </button>
 
                     <div className="flex gap-2">
@@ -296,7 +330,7 @@ function Container4() {
                       className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
                       aria-label="Next review"
                     >
-                      <FaChevronRight className="w-6 h-6" />
+                      <FaChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
                     </button>
                   </div>
                 </div>
