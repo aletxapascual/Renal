@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 function Container4() {
   const { language } = useLanguage();
@@ -9,6 +9,7 @@ function Container4() {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(0);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
   const videoRef = useRef(null);
 
   const reviews = [
@@ -91,6 +92,14 @@ function Container4() {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
   };
 
+  // Toggle audio
+  const toggleAudio = () => {
+    setIsVideoMuted(!isVideoMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = !isVideoMuted;
+    }
+  };
+
   const nextReview = () => {
     setCurrentReview((prev) => (prev + 1) % reviews.length);
   };
@@ -136,18 +145,41 @@ function Container4() {
               {/* Video Section - Left */}
               <div className="flex flex-col items-center h-[600px] justify-center">
                 <div className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden bg-black mb-6">
-                  <video
-                    ref={videoRef}
-                    key={videoTestimonials[currentVideo].id}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    playsInline
-                    onEnded={handleVideoEnded}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentVideo}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full"
+                    >
+                      <video
+                        ref={videoRef}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted={isVideoMuted}
+                        playsInline
+                        onEnded={handleVideoEnded}
+                      >
+                        <source src={videoTestimonials[currentVideo].src} type="video/mp4" />
+                        {language === 'es' ? 'Tu navegador no soporta videos.' : 'Your browser does not support videos.'}
+                      </video>
+                    </motion.div>
+                  </AnimatePresence>
+                  
+                  {/* Audio Toggle Button */}
+                  <button
+                    onClick={toggleAudio}
+                    className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
+                    aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
                   >
-                    <source src={videoTestimonials[currentVideo].src} type="video/mp4" />
-                    {language === 'es' ? 'Tu navegador no soporta videos.' : 'Your browser does not support videos.'}
-                  </video>
+                    {isVideoMuted ? (
+                      <FaVolumeMute className="w-5 h-5" />
+                    ) : (
+                      <FaVolumeUp className="w-5 h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Video Navigation - Bottom */}
