@@ -55,20 +55,22 @@ function Container2() {
     {
       icon: FaEnvelope,
       label: 'Email',
-      value: 'gerencia@hemodialisis.com.mx',
-      href: 'mailto:gerencia@hemodialisis.com.mx'
+      value: 'administracion@hemodialisis.com.mx',
+      href: 'mailto:administracion@hemodialisis.com.mx'
     },
     {
       icon: FaMapMarkerAlt,
       label: language === 'es' ? 'Ubicación' : 'Location',
       value: language === 'es'
-        ? 'Altabrisa \nCalle 26 No.202 Int. 5 \n6 Y 7 Plaza las Brisas\n97130 Mérida, Yuc.'
-        : 'Altabrisa \n26th Street No.202 Int. 5 \n6 & 7 Plaza las Brisas\n97130 Mérida, Yuc.'
+        ? 'Altabrisa, Calle 26 No.202 Int. 5\n97130 Mérida, Yuc.'
+        : 'Altabrisa, 26th Street No.202 Int. 5\n97130 Mérida, Yuc.'
     },
     {
       icon: FaClock,
       label: language === 'es' ? 'Horario' : 'Hours',
-      value: language === 'es' ? 'Lunes a Sábado: 7:00 AM - 3:00 PM' : 'Monday to Saturday: 7:00 AM - 3:00 PM'
+      value: language === 'es' 
+        ? 'Lunes a Viernes: 7:00 A.M. - 3:00 P.M.\nSábado: 7:00 A.M. - 1:00 P.M.'
+        : 'Monday to Friday: 7:00 A.M. - 3:00 P.M.\nSaturday: 7:00 A.M. - 1:00 P.M.'
     }
   ];
 
@@ -201,7 +203,11 @@ function Container2() {
             <motion.div
               key={index}
               variants={containerVariants}
-              className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ring-1 ring-[#5773BB]/10"
+              className={`bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ring-1 ring-[#5773BB]/10 ${
+                info.label === (language === 'es' ? 'Ubicación' : 'Location') 
+                  ? 'p-4' 
+                  : 'p-6'
+              }`}
             >
               <div className="flex items-start space-x-4">
                 <div className="p-3 bg-gradient-to-br from-[#5773BB] to-[#4466B7] rounded-2xl text-white">

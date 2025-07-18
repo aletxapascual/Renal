@@ -62,7 +62,7 @@ const PrivacyPolicy = () => {
         <section>
           <h2 className="text-xl font-semibold mb-3">6. Contacto</h2>
           <p>Si tiene preguntas sobre nuestra política de privacidad, puede contactarnos en:</p>
-          <p className="mt-2">Email: gerencia@hemodialisis.com.mx</p>
+          <p className="mt-2">Email: administracion@hemodialisis.com.mx</p>
           <p>Teléfono: (999) 930 6925</p>
         </section>
 

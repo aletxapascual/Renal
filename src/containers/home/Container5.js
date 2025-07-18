@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaMapMarkedAlt, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { contactInfo } from '../../data/contactInfo';
 
 function Container5() {
   const { language } = useLanguage();
@@ -74,9 +75,8 @@ function Container5() {
                     <h4 className="font-sans text-xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-3">
                       {language === 'es' ? 'Dirección' : 'Address'}
                     </h4>
-                    <p className="font-sans text-lg text-gray-600 leading-relaxed">
-                      Altabrisa, Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas<br />
-                      97130 Mérida, Yuc.
+                    <p className="font-sans text-lg text-gray-600 leading-relaxed whitespace-pre-line">
+                      {language === 'es' ? contactInfo.address.es : contactInfo.address.en}
                     </p>
                   </div>
                 </div>
@@ -94,16 +94,15 @@ function Container5() {
                     <h4 className="font-sans text-xl font-bold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent mb-3">
                       {language === 'es' ? 'Horario' : 'Hours'}
                     </h4>
-                    <p className="font-sans text-lg text-gray-600 leading-relaxed">
-                      {language === 'es' ? 'Lunes a Sábado' : 'Monday to Saturday'}<br />
-                      7:00 A.M. - 3:00 P.M.
+                    <p className="font-sans text-lg text-gray-600 leading-relaxed whitespace-pre-line">
+                      {language === 'es' ? contactInfo.hours.es : contactInfo.hours.en}
                     </p>
                   </div>
                 </div>
               </motion.div>
 
               <motion.a
-                href="https://www.google.com/maps/place/Renal+-+Hemodiálisis+Clínica+de+Riñón+y+trasplante+renal/@21.014954,-89.584404,18z/data=!4m6!3m5!1s0x8f567726c5f5220d:0x3da0ddfb0de71cd1!8m2!3d21.0149535!4d-89.5844038!16s%2Fg%2F1tmplkmk?hl=es&entry=ttu&g_ep=EgoyMDI1MDQyMC4wIKXMDSoASAFQAw%3D%3D"
+                href={contactInfo.mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center w-full px-8 py-4 bg-gradient-to-r from-[#5773BB] to-[#4466B7] hover:from-[#4466B7] hover:to-[#5773BB] text-white font-sans font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
