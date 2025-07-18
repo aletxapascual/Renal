@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaChevronLeft, FaChevronRight, FaStar, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaStar, FaVolumeUp, FaVolumeMute, FaPlay, FaPause } from 'react-icons/fa';
 
 function Container4() {
   const { language } = useLanguage();
@@ -11,8 +11,11 @@ function Container4() {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [showVideoControls, setShowVideoControls] = useState(false);
-  const [isVideoHovered, setIsVideoHovered] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const videoRef = useRef(null);
+  const controlsTimeoutRef = useRef(null);
 
   const reviews = [
     {
@@ -92,7 +95,15 @@ function Container4() {
   // Video ended handler
   const handleVideoEnded = () => {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
-    setShowVideoControls(false);
+    setIsVideoPlaying(true);
+  };
+
+  // Video time update
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+      setDuration(videoRef.current.duration);
+    }
   };
 
   // Toggle audio
@@ -103,19 +114,50 @@ function Container4() {
     }
   };
 
-  // Handle video controls visibility
-  const handleVideoMouseEnter = () => {
-    setIsVideoHovered(true);
+  // Toggle play/pause
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+        setIsVideoPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsVideoPlaying(true);
+      }
+    }
+  };
+
+  // Handle timeline click
+  const handleTimelineClick = (e) => {
+    if (videoRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newTime = (clickX / rect.width) * duration;
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  // Show controls on hover/touch
+  const showControls = () => {
     setShowVideoControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
   };
 
-  const handleVideoMouseLeave = () => {
-    setIsVideoHovered(false);
-    setShowVideoControls(false);
+  // Hide controls with delay
+  const hideControls = () => {
+    controlsTimeoutRef.current = setTimeout(() => {
+      setShowVideoControls(false);
+    }, 3000);
   };
 
-  const handleVideoClick = () => {
-    setShowVideoControls(!showVideoControls);
+  // Format time
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const nextReview = () => {
@@ -128,12 +170,10 @@ function Container4() {
 
   const nextVideo = () => {
     setCurrentVideo((prev) => (prev + 1) % videoTestimonials.length);
-    setShowVideoControls(false);
   };
 
   const prevVideo = () => {
     setCurrentVideo((prev) => (prev - 1 + videoTestimonials.length) % videoTestimonials.length);
-    setShowVideoControls(false);
   };
 
   return (
@@ -166,17 +206,17 @@ function Container4() {
               <div className="flex flex-col items-center h-auto lg:h-[500px] justify-center order-1 lg:order-1">
                 <div 
                   className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[400px] h-[300px] sm:h-[350px] md:h-[400px] lg:h-[400px] rounded-2xl overflow-hidden bg-black mb-6"
-                  onMouseEnter={handleVideoMouseEnter}
-                  onMouseLeave={handleVideoMouseLeave}
-                  onClick={handleVideoClick}
+                  onMouseEnter={showControls}
+                  onMouseLeave={hideControls}
+                  onTouchStart={showControls}
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentVideo}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
                       className="w-full h-full"
                     >
                       <video
@@ -185,8 +225,11 @@ function Container4() {
                         autoPlay
                         muted={isVideoMuted}
                         playsInline
-                        controls={showVideoControls}
                         onEnded={handleVideoEnded}
+                        onTimeUpdate={handleTimeUpdate}
+                        onLoadedMetadata={handleTimeUpdate}
+                        onPlay={() => setIsVideoPlaying(true)}
+                        onPause={() => setIsVideoPlaying(false)}
                       >
                         <source src={videoTestimonials[currentVideo].src} type="video/mp4" />
                         {language === 'es' ? 'Tu navegador no soporta videos.' : 'Your browser does not support videos.'}
@@ -194,23 +237,63 @@ function Container4() {
                     </motion.div>
                   </AnimatePresence>
                   
-                  {/* Audio Toggle Button - Only show when not showing controls */}
-                  {!showVideoControls && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleAudio();
-                      }}
-                      className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
-                      aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
-                    >
-                      {isVideoMuted ? (
-                        <FaVolumeMute className="w-4 h-4 lg:w-5 lg:h-5" />
-                      ) : (
-                        <FaVolumeUp className="w-4 h-4 lg:w-5 lg:h-5" />
-                      )}
-                    </button>
-                  )}
+                  {/* Audio Toggle Button */}
+                  <button
+                    onClick={toggleAudio}
+                    className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-all duration-300 transform hover:scale-110"
+                    aria-label={isVideoMuted ? 'Activar audio' : 'Silenciar audio'}
+                  >
+                    {isVideoMuted ? (
+                      <FaVolumeMute className="w-4 h-4 lg:w-5 lg:h-5" />
+                    ) : (
+                      <FaVolumeUp className="w-4 h-4 lg:w-5 lg:h-5" />
+                    )}
+                  </button>
+
+                  {/* Video Controls */}
+                  <AnimatePresence>
+                    {showVideoControls && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4"
+                      >
+                        {/* Timeline */}
+                        <div className="mb-3">
+                          <div 
+                            className="w-full h-2 bg-black/30 rounded-full cursor-pointer hover:h-3 transition-all duration-200"
+                            onClick={handleTimelineClick}
+                          >
+                            <div 
+                              className="h-full bg-gradient-to-r from-[#5773BB] to-[#4466B7] rounded-full transition-all duration-200"
+                              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="flex items-center justify-between">
+                          <button
+                            onClick={togglePlayPause}
+                            className="p-2 text-white hover:text-[#5773BB] transition-colors"
+                            aria-label={isVideoPlaying ? 'Pausar video' : 'Reproducir video'}
+                          >
+                            {isVideoPlaying ? (
+                              <FaPause className="w-4 h-4" />
+                            ) : (
+                              <FaPlay className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          <div className="text-white text-sm font-medium">
+                            {formatTime(currentTime)} / {formatTime(duration)}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Video Navigation - Bottom */}
@@ -227,10 +310,7 @@ function Container4() {
                     {videoTestimonials.map((_, index) => (
                       <button
                         key={index}
-                        onClick={() => {
-                          setCurrentVideo(index);
-                          setShowVideoControls(false);
-                        }}
+                        onClick={() => setCurrentVideo(index)}
                         className={`w-2 h-2 rounded-full transition-colors ${
                           index === currentVideo
                             ? 'bg-gradient-to-r from-[#5773BB] to-[#4466B7]'
