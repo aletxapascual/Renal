@@ -132,10 +132,10 @@ function Container4() {
         {/* Combined Video and Reviews Section */}
         <div className="max-w-6xl mx-auto">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 ring-1 ring-[#5773BB]/10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Video Section - Left */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-[300px] h-[600px] rounded-2xl overflow-hidden bg-black mb-6">
+              <div className="flex flex-col items-center h-[600px] justify-center">
+                <div className="relative w-[500px] h-[500px] rounded-2xl overflow-hidden bg-black mb-6">
                   <video
                     ref={videoRef}
                     key={videoTestimonials[currentVideo].id}
@@ -186,54 +186,56 @@ function Container4() {
               </div>
 
               {/* Reviews Section - Right */}
-              <div className="flex flex-col justify-center h-[600px]">
+              <div className="flex flex-col items-center h-[600px] justify-center">
                 <div 
                   className="relative flex flex-col items-center"
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                 >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentReview}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-12 ring-1 ring-[#5773BB]/10 mb-6"
-                    >
-                      <p className="text-xl text-gray-700 mb-8 text-center leading-relaxed">
-                        "{reviews[currentReview].text}"
-                      </p>
-                      <div className="flex flex-col items-center gap-6">
-                        <div className="flex gap-1">
-                          {[...Array(reviews[currentReview].stars)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              onHoverStart={() => setHoveredStar(i)}
-                              onHoverEnd={() => setHoveredStar(null)}
-                              animate={{
-                                rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
-                              }}
-                              transition={{
-                                rotate: {
-                                  duration: 0.5,
-                                  ease: "easeInOut"
-                                }
-                              }}
-                            >
-                              <FaStar className={`w-6 h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
-                            </motion.div>
-                          ))}
+                  <div className="w-[500px] h-[500px] mb-6 flex items-center justify-center">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentReview}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-md p-8 ring-1 ring-[#5773BB]/10 h-full w-full flex flex-col justify-center"
+                      >
+                        <p className="text-lg text-gray-700 mb-8 text-center leading-relaxed">
+                          "{reviews[currentReview].text}"
+                        </p>
+                        <div className="flex flex-col items-center gap-6">
+                          <div className="flex gap-1">
+                            {[...Array(reviews[currentReview].stars)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                onHoverStart={() => setHoveredStar(i)}
+                                onHoverEnd={() => setHoveredStar(null)}
+                                animate={{
+                                  rotate: hoveredStar === i ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{
+                                  rotate: {
+                                    duration: 0.5,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                              >
+                                <FaStar className={`w-6 h-6 ${hoveredStar !== null && i <= hoveredStar ? 'text-yellow-300' : 'text-yellow-400'}`} />
+                              </motion.div>
+                            ))}
+                          </div>
+                          <h4 className="text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
+                            {reviews[currentReview].name}
+                          </h4>
                         </div>
-                        <h4 className="text-xl font-semibold bg-gradient-to-r from-[#5773BB] to-[#4466B7] bg-clip-text text-transparent">
-                          {reviews[currentReview].name}
-                        </h4>
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
 
-                  {/* Reviews Navigation - Directly below the review card */}
-                  <div className="flex items-center justify-center gap-4">
+                  {/* Reviews Navigation - Bottom */}
+                  <div className="flex items-center gap-4">
                     <button
                       onClick={prevReview}
                       className="p-2 text-[#5773BB] hover:text-[#4466B7] transition-colors"
