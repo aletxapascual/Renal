@@ -138,8 +138,7 @@ function Footer() {
                   {language === 'es' ? 'Dirección' : 'Address'}
                 </h4>
                 <p className="text-white/80 text-sm">
-                  Altabrisa, Calle 26 No.202 Int. 5, 6 Y 7 Plaza las Brisas<br />
-                  97130 Mérida, Yuc.
+                  Calle 26 #202 entre 15 y 7 Plaza las Brisas Int. 5, 6 y 7 Col. Altabrisa, 97130, Mérida Yuc<br />
                 </p>
               </div>
               <div>
