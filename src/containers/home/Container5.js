@@ -76,7 +76,7 @@ function Container5() {
                       {language === 'es' ? 'Dirección' : 'Address'}
                     </h4>
                     <p className="font-sans text-lg text-gray-600 leading-relaxed whitespace-pre-line">
-                      {language === 'es' ? contactInfo.address.es : contactInfo.address.en}
+                      {language === 'es' ? 'Calle 26 #202 entre 15 y 7 Plaza las Brisas Int. 5, 6 y 7 Col. Altabrisa, 97130, Mérida Yuc.' : 'Calle 26 #202 entre 15 y 7 Plaza las Brisas Int. 5, 6 y 7 Col. Altabrisa, 97130, Mérida Yuc.'}
                     </p>
                   </div>
                 </div>

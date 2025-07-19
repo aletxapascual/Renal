@@ -62,8 +62,8 @@ function Container2() {
       icon: FaMapMarkerAlt,
       label: language === 'es' ? 'Ubicación' : 'Location',
       value: language === 'es'
-        ? 'Altabrisa, Calle 26 No.202 Int. 5\n97130 Mérida, Yuc.'
-        : 'Altabrisa, 26th Street No.202 Int. 5\n97130 Mérida, Yuc.'
+        ? 'Calle 26 #202 entre 15 y 7 Plaza las Brisas Int. 5, 6 y 7 Col. Altabrisa, 97130, Mérida Yuc.'
+        : 'Calle 26 #202 entre 15 y 7 Plaza las Brisas Int. 5, 6 y 7 Col. Altabrisa, 97130, Mérida Yuc.'
     },
     {
       icon: FaClock,
