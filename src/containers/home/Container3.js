@@ -21,8 +21,8 @@ function Container3() {
       name: 'Maloobtal Pro',
       image: maloobtalProImg,
       description: {
-        es: 'Simbiótico con Rhamnosus y Longum. Diseñado para pacientes en hemodiálisis con síntomas digestivos por uremia.',
-        en: 'Symbiotic with Rhamnosus and Longum. Designed for hemodialysis patients with digestive symptoms from uremia.'
+        es: 'Simbiótico con Rhamnosus y Lognum. Diseñado para pacientes con enfermedad renal crónica que disminuye los niveles de urea y creatinina',
+        en: 'Symbiotic with Rhamnosus and Lognum. Designed for patients with chronic kidney disease that decreases urea and creatinine levels'
       }
     },
     {

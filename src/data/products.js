@@ -117,8 +117,8 @@ export const products = {
     name: 'Maloobtal Pro',
     price: '$700.00',
     shortDescription: {
-      es: 'Simbiótico con probióticos encapsulados y fibra de agave. Ayuda a reducir síntomas digestivos y urémicos en hemodiálisis.',
-      en: 'Symbiotic with encapsulated probiotics and agave fiber. Helps reduce digestive and uremic symptoms in hemodialysis.'
+      es: 'Simbiótico con Rhamnosus y Lognum. Diseñado para pacientes con enfermedad renal crónica que disminuye los niveles de urea y creatinina',
+      en: 'Symbiotic with Rhamnosus and Lognum. Designed for patients with chronic kidney disease that decreases urea and creatinine levels'
     },
     description: {
       es: 'Simbiótico que combina inulina de agave y bacterias vivas (Lactobacillus rhamnosus y Bifidobacterium longum), formulado con tecnología de microencapsulado, lo que permite su estabilidad sin necesidad de refrigeración.<br><br><strong>Indicaciones:</strong><br>Útil en el tratamiento de síntomas asociados a la sintomatología urémica en pacientes en hemodiálisis, como:<br><br>• Náusea<br>• Vómito<br>• Diarrea<br>• Estreñimiento<br>• Prurito (comezón)',
