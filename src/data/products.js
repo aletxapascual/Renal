@@ -80,7 +80,7 @@ export const products = {
         id: 'fresa',
         name: { es: 'Fresa', en: 'Strawberry' },
         images: [
-          '/images/productos/renNutFresa.png',
+          '/images/productos/renNutFresa2.png',
           '/images/productos/renNutJuntos.png'
         ]
       }

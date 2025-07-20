@@ -150,6 +150,7 @@ function ProductDetail() {
     if (product.flavors) {
       const flavor = product.flavors.find(f => f.id === flavorId);
       if (flavor) {
+        console.log('Cambiando a sabor:', flavorId, 'Imágenes:', flavor.images);
         setImages(flavor.images);
       }
     }
